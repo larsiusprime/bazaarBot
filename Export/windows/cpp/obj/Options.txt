@@ -1,0 +1,2 @@
+ -Dactuate="1" -Ddesktop="1" -Dhaxe3="1" -Dhaxe_release="1" -Dhaxe_ver="3." -Dnme="1" -Dnme3="1" -Dnme_install_tool="1" -Dnme_ver="3.5.6" -Dno_console="1" -Dwindows="1"
+C:\HaxeToolkit\haxe\lib\hxcpp/3,0,2/
