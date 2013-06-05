@@ -1,5 +1,4 @@
 package com.leveluplabs.bazaarbot;
-import nme.utils.Float32Array;
 
 /**
  * ...

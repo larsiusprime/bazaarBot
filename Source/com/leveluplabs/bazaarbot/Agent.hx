@@ -1,6 +1,5 @@
 package com.leveluplabs.bazaarbot;
-import nme.geom.Point;
-import nme.utils.Float32Array;
+import flash.geom.Point;
 
 /**
  * ...

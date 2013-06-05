@@ -1,9 +1,9 @@
 package com.leveluplabs.bazaarbot.example;
 import com.leveluplabs.bazaarbot.BazaarBot;
 import com.leveluplabs.bazaarbot.MarketReport;
-import nme.display.Sprite;
-import nme.text.TextField;
-import nme.text.TextFormatAlign;
+import flash.display.Sprite;
+import flash.text.TextField;
+import flash.text.TextFormatAlign;
 
 /**
  * ...

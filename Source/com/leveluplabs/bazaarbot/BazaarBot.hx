@@ -1,8 +1,7 @@
 package com.leveluplabs.bazaarbot;
 import haxe.Json;
 import haxe.xml.Fast;
-import nme.errors.Error;
-import nme.utils.Float32Array;
+import flash.errors.Error;
 
 /**
  * ...
@@ -40,6 +39,14 @@ class BazaarBot
 		}else {
 			throw new Error("unrecognized data format!");
 		}
+	}
+	
+	public function num_commodities():Int {
+		return list_commodities.length;
+	}
+	
+	public function num_agents():Int {
+		return list_agents.length;
 	}
 	
 	public function fromXML(data:Fast):Void {
@@ -104,7 +111,6 @@ class BazaarBot
 	}
 	
 	public function simulate(rounds:Int):Void {
-		trace("Round " + _round_num);
 		for (round in 0...rounds) {
 			for (agent in list_agents) {
 				agent.set_money_last(agent.money);
@@ -129,17 +135,11 @@ class BazaarBot
 	}
 	
 	public function ask(offer:Offer):Void {
-		if (offer.units <= 0) {
-			trace("DOINK!");
-		}
 		var list:Array<Offer> = book_asks.get(offer.commodity);
 		list.push(offer);
 	}
 	
 	public function bid(offer:Offer):Void {
-		if (offer.units <= 0) {
-			trace("WOKN!");
-		}
 		var list:Array<Offer> = book_bids.get(offer.commodity);
 		list.push(offer);
 	}
@@ -421,7 +421,6 @@ class BazaarBot
 		//sort by id so everything works again
 		list_agents.sort(sort_agent_id);
 		
-		trace("\t(" + commodity_ +") :\t$" + num_str(avg_price,2)+"\t("+num_asks+"/"+num_bids + ")\t" + units_traded + " sold");
 	}
 	
 	private function list_avg_f(list:Array<Float>):Float {
@@ -451,7 +450,6 @@ class BazaarBot
 		var new_agent:Agent = new Agent(agent.id, best_id, agent_class.getStartInventory(), agent_class.money);
 		new_agent.init(this);
 		list_agents[agent.id] = new_agent;
-		trace("replaceAgent(" + agent.class_id + ")--> " + new_agent.class_id);
 		agent.destroy();
 	}
 	

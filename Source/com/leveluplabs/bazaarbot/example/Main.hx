@@ -1,18 +1,18 @@
 package com.leveluplabs.bazaarbot.example;
 
-import nme.text.TextFieldAutoSize;
-import nme.text.TextFormat;
+import flash.Lib;
+import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
 import com.leveluplabs.bazaarbot.BazaarBot;
 import haxe.Json;
-import nme.display.Bitmap;
-import nme.display.Shape;
-import nme.display.SimpleButton;
-import nme.display.Sprite;
-import nme.Assets;
-import nme.events.MouseEvent;
-import nme.Lib;
-import nme.text.TextField;
-import nme.text.TextFormatAlign;
+import flash.display.Bitmap;
+import flash.display.Shape;
+import flash.display.SimpleButton;
+import flash.display.Sprite;
+import openfl.Assets;
+import flash.events.MouseEvent;
+import flash.text.TextFormatAlign;
 
 
 class Main extends Sprite {
@@ -20,6 +20,7 @@ class Main extends Sprite {
 	private var bazaar:BazaarBot;
 	
 	private var display:MarketDisplay;
+	private var txt_benchmark:TextField;
 	
 	public function new () {			
 		super ();		
@@ -39,6 +40,35 @@ class Main extends Sprite {
 		display.x = 0;
 		display.y = 50;
 		addChild(display);
+		
+		makeButton(120, 10, "Benchmark", onBenchmark);		
+		txt_benchmark = new TextField();
+		txt_benchmark.x = 220;
+		txt_benchmark.y = 10;
+		txt_benchmark.width = 800 - 220;
+		addChild(txt_benchmark);
+	}
+	
+	private function onBenchmark(m:MouseEvent):Void{
+		var time = Lib.getTimer();
+		var benchmark:Int = 30;
+		bazaar.simulate(benchmark);
+		display.update(bazaar.get_marketReport(1));
+		time = Lib.getTimer() - time;
+		var avg:Float = (cast(time, Float) / cast(benchmark, Float)) / 1000;
+		var tstr:String = BazaarBot.num_str(time / 1000, 2);
+		var platform:String="NONE";
+		#if flash
+			platform = "flash";
+		#elseif cpp
+			platform = "cpp";
+		#elseif neko
+			platform = "neko";
+		#elseif js
+			platform = "js";
+		#end
+		
+		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.num_commodities() + ", Agents=" + bazaar.num_agents() + ", TIME total=" + tstr + " avg=" + BazaarBot.num_str(avg,2));				
 	}
 	
 	private function onAdvance(m:MouseEvent):Void {
@@ -87,6 +117,9 @@ class Main extends Sprite {
 		
 		var s:SimpleButton = new SimpleButton(up, over, down, hit);
 		s.addEventListener(MouseEvent.CLICK, func, false, 0, true);
+		
+		s.x = X;
+		s.y = Y;
 		
 		addChild(s);
 		return s;
