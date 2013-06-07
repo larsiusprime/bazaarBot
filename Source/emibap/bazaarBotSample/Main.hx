@@ -22,10 +22,12 @@ class Main extends Sprite {
 	private var display:MarketDisplay;
 	private var txt_benchmark:TextField;
 	
+	private var chartGood:String = "food";
+	
 	public function new () {			
 		super ();		
 		
-		var settings:String = Assets.getText("assets/data/settings2.json");
+		var settings:String = Assets.getText("assets/data/settings.json");
 		var data:Dynamic = Json.parse(settings);
 		bazaar = new BazaarBot();
 		bazaar.init(data);
@@ -51,9 +53,10 @@ class Main extends Sprite {
 	
 	private function onBenchmark(m:MouseEvent):Void{
 		var time = Lib.getTimer();
-		var benchmark:Int = 1500;
+		var benchmark:Int = 1000;
 		bazaar.simulate(benchmark);
 		display.update(bazaar.get_marketReport(1));
+		display.updateChart(bazaar.history_price.get(chartGood));
 		time = Lib.getTimer() - time;
 		var avg:Float = (cast(time, Float) / cast(benchmark, Float)) / 1000;
 		var tstr:String = BazaarBot.num_str(time / 1000, 2);
@@ -74,9 +77,11 @@ class Main extends Sprite {
 	private function onAdvance(m:MouseEvent):Void {
 		bazaar.simulate(1);
 		display.update(bazaar.get_marketReport(1));
+		display.updateChart(bazaar.history_price.get(chartGood));
+		
 		/*var str:String = "";
 		for (c in bazaar.get_commodities_unsafe()) {
-			str += c + " \t" + "$" + BazaarBot.num_str(bazaar.get_history_price(c, 1), 2);
+			str += c + " \t" + "$" + BazaarBot.num_str(bazaar.get_history_price_avg(c, 1), 2);
 			str += "\n";
 		}*/
 	}

@@ -24,6 +24,10 @@ class MarketDisplay extends Sprite
 	
 	private var arr_txt_list_inventory:Array<TextField>;
 	
+	
+	private var chart:LineChart;
+	private var market:BazaarBot;
+	
 	public function new(W:Float,H:Float) 
 	{
 		super();		
@@ -53,6 +57,14 @@ class MarketDisplay extends Sprite
 		for (i in 0...report.arr_str_list_inventory.length) {			
 			arr_txt_list_inventory[i].text = report.arr_str_list_inventory[i];
 		}
+		
+	}
+	
+	public function updateChart(data:Array<Dynamic>):Void {
+		
+		chart.data = data;
+		chart.draw();
+		
 	}
 	
 	private function setupTxtInventory(report:MarketReport):Void {
@@ -138,5 +150,11 @@ class MarketDisplay extends Sprite
 		addChild(txt_list_agent_count);
 		addChild(txt_list_agent_profit);
 		addChild(txt_list_agent_money);
+		
+		
+		chart = new LineChart();
+		//
+		addChild(chart);
+		chart.draw();
 	}
 }
