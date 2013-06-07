@@ -9,7 +9,10 @@ import flash.errors.Error;
  */
 class BazaarBot
 {
-		
+	public var history_price(get, null):Map<String, Array<Float>>;
+	public var history_asks(get, null):Map<String, Array<Float>>;
+	public var history_bids(get, null):Map<String, Array<Float>>;
+	public var history_trades(get, null):Map<String, Array<Float>>;
 	
 	public function new() 
 	{
@@ -151,7 +154,7 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function get_history_price(commodity_:String, range:Int):Float {
+	public function get_history_price_avg(commodity_:String, range:Int):Float {
 		var list = _history_price.get(commodity_);
 		return avg_list_f(list, range);
 	}
@@ -163,7 +166,7 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function get_history_profit(class_:String, range:Int):Float {
+	public function get_history_profit_avg(class_:String, range:Int):Float {
 		var list = _history_profit.get(class_);
 		return avg_list_f(list, range);
 	}
@@ -175,7 +178,7 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function get_history_asks(commodity_:String,range:Int):Float {
+	public function get_history_asks_avg(commodity_:String,range:Int):Float {
 		var list = _history_asks.get(commodity_);
 		return avg_list_f(list, range);
 	}
@@ -187,12 +190,12 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function get_history_bids(commodity_:String,range:Int):Float {
+	public function get_history_bids_avg(commodity_:String,range:Int):Float {
 		var list = _history_bids.get(commodity_);
 		return avg_list_f(list, range);
 	}
 	
-	public function get_history_trades(commodity_:String, range:Int):Float {
+	public function get_history_trades_avg(commodity_:String, range:Int):Float {
 		var list = _history_trades.get(commodity_);
 		return avg_list_f(list, range);
 	}
@@ -227,16 +230,16 @@ class BazaarBot
 		for (commodity in list_commodities) {
 			mr.str_list_commodity += commodity + "\n";
 			
-			var price:Float = get_history_price(commodity, rounds);			
+			var price:Float = get_history_price_avg(commodity, rounds);			
 			mr.str_list_commodity_prices += num_str(price, 2) + "\n";
 			
-			var asks:Float = get_history_asks(commodity, rounds);
+			var asks:Float = get_history_asks_avg(commodity, rounds);
 			mr.str_list_commodity_asks += Std.int(asks) + "\n";
 			
-			var bids:Float = get_history_bids(commodity, rounds);
+			var bids:Float = get_history_bids_avg(commodity, rounds);
 			mr.str_list_commodity_bids += Std.int(bids) + "\n";
 						
-			var trades:Float = get_history_trades(commodity, rounds);
+			var trades:Float = get_history_trades_avg(commodity, rounds);
 			mr.str_list_commodity_trades += Std.int(trades) + "\n";
 			
 			mr.arr_str_list_inventory.push(commodity + "\n\n");
@@ -247,7 +250,7 @@ class BazaarBot
 				inventory.push(0);		
 			}
 			mr.str_list_agent += key + "\n";
-			var profit:Float = get_history_profit(key, rounds);
+			var profit:Float = get_history_profit_avg(key, rounds);
 			mr.str_list_agent_profit += num_str(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
@@ -392,8 +395,8 @@ class BazaarBot
 			add_history_price(commodity_, avg_price);		
 		}else {
 			//special case: none were traded this round, use last round's average price
-			add_history_price(commodity_, get_history_price(commodity_, 1));
-			avg_price = get_history_price(commodity_,1);
+			add_history_price(commodity_, get_history_price_avg(commodity_, 1));
+			avg_price = get_history_price_avg(commodity_,1);
 		}		
 		
 		list_agents.sort(sort_agent_alpha);
@@ -502,8 +505,8 @@ class BazaarBot
 		var best_market:String = "";
 		var best_ratio:Float = -999999;
 		for(commodity in list_commodities){
-			var asks:Float = get_history_asks(commodity, range);
-			var bids:Float = get_history_bids(commodity, range);			
+			var asks:Float = get_history_asks_avg(commodity, range);
+			var bids:Float = get_history_bids_avg(commodity, range);			
 			var ratio:Float = 0;
 			if (asks == 0 && bids > 0) {
 				ratio = 9999999999999999;	
@@ -523,7 +526,7 @@ class BazaarBot
 		var best:Float = -99999;
 		var best_id:String="";
 		for(ac_id in _agent_classes.keys()){
-			var val:Float = get_history_profit(ac_id, range);
+			var val:Float = get_history_profit_avg(ac_id, range);
 			if (val > best) {
 				best_id = ac_id;
 				best = val;
@@ -580,6 +583,29 @@ class BazaarBot
 		buyer.money -= amount_;
 	}	
 	
+	private function get_history_price():Map<String, Array<Float>> 
+	{
+		return _history_price;
+	}
+	
+	
+	private function get_history_asks():Map<String, Array<Float>> 
+	{
+		return _history_asks;
+	}
+	
+	
+	private function get_history_bids():Map<String, Array<Float>> 
+	{
+		return _history_bids;
+	}
+	
+	
+	private function get_history_trades():Map<String, Array<Float>> 
+	{
+		return _history_trades;
+	}
+		
 	private static function sort_agent_id(a:Agent, b:Agent):Int {
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
