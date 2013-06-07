@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="Bazaar Bot" package="emibap.bazaarBotSample" version="1.0.0" company="Emibap" />
-	<app main="emibap.bazaarBotSample.Main" path="Export" file="bazaarBot"/>
+	<meta title="Bazaar Bot" package="com.leveluplabs.example" version="1.0.0" company="LevelUpLabs" />
+	<app main="com.leveluplabs.bazaarbot.example.Main" path="Export" file="bazaarBot"/>
 	
 	<source path="Source" />
 	
