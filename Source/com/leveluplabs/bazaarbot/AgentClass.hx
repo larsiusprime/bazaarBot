@@ -1,4 +1,5 @@
 package com.leveluplabs.bazaarbot;
+import openfl.Assets;
 
 /**
  * ...
@@ -15,8 +16,7 @@ class AgentClass
 	public var inventory_size_ids:Array<String>;
 	public var inventory_size_amounts:Array<Float>;
 	
-	public var inventory_size:Float;
-	
+	public var inventory_size:Float;	
 	public var logic:AgentLogic;
 	
 	public function new(data:Dynamic) 
@@ -44,7 +44,17 @@ class AgentClass
 			inventory_size_amounts.push(Reflect.field(data.inventory.size, istr));
 		}
 		
-		logic = new AgentLogic(data.logic);
+		var script:String = "";
+		if (Reflect.hasField(data, "script")) {
+			var script_id:String = data.script;
+			script = Assets.getText("assets/data/scripts/" + script_id);
+		}
+		
+		if (script != "") {
+			logic = new AgentLogic(script);
+		}else{
+			logic = new AgentLogic(data.logic);
+		}
 	}
 	
 	public function getStartInventory():Inventory {

@@ -2,6 +2,9 @@ package com.leveluplabs.bazaarbot;
 import haxe.Json;
 import haxe.xml.Fast;
 import flash.errors.Error;
+import hscript.Interp;
+import hscript.Parser;
+import openfl.Assets;
 
 /**
  * ...
@@ -116,7 +119,7 @@ class BazaarBot
 				agent.set_money_last(agent.money);
 				
 				var ac:AgentClass = _agent_classes.get(agent.class_id);				
-				ac.logic.perform(agent);
+				ac.logic.perform(agent,this);
 								
 				for (commodity in list_commodities) {
 					agent.generate_offers(this, commodity);
@@ -154,6 +157,30 @@ class BazaarBot
 	public function get_history_price(commodity_:String, range:Int):Float {
 		var list = _history_price.get(commodity_);
 		return avg_list_f(list, range);
+	}
+	
+	public function get_cheapest_commodity(range:Int,not_this:String=""):String{
+		var best_price:Float = 999999999999999999;
+		var best_commodity:String = "";
+		for (c in list_commodities) {
+			if(c != not_this){
+				var price:Float = get_history_price(c, range);
+				if (price < best_price) { best_price = price; best_commodity = c; }
+			}
+		}
+		return best_commodity;
+	}
+	
+	public function get_dearest_commodity(range:Int,not_this:String=""):String{
+		var best_price:Float = 0;
+		var best_commodity:String = "";
+		for (c in list_commodities) {
+			if(c != not_this){
+				var price = get_history_price(c, range);
+				if (price > best_price) { best_price = price; best_commodity = c; }
+			}
+		}
+		return best_commodity;
 	}
 	
 	/**
@@ -454,16 +481,16 @@ class BazaarBot
 	}
 	
 	private function get_agent_class_that_makes_most(commodity_:String):String {
-		var best_amount:Float = 0;
 		var best_class:String = "";
-		for (key in _agent_classes.keys()) {
-			var ac:AgentClass = _agent_classes.get(key);
-			var amount:Float = ac.logic.get_production(commodity_);
-			if (amount > best_amount) {
-				best_amount = amount;
-				best_class = ac.id;
-			}
-		}
+		var parser = new Parser();
+		var script:String = Assets.getText("assets/data/scripts/best_job.hs");
+		var ast = parser.parseString(script);
+		var interp = new Interp();
+		
+		var variables:Map<String,Dynamic> = ["commodity" => commodity_];		 
+		interp.variables = variables;	
+		best_class = Std.string(interp.execute(ast));
+		
 		return best_class;
 	}
 	

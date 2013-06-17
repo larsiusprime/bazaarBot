@@ -8,9 +8,13 @@
 	
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
+	<haxelib name="hscript"/>
+	
+	<!--<haxedef name="hscriptPos"/>-->
 	
 	<assets path="Assets" rename="assets" exclude="nme.svg" />
 	<assets path="Assets/data" include="*.xml" type="text" />
+	<assets path="Assets/data" include="*.hs" type="text" />
 	<assets path="Assets/data" include="*.json" type="text" />
 	<icon path="Assets/nme.svg" />
 	

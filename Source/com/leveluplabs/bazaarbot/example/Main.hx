@@ -10,6 +10,8 @@ import flash.display.Bitmap;
 import flash.display.Shape;
 import flash.display.SimpleButton;
 import flash.display.Sprite;
+import hscript.Interp;
+import hscript.Parser;
 import openfl.Assets;
 import flash.events.MouseEvent;
 import flash.text.TextFormatAlign;
@@ -31,7 +33,27 @@ class Main extends Sprite {
 		bazaar.init(data);
 		
 		makeButtons();
-	}		
+		testScript();
+	}	
+	
+	private function testScript():Void {
+		var expr = "if 10 >= 5 {doAdd(a,b);} else {doAdd(a,1);}";
+		var parser = new hscript.Parser();
+		var ast = parser.parseString(expr);
+		var interp = new hscript.Interp();
+		/*var vars:Map<String,Dynamic> = new Map<String,Dynamic>();
+		vars.set("a", 2);
+		vars.set("b", 2);
+		vars.set("doAdd", doAdd);*/
+		var vars:Map < String, Dynamic > = ["a" => 2, "b" => 2, "doAdd" => doAdd];
+		interp.variables = vars;
+		vars = ["a" => 2, "b" => 2, "doAdd" => doAdd];
+		trace(interp.execute(ast));	
+	}
+	
+	private function doAdd(a:Int, b:Int):Int {
+		return a + b;
+	}
 	
 	private function makeButtons():Void {
 		makeButton(10, 10, "Advance", onAdvance);

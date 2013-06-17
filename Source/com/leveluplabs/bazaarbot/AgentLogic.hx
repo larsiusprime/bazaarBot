@@ -1,6 +1,9 @@
 package com.leveluplabs.bazaarbot;
 import haxe.io.Path;
 import haxe.Json;
+import hscript.Interp;
+import hscript.Parser;
+import openfl.Assets;
 
 /**
  * ...
@@ -8,6 +11,7 @@ import haxe.Json;
  */
 class AgentLogic
 {
+	var script:String = "";
 	var source:String;
 	var root:AgentLogicNode;
 	
@@ -15,11 +19,17 @@ class AgentLogic
 	
 	public function new(data:Dynamic) 
 	{
-		source = Json.stringify(data);
-		root = new AgentLogicNode(data);
+		if (Std.is(data, String)) {
+			script = data;
+		}else{
+			source = Json.stringify(data);
+			root = new AgentLogicNode(data);
+		}
 	}
 		
-	public function get_production(commodity_:String,curr_node:AgentLogicNode=null):Float {
+	public function get_production(commodity_:String):Float {
+		return 0;
+		/*
 		if (curr_node == null) {
 			return get_production(commodity_, root);
 		}else {
@@ -49,8 +59,7 @@ class AgentLogic
 				}
 				return amount;
 			}
-		}
-		return 0;
+		}*/
 	}
 	
 	
@@ -59,9 +68,51 @@ class AgentLogic
 	 * @param	agent
 	 */
 	
-	public function perform(agent:Agent):Void {
-		_perform(root, agent);
+	public function perform(agent:Agent,bazaar:BazaarBot):Void {
+		if(script == ""){
+			_perform(root, agent);
+		}else {
+			_perform_script(script, agent, bazaar);
+		}
 	}
+	
+	private function _perform_script(script:String, agent:Agent, bazaar:BazaarBot):Void {
+		var parser = new Parser();
+		var ast = parser.parseString(script);
+		var interp = new Interp();
+		
+		var vars:Map<String,Dynamic> = 
+		[
+		 "agent" => agent, 
+		 "query_inventory" => agent.query_inventory,
+		 "produce" => _produce,
+		 "consume" => _consume,
+		 "inventory_is_full" => agent.get_inventory_space,
+		 "make_room_for" => 
+			function(a:Agent, c:String="food", amt:Float = 1.0):Void { 
+				var to_drop:String = bazaar.get_cheapest_commodity(10,c);
+				if (to_drop != "") {_consume(a, to_drop, amt);}
+			}
+		 ];
+		 
+		interp.variables = vars;			
+	}
+	
+	private function _produce(agent:Agent, commodity:String, amount:Float, chance:Float=1.0):Void {
+		if (chance >= 1.0 || Math.random() < chance) {
+			agent.change_inventory(commodity, amount);
+		}
+	}
+	
+	private function _consume(agent:Agent, commodity:String, amount:Float, chance:Float=1.0):Void {
+		if (chance >= 1.0 || Math.random() < chance) {
+			if (commodity == "money") {
+				agent.money -= amount;
+			}else{
+				agent.change_inventory(commodity, -amount);
+			}
+		}
+	}	
 	
 	/**
 	 * Recursively steps through the current node and does the given action for the given agent

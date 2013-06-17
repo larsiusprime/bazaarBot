@@ -199,6 +199,10 @@ class Agent
 		return null;
 	}
 	
+	public function get_inventory_space():Float {
+		return _inventory.get_space_empty();
+	}
+	
 	public function query_inventory(commodity_:String):Float {
 		return _inventory.query(commodity_);
 	}
