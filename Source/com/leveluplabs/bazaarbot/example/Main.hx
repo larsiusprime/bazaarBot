@@ -98,7 +98,7 @@ class Main extends Sprite {
 		display.update(bazaar.get_marketReport(1));
 		/*var str:String = "";
 		for (c in bazaar.get_commodities_unsafe()) {
-			str += c + " \t" + "$" + BazaarBot.num_str(bazaar.get_history_price(c, 1), 2);
+			str += c + " \t" + "$" + BazaarBot.num_str(bazaar.get_history_price_avg(c, 1), 2);
 			str += "\n";
 		}*/
 	}

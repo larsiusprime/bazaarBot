@@ -11,7 +11,7 @@ Based on "[Emergent Economies for Role Playing Games](http://larc.unt.edu/techre
 
 Source: [Procedural Content Generation](http://larc.unt.edu/ian/research/content/)
 	
-Builing the example project
+Building the example project
 ---------------------------
 
 1. Read this: [Getting Started with OpenFL](https://github.com/openfl/openfl/wiki/Get-Started)
