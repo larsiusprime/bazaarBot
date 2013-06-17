@@ -96,6 +96,7 @@ class AgentLogic
 		 ];
 		 
 		interp.variables = vars;			
+		interp.execute(ast);
 	}
 	
 	private function _produce(agent:Agent, commodity:String, amount:Float, chance:Float=1.0):Void {

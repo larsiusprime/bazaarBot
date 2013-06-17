@@ -167,7 +167,7 @@ class BazaarBot
 		var best_commodity:String = "";
 		for (c in list_commodities) {
 			if(c != not_this){
-				var price:Float = get_history_price(c, range);
+				var price:Float = get_history_price_avg(c, range);
 				if (price < best_price) { best_price = price; best_commodity = c; }
 			}
 		}
@@ -179,7 +179,7 @@ class BazaarBot
 		var best_commodity:String = "";
 		for (c in list_commodities) {
 			if(c != not_this){
-				var price = get_history_price(c, range);
+				var price = get_history_price_avg(c, range);
 				if (price > best_price) { best_price = price; best_commodity = c; }
 			}
 		}
