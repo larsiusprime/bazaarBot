@@ -1,5 +1,5 @@
 package bazaarbot;
-import bazaarbot.agent.Agent;
+import bazaarbot.agent.StandardAgent;
 
 /**
  * ...
@@ -140,14 +140,14 @@ class Quick
 		return list;
 	}
 	
-	public static function sortAgentAlpha(a:Agent, b:Agent):Int
+	public static function sortAgentAlpha(a:StandardAgent, b:StandardAgent):Int
 	{
 		if (a.className < b.className) return -1;
 		if (a.className > b.className) return 1;
 		return 0;
 	}
 	
-	public static function sortAgentId(a:Agent, b:Agent):Int
+	public static function sortAgentId(a:StandardAgent, b:StandardAgent):Int
 	{
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;

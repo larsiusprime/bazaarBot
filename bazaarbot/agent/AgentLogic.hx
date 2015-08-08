@@ -68,7 +68,7 @@ class AgentLogic
 	 * @param	agent
 	 */
 	
-	public function perform(agent:Agent,bazaar:BazaarBot):Void {
+	public function perform(agent:StandardAgent,bazaar:BazaarBot):Void {
 		if(script == ""){
 			_perform(root, agent);
 		}else {
@@ -76,7 +76,7 @@ class AgentLogic
 		}
 	}
 	
-	private function _perform_script(script:String, agent:Agent, bazaar:BazaarBot):Void {
+	private function _perform_script(script:String, agent:StandardAgent, bazaar:BazaarBot):Void {
 		var parser = new Parser();
 		var ast = parser.parseString(script);
 		var interp = new Interp();
@@ -89,7 +89,7 @@ class AgentLogic
 		 "consume" => _consume,
 		 "inventory_is_full" => agent.get_inventorySpace,
 		 "make_room_for" => 
-			function(a:Agent, c:String = "food", amt:Float = 1.0):Void
+			function(a:StandardAgent, c:String = "food", amt:Float = 1.0):Void
 			{ 
 				var to_drop:String = bazaar.getCheapestCommodity(10, [c]);
 				if (to_drop != "") {_consume(a, to_drop, amt);}
@@ -100,18 +100,18 @@ class AgentLogic
 		interp.execute(ast);
 	}
 	
-	private function _produce(agent:Agent, commodity:String, amount:Float, chance:Float=1.0):Void {
+	private function _produce(agent:StandardAgent, commodity:String, amount:Float, chance:Float=1.0):Void {
 		if (chance >= 1.0 || Math.random() < chance) {
-			agent.change_inventory(commodity, amount);
+			agent.changeInventory(commodity, amount);
 		}
 	}
 	
-	private function _consume(agent:Agent, commodity:String, amount:Float, chance:Float=1.0):Void {
+	private function _consume(agent:StandardAgent, commodity:String, amount:Float, chance:Float=1.0):Void {
 		if (chance >= 1.0 || Math.random() < chance) {
 			if (commodity == "money") {
 				agent.money -= amount;
 			}else{
-				agent.change_inventory(commodity, -amount);
+				agent.changeInventory(commodity, -amount);
 			}
 		}
 	}	
@@ -122,7 +122,7 @@ class AgentLogic
 	 * @param	agent
 	 */
 	
-	private function _perform(curr_node:AgentLogicNode,agent:Agent):Void{
+	private function _perform(curr_node:AgentLogicNode,agent:StandardAgent):Void{
 		
 		if(!curr_node.isLeaf){								//If not a leaf node
 			if (_evaluate(curr_node, agent)) {				//Test the conditions
@@ -155,27 +155,27 @@ class AgentLogic
 						switch(act.action)
 						{
 							case "produce":
-								agent.change_inventory(target, amount);		//produce some stuff
+								agent.changeInventory(target, amount);		//produce some stuff
 							case "consume":
-								agent.change_inventory(target, -amount);	//consume some stuff
-							case "transform":			
+								agent.changeInventory(target, -amount);	//consume some stuff
+							case "transform":
 								var amount_target:Float = amount;
 								
-								//exchange rate between A -> B								
+								//exchange rate between A -> B
 								var amount_product:Float = amount * act.efficiency[i]; 
-								var result:String = act.results[i];						
+								var result:String = act.results[i];
 								
-								agent.change_inventory(target, -amount_target);	//consume this much of A
-								agent.change_inventory(result, amount_product); //produce this much of B								
+								agent.changeInventory(target, -amount_target);	//consume this much of A
+								agent.changeInventory(result, amount_product); //produce this much of B
 						}
 					}
-				}					
+				}
 				
 			}
 		}
 	}
 	
-	private function _evaluate(curr_node:AgentLogicNode, agent:Agent):Bool
+	private function _evaluate(curr_node:AgentLogicNode, agent:StandardAgent):Bool
 	{
 		//Fail on the first condition that is false
 		for (c in curr_node.conditions)

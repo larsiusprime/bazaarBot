@@ -8,21 +8,13 @@ import openfl.geom.Point;
 @:allow(BazaarBot)
 class BasicAgent
 {
-	public var id:Int;			//unique integer identifier
+	public var id:Int;				//unique integer identifier
 	public var className:String;	//string identifier, "famer", "woodcutter", etc.
 	public var money:Float;
 	public var moneyLastRound(default, null):Float;
 	public var profit(get, null):Float;
 	public var inventorySpace(get, null):Float;
 	public var destroyed(default, null):Bool;
-	
-	
-	public static inline var SIGNIFICANT:Float = 0.25;		//25% more or less is "significant"
-	public static inline var SIG_IMBALANCE:Float = 0.33;
-	public static inline var LOW_INVENTORY:Float = 0.1;		//10% of ideal inventory = "LOW"
-	public static inline var HIGH_INVENTORY:Float = 2.0;	//200% of ideal inventory = "HIGH"
-	
-	public static inline var MIN_PRICE:Float = 0.01;		//lowest possible price
 	
 	public function new(id:Int,className:String,inventory:Inventory,money:Float) 
 	{
@@ -38,31 +30,36 @@ class BasicAgent
 		}
 		this.money = money;
 		
-		_price_beliefs = new Map<String, Point>();
-		_observed_trading_range = new Map<String, Array<Float>>();
+		_priceBeliefs = new Map<String, Point>();
+		_observedTradingRange = new Map<String, Array<Float>>();
 	}
 	
-	public function destroy():Void {
+	public function destroy():Void
+	{
 		destroyed = true;
 		_inventory.destroy();
-		for (key in _price_beliefs.keys()) {
-			_price_beliefs.remove(key);
+		for (key in _priceBeliefs.keys())
+		{
+			_priceBeliefs.remove(key);
 		}
-		for (key in _observed_trading_range.keys()) {
-			var list:Array<Float> = _observed_trading_range.get(key);
+		for (key in _observedTradingRange.keys())
+		{
+			var list:Array<Float> = _observedTradingRange.get(key);
 			while (list.length > 0) {
 				list.splice(0, 1);
 			}list = null;
-			_observed_trading_range.remove(key);
+			_observedTradingRange.remove(key);
 		}
-		_price_beliefs = null;
-		_observed_trading_range = null;
+		_priceBeliefs = null;
+		_observedTradingRange = null;
 	}
 	
 	
-	public function init(bazaar:BazaarBot):Void {
+	public function init(bazaar:BazaarBot):Void
+	{
 		var list_commodities = bazaar.getGoods_unsafe();
-		for (str in list_commodities) {
+		for (str in list_commodities)
+		{
 			var trades:Array<Float> = new Array<Float>();
 			
 			var price:Float = bazaar.getAverageHistoricalPrice(str, _lookback);
@@ -70,147 +67,47 @@ class BasicAgent
 			trades.push(price * 1.5);	//push two fake trades to generate a range
 			
 			//set initial price belief & observed trading range
-			_observed_trading_range.set(str, trades);
-			_price_beliefs.set(str, new Point(price * 0.5, price * 1.5));
+			_observedTradingRange.set(str, trades);
+			_priceBeliefs.set(str, new Point(price * 0.5, price * 1.5));
 		}
 	}
 	
-	public function generate_offers(bazaar:BazaarBot, commodity:String):Void {
-		var offer:Offer;
-		var surplus:Float = _inventory.surplus(commodity);
-		if (surplus >= 1) {
-			 offer = create_ask(bazaar, commodity, 1);
-			 if(offer != null){
-				bazaar.ask(offer);
-			 }
-		}else {
-			var shortage:Float = _inventory.shortage(commodity);
-			var space:Float = _inventory.getEmptySpace();
-			var unit_size:Float = _inventory.getCapacityFor(commodity);
-			
-			if (shortage > 0 && space >= unit_size) {	
-				var limit:Float = 0;
-				if ((shortage * unit_size) <= space) { //enough space for ideal order
-					limit = shortage;
-				}else {								   //not enough space for ideal order
-					limit = Math.floor(space / shortage);
-				}
-				
-				if(limit > 0){
-					offer = create_bid(bazaar, commodity, limit);
-					if(offer != null){
-						bazaar.bid(offer);
-					}
-				}
-			}
-		}
+	public function generateOffers(bazaar:BazaarBot, good:String):Void
+	{
+		//no implemenation -- provide your own in a subclass
 	}
 	
-	public function update_price_model(bazaar:BazaarBot, act:String, commodity_:String, success:Bool, unit_price_:Float=0):Void {
-		var observed_trades:Array<Float>;
-		
-		if (success) {
-			//Add this to my list of observed trades		
-			observed_trades = _observed_trading_range.get(commodity_);
-			observed_trades.push(unit_price_);
-		}
-		
-		var public_mean_price:Float = bazaar.getAverageHistoricalPrice(commodity_, 1);
-		
-		var belief:Point = price_belief(commodity_);
-		var mean:Float = (belief.x + belief.y) / 2;
-		var wobble:Float = 0.05;
-		
-		var delta_to_mean:Float = mean - public_mean_price;
-		
-		if (success) {		
-			if(act == "buy" && delta_to_mean > SIGNIFICANT) {			//overpaid
-				belief.x -= delta_to_mean / 2;							//SHIFT towards mean
-				belief.y -= delta_to_mean / 2; 							
-			}else if(act == "sell" && delta_to_mean < -SIGNIFICANT) {	//undersold
-				belief.x -= delta_to_mean / 2;							//SHIFT towards mean
-				belief.y -= delta_to_mean / 2;				
-			}		
-							
-			belief.x += wobble * mean;	//increase the belief's certainty
-			belief.y -= wobble * mean;
-		}else {
-			belief.x -= delta_to_mean / 2;	//SHIFT towards the mean
-			belief.y -= delta_to_mean / 2;			
-			
-			var special_case:Bool = false;
-			var stocks:Float = queryInventory(commodity_);
-			var ideal:Float = _inventory.ideal(commodity_);
-						
-			if(act == "buy" && stocks < LOW_INVENTORY * ideal) {		
-				//very low on inventory AND can't buy
-				wobble *= 2;			//bid more liberally
-				special_case = true;				
-			}else if (act == "sell" && stocks > HIGH_INVENTORY * ideal) {	
-				//very high on inventory AND can't sell
-				wobble *= 2;			//ask more liberally
-				special_case = true;				
-			}
-			
-			if (!special_case) {
-				//Don't know what else to do? Check supply vs. demand
-				var asks:Float = bazaar.history.asks.average(commodity_,1);
-				var bids:Float = bazaar.history.bids.average(commodity_,1);
-				
-				//supply_vs_demand: 0=balance, 1=all supply, -1=all demand
-				var supply_vs_demand:Float = (asks - bids) / (asks + bids);
-				
-				//too much supply, or too much demand
-				if (supply_vs_demand > SIG_IMBALANCE || supply_vs_demand < -SIG_IMBALANCE) {	
-					//too much supply: lower price
-					//too much demand: raise price
-					
-					var new_mean = public_mean_price * (1 - supply_vs_demand);
-					delta_to_mean = mean - new_mean;
-					
-					belief.x -= delta_to_mean / 2;	//SHIFT towards anticipated new mean
-					belief.y -= delta_to_mean / 2;				
-				}
-			}
-			
-			belief.x -= wobble * mean;	//decrease the belief's certainty
-			belief.y += wobble * mean;			
-		}
-		
-		if (belief.x < MIN_PRICE) {
-			belief.x = MIN_PRICE;
-		}else if (belief.y < MIN_PRICE) {
-			belief.y = MIN_PRICE;
-		}
+	public function updatePriceModel(bazaar:BazaarBot, act:String, good:String, success:Bool, unitPrice:Float = 0):Void
+	{
+		//no implementation -- provide your own in a subclass
 	}
 	
-	public function create_bid(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer{
-		var bid_price:Float = determinePriceOf(commodity_);
-		var ideal:Float = determine_purchase_quantity(bazaar, commodity_);
+	public function createBid(bazaar:BazaarBot, good:String, limit:Float):Offer
+	{
+		var bidPrice:Float = determinePriceOf(good);
+		var ideal:Float = determinePurchaseQuantity(bazaar, good);
 		
 		//can't buy more than limit
-		var quantity_to_buy:Float = ideal > limit_ ? limit_ : ideal;
-		if(quantity_to_buy > 0){
-			return new Offer(id, commodity_, quantity_to_buy, bid_price);
+		var quantityToBuy:Float = ideal > limit ? limit : ideal;
+		if (quantityToBuy > 0)
+		{
+			return new Offer(id, good, quantityToBuy, bidPrice);
 		}
 		return null;
 	}
 	
-	public function create_ask(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer{
+	public function createAsk(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer
+	{
 		var ask_price:Float = determinePriceOf(commodity_);
-		var ideal:Float = determineSaleQuantity(bazaar, commodity_);		
+		var ideal:Float = determineSaleQuantity(bazaar, commodity_);
 		
 		//can't sell less than limit
 		var quantity_to_sell:Float = ideal < limit_ ? limit_ : ideal;
-		if(quantity_to_sell > 0){
+		if (quantity_to_sell > 0)
+		{
 			return new Offer(id, commodity_, quantity_to_sell, ask_price);
 		}
 		return null;
-	}
-	
-	public function get_inventorySpace():Float
-	{
-		return _inventory.getEmptySpace();
 	}
 	
 	public function queryInventory(good:String):Float
@@ -218,35 +115,39 @@ class BasicAgent
 		return _inventory.query(good);
 	}
 	
-	public function change_inventory(good:String, delta:Float):Void
+	public function changeInventory(good:String, delta:Float):Void
 	{
 		_inventory.change(good, delta);
-	}
-	
-	public function get_profit():Float
-	{
-		return money - moneyLastRound;
 	}
 	
 	/********PRIVATE************/
 	
 	private var _inventory:Inventory;
-	private var _money_last:Float; 	//money I had last round
-	private var _price_beliefs:Map<String, Point>;
-	private var _observed_trading_range:Map<String, Array<Float>>;
+	private var _priceBeliefs:Map<String, Point>;
+	private var _observedTradingRange:Map<String, Array<Float>>;
 	private var _profit:Float = 0;	//profit from last round
 	private var _lookback:Int = 15;
 	
+	public function get_inventorySpace():Float
+	{
+		return _inventory.getEmptySpace();
+	}
+	
+	private function get_profit():Float
+	{
+		return money - moneyLastRound;
+	}
+	
 	private function determinePriceOf(commodity_:String):Float
 	{
-		var belief:Point = _price_beliefs.get(commodity_);
+		var belief:Point = _priceBeliefs.get(commodity_);
 		return Quick.randomRange(belief.x, belief.y);
 	}
 	
 	private function determineSaleQuantity(bazaar:BazaarBot, commodity_:String):Float
 	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
-		var trading_range:Point = observe_trading_range(commodity_);
+		var trading_range:Point = observeTradingRange(commodity_);
 		if (trading_range != null)
 		{
 			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
@@ -262,9 +163,10 @@ class BasicAgent
 		return 0;
 	}
 	
-	private function determine_purchase_quantity(bazaar:BazaarBot, commodity_:String):Float {
+	private function determinePurchaseQuantity(bazaar:BazaarBot, commodity_:String):Float
+	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
-		var trading_range:Point = observe_trading_range(commodity_);
+		var trading_range:Point = observeTradingRange(commodity_);
 		if(trading_range != null){
 			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
 			favorability = 1 - favorability;			
@@ -278,13 +180,14 @@ class BasicAgent
 		}return 0;
 	}
 		
-	private function price_belief(commodity_:String):Point {
-		return _price_beliefs.get(commodity_);
+	private function getPriceBelief(good:String):Point
+	{
+		return _priceBeliefs.get(good);
 	}
 	
-	private function observe_trading_range(commodity_:String):Point
+	private function observeTradingRange(good:String):Point
 	{
-		var a:Array<Float> = _observed_trading_range.get(commodity_);
+		var a:Array<Float> = _observedTradingRange.get(good);
 		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
 		return pt;
 	}
