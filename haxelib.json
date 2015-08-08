@@ -1,0 +1,13 @@
+{
+ "name": "bazaarbot",
+ "url" : "https://github.com/larsiusprime/bazaarBot",
+ "license": "MIT",
+ "tags": ["economics","simulation","openfl"],
+ "description": "A free-market simulator based on Doran & Parberry's 'Emergent Economies for Role Playing Games'",
+ "version": "0.0.1",
+ "releasenote": "Pre-alpha release",
+ "contributors": ["larsiusprime"],
+ "dependencies": { 
+  "openfl": ""
+ }
+}

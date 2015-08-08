@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Doran & Parberry's example" package="com.leveluplabs.example" version="1.0.0" company="LevelUpLabs" />
+	<app main="Main" path="Export" file="doran_and_parberry"/>
+	
+	<source path="Source" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="bazaarbot" />
+	<haxelib name="hscript"/>
+	
+	<!--<haxedef name="hscriptPos"/>-->
+	
+	<assets path="Assets" rename="assets" exclude="nme.svg" />
+	<assets path="Assets" include="*.xml" type="text" />
+	<assets path="Assets" include="*.hs" type="text" />
+	<assets path="Assets" include="*.json" type="text" />
+	<icon path="Assets/nme.svg" />
+	
+</project>
