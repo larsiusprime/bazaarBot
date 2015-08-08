@@ -1,6 +1,4 @@
-package bazaarbot;
-
-
+package bazaarbot.agent;
 
 /**
  * ...

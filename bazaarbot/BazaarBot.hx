@@ -1,4 +1,6 @@
 package bazaarbot;
+import bazaarbot.agent.Agent;
+import bazaarbot.agent.AgentClass;
 import haxe.Json;
 import haxe.xml.Fast;
 import flash.errors.Error;

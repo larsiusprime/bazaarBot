@@ -1,4 +1,4 @@
-package bazaarbot;
+package bazaarbot.agent;
 import flash.geom.Point;
 
 /**
