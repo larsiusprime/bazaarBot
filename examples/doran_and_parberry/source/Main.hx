@@ -74,7 +74,7 @@ class Main extends Sprite {
 			platform = "js";
 		#end
 		
-		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.num_commodities() + ", Agents=" + bazaar.num_agents() + ", TIME total=" + tstr + " avg=" + BazaarBot.num_str(avg,2));				
+		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.numTypesOfGood() + ", Agents=" + bazaar.numAgents() + ", TIME total=" + tstr + " avg=" + BazaarBot.num_str(avg,2));				
 	}
 	
 	private function onAdvance(m:MouseEvent):Void {

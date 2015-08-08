@@ -18,7 +18,7 @@ class Good
 
 	public function copy():Good
 	{
-		return new Good(id,size);
+		return new Good(id, size);
 	}
 }
  
