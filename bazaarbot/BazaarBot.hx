@@ -19,18 +19,12 @@ class BazaarBot
 	{
 		history = new History();
 		
-		_goods = new Array<String>();
-		_mapGoods = new Map<String, Good>();
-		
-		_mapAgents = new Map<String, AgentClass>();
-		_agents = new Array<Agent>();
-		
 		_book = new TradeBook();
 		
-		/*
-		book_bids = new Map<String, Array<Offer>>();
-		book_asks = new Map<String, Array<Offer>>();
-		*/
+		_goods = new Array<String>();
+		_agents = new Array<Agent>();
+		_mapGoods = new Map<String, Good>();
+		_mapAgents = new Map<String, AgentClass>();
 	}
 	
 	public function init(data:Dynamic, format:String = "json"):Void
@@ -53,65 +47,6 @@ class BazaarBot
 	public function numAgents():Int
 	{
 		return _agents.length;
-	}
-	
-	public function fromJSON(data:Dynamic):Void
-	{
-		//Create commodity index
-		var list:Array<Dynamic> = data.commodities;
-		for (g in list)
-		{
-			_goods.push(g.id);
-			_mapGoods.set(g.id, new Good(g.id, g.size));
-			
-			history.register(g.id);
-			history.prices.add(g.id, 1.0);	//start the bidding at $1!
-			history.asks.add(g.id, 1.0);	//start history charts with 1 fake buy/sell bid
-			history.bids.add(g.id, 1.0);
-			history.trades.add(g.id, 1.0);
-			
-			_book.register(g.id);
-		}
-		
-		//Create agent classes
-		var temp_agents:Array<Dynamic> = data.agents;
-		_mapAgents = new Map<String, AgentClass>();
-		for (a in temp_agents)
-		{
-			a.inventory.size = { };
-			for (key in _mapGoods.keys())
-			{
-				var c:Good = _mapGoods.get(key);
-				Reflect.setField(a.inventory.size, c.id, c.size);
-			}
-			var ac:AgentClass = new AgentClass(a);
-			_mapAgents.set(ac.id, ac);
-			
-			history.profit.register(ac.id);
-		}
-		
-		//Make the agent list
-		_agents = new Array<Agent>();
-		
-		//Get start conditions
-		var start_conditions:Dynamic = data.start_conditions;
-		var starts:Array<Dynamic> = Reflect.fields(start_conditions.agents);
-		
-		var agent_index:Int = 0;
-		//Make given number of each agent type
-		for (class_str in starts) {
-			var val:Int = Reflect.field(start_conditions.agents, class_str);
-			var agent_class = _mapAgents.get(class_str);
-			var inv:Inventory = agent_class.getStartInventory();
-			var money:Float = agent_class.money;
-			
-			for (i in 0...val) {
-				var a:Agent = new Agent(agent_index, class_str, inv.copy(), money);
-				a.init(this);
-				_agents.push(a);
-				agent_index++;
-			}
-		}
 	}
 	
 	public function simulate(rounds:Int):Void {
@@ -224,7 +159,7 @@ class BazaarBot
 			mr.str_list_commodity += commodity + "\n";
 			
 			var price:Float = history.prices.average(commodity, rounds);
-			mr.str_list_commodity_prices += num_str(price, 2) + "\n";
+			mr.str_list_commodity_prices += Utility.numStr(price, 2) + "\n";
 			
 			var asks:Float = history.asks.average(commodity, rounds);
 			mr.str_list_commodity_asks += Std.int(asks) + "\n";
@@ -246,7 +181,7 @@ class BazaarBot
 			}
 			mr.str_list_agent += key + "\n";
 			var profit:Float = history.profit.average(key, rounds);
-			mr.str_list_agent_profit += num_str(profit, 2) + "\n";
+			mr.str_list_agent_profit += Utility.numStr(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
 			var list = _agents.filter(function(a:Agent):Bool { return a.class_id == key; } );
@@ -263,11 +198,11 @@ class BazaarBot
 			money /= list.length;
 			for (lic in 0..._goods.length) {
 				inventory[lic] /= list.length;
-				mr.arr_str_list_inventory[lic] += num_str(inventory[lic],1) + "\n";
+				mr.arr_str_list_inventory[lic] += Utility.numStr(inventory[lic],1) + "\n";
 			}
 			
-			mr.str_list_agent_count += num_str(count, 0) + "\n";
-			mr.str_list_agent_money += num_str(money, 0) + "\n";
+			mr.str_list_agent_count += Utility.numStr(count, 0) + "\n";
+			mr.str_list_agent_money += Utility.numStr(money, 0) + "\n";
 		}
 		return mr;
 	}	
@@ -281,6 +216,65 @@ class BazaarBot
 	private var _book:TradeBook;
 	private var _mapAgents:Map<String, AgentClass>;
 	private var _mapGoods:Map<String, Good>;
+	
+	private function fromJSON(data:Dynamic):Void
+	{
+		//Create commodity index
+		var list:Array<Dynamic> = data.commodities;
+		for (g in list)
+		{
+			_goods.push(g.id);
+			_mapGoods.set(g.id, new Good(g.id, g.size));
+			
+			history.register(g.id);
+			history.prices.add(g.id, 1.0);	//start the bidding at $1!
+			history.asks.add(g.id, 1.0);	//start history charts with 1 fake buy/sell bid
+			history.bids.add(g.id, 1.0);
+			history.trades.add(g.id, 1.0);
+			
+			_book.register(g.id);
+		}
+		
+		//Create agent classes
+		var temp_agents:Array<Dynamic> = data.agents;
+		_mapAgents = new Map<String, AgentClass>();
+		for (a in temp_agents)
+		{
+			a.inventory.size = { };
+			for (key in _mapGoods.keys())
+			{
+				var c:Good = _mapGoods.get(key);
+				Reflect.setField(a.inventory.size, c.id, c.size);
+			}
+			var ac:AgentClass = new AgentClass(a);
+			_mapAgents.set(ac.id, ac);
+			
+			history.profit.register(ac.id);
+		}
+		
+		//Make the agent list
+		_agents = new Array<Agent>();
+		
+		//Get start conditions
+		var start_conditions:Dynamic = data.start_conditions;
+		var starts:Array<Dynamic> = Reflect.fields(start_conditions.agents);
+		
+		var agent_index:Int = 0;
+		//Make given number of each agent type
+		for (class_str in starts) {
+			var val:Int = Reflect.field(start_conditions.agents, class_str);
+			var agent_class = _mapAgents.get(class_str);
+			var inv:Inventory = agent_class.getStartInventory();
+			var money:Float = agent_class.money;
+			
+			for (i in 0...val) {
+				var a:Agent = new Agent(agent_index, class_str, inv.copy(), money);
+				a.init(this);
+				_agents.push(a);
+				agent_index++;
+			}
+		}
+	}
 	
 	private function resolveOffers(good:String = ""):Void
 	{
@@ -318,8 +312,8 @@ class BazaarBot
 			var buyer:Offer = bids[0];
 			var seller:Offer = asks[0];
 			
-			var quantity_traded:Float = minf(seller.units, buyer.units);
-			var clearing_price:Float = avgf(seller.unit_price, buyer.unit_price);
+			var quantity_traded = Math.min(seller.units, buyer.units);
+			var clearing_price  = Utility.avgf(seller.unit_price, buyer.unit_price);
 						
 			if (quantity_traded > 0) {
 				//transfer the goods for the agreed price
@@ -327,7 +321,7 @@ class BazaarBot
 				buyer.units -= quantity_traded;
 							
 				transferGood(good, quantity_traded, seller.agent_id, buyer.agent_id);
-				transfer_money(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
+				transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 									
 				//update agent price beliefs based on successful transaction
 				var buyer_a:Agent = _agents[buyer.agent_id];
@@ -393,7 +387,7 @@ class BazaarBot
 			avgPrice = history.prices.average(good,1);
 		}
 		
-		_agents.sort(sort_agent_alpha);
+		_agents.sort(Utility.sortAgentAlpha);
 		
 		var curr_class:String = "";
 		var last_class:String = "";
@@ -419,7 +413,7 @@ class BazaarBot
 		history.profit.add(last_class, list_avg_f(list));
 		
 		//sort by id so everything works again
-		_agents.sort(sort_agent_id);
+		_agents.sort(Utility.sortAgentId);
 		
 	}
 	
@@ -434,13 +428,14 @@ class BazaarBot
 		return avg;
 	}
 	
-	private function replaceAgent(agent:Agent):Void {
-		var best_id:String = most_profitable_agent_class();
+	private function replaceAgent(agent:Agent):Void
+	{
+		var best_id:String = mostProfitableAgentClass();
 		
 		//Special case to deal with very high demand-to-supply ratios
 		//This will make them favor entering an underserved market over
 		//Just picking the most profitable class
-		var best_opportunity:String = get_best_market_opportunity();
+		var best_opportunity:String = getBestMarketOpportunity();
 		if (best_opportunity != "")
 		{
 			var best_opportunity_class:String = getAgentClassThatMakesMost(best_opportunity);
@@ -504,7 +499,8 @@ class BazaarBot
 	 * @return
 	 */
 	
-	private function get_best_market_opportunity(minimum:Float=1.5,range:Int = 10):String {
+	private function getBestMarketOpportunity(minimum:Float = 1.5, range:Int = 10):String
+	{
 		var best_market:String = "";
 		var best_ratio:Float = -999999;
 		for(good in _goods){
@@ -512,7 +508,7 @@ class BazaarBot
 			var bids:Float = history.bids.average(good, range);
 			var ratio:Float = 0;
 			if (asks == 0 && bids > 0) {
-				ratio = 9999999999999999;	
+				ratio = 9999999999999999;
 			}else {
 				ratio = bids / asks;
 			}
@@ -524,7 +520,8 @@ class BazaarBot
 		return best_market;
 	}
 	
-	private function most_profitable_agent_class(range:Int=10):String{
+	private function mostProfitableAgentClass(range:Int = 10):String
+	{
 		var list:Array<Float>;
 		var best:Float = -99999;
 		var best_id:String="";
@@ -538,11 +535,11 @@ class BazaarBot
 		return best_id;
 	}
 	
-	private function get_agent_class(str:String):AgentClass{
-		for (ac in _mapAgents) {
-			if (ac.id == str) {
-				return ac;
-			}
+	private function getAgentClass(str:String):AgentClass
+	{
+		if (_mapAgents.exists(str))
+		{
+			return _mapAgents.get(str);
 		}
 		return null;
 	}
@@ -555,7 +552,7 @@ class BazaarBot
 		 buyer.change_inventory(good,  units);
 	}
 	
-	private function transfer_money(amount:Float, seller_id:Int, buyer_id:Int):Void
+	private function transferMoney(amount:Float, seller_id:Int, buyer_id:Int):Void
 	{
 		var seller:Agent = _agents[seller_id];
 		var  buyer:Agent = _agents[buyer_id];
@@ -563,117 +560,4 @@ class BazaarBot
 		 buyer.money -= amount;
 	}
 	
-	private static function sort_agent_id(a:Agent, b:Agent):Int
-	{
-		if (a.id < b.id) return -1;
-		if (a.id > b.id) return 1;
-		return 0;
-	}
-	
-	private static function sort_agent_alpha(a:Agent, b:Agent):Int {
-		if (a.class_id < b.class_id) return -1;
-		if (a.class_id > b.class_id) return 1;
-		return 0;
-	}
-	
-	private static inline function avgf(a:Float, b:Float):Float {
-		return (a + b) / 2;
-	}
-	
-	private static inline function minf(a:Float, b:Float):Float {
-		return a < b ? a : b;
-	}
-	
-	private static inline function maxf(a:Float, b:Float):Float {
-		return a > b ? a : b;
-	}
-	
-	private static inline function mini(a:Int, b:Int):Int {
-		return a < b ? a : b;
-	}
-	
-	private static inline function maxi(a:Int, b:Int):Int {
-		return a > b ? a : b;
-	}
-	
-	private static inline function shuffle(list:Array<Dynamic>):Array<Dynamic> {	
-		/*
-		To shuffle an array a of n elements (indices 0..n-1):	
-		for i from n − 1 downto 1 do
-			j ← random integer with 0 ≤ j ≤ i
-			exchange a[j] and a[i]
-		}	
-		 */
-		for (i in 0...list.length - 1) {
-			var ii:Int = (list.length - 1) - i;
-			if (ii > 1) {
-				var j:Int = rand_i(0, ii);
-				var temp:Dynamic = list[j];
-				list[j] = list[ii];
-				list[ii] = temp;
-			}
-		}
-		return list;
-	}	
-	
-	public static function num_str(num:Float,decimals:Int):String {
-		var tens:Float = 1;
-		for(i in 0...decimals) {
-			tens *= 10;
-		}
-		num = Math.floor(num * tens) / tens;
-		var str:String = Std.string(num);
-		var split = str.split(".");
-		if (split.length == 2) {
-			if (split[1].length < decimals) {
-				var diff:Int = decimals - split[1].length;
-				for (i in 0...diff) {
-					str += "0";
-				}
-			}
-			if(decimals > 0){
-				str = split[0] + "." + split[1].substr(0, decimals);
-			}else {
-				str = split[0];
-			}			
-		}else {
-			if(decimals > 0){
-				str += ".";
-				for (i in 0...decimals) {
-					str += "0";
-				}
-			}
-		}
-		return str;
-	}
-	
-	private static inline function rand_i(min:Int, max:Int):Int {
-		return Std.int(Math.random() * cast(1+max-min, Float)) + min;		
-	}
-
-	private static inline function avg_list_f(list:Array<Float>, range:Int):Float {
-		var avg:Float = 0;
-		var length:Int = list.length;
-		if (length < range) {
-			range = length;
-		}
-		for (i in 0...range) {
-			avg += list[length - 1 - i];
-		}
-		avg /= cast(range,Float);
-		return avg;
-	}
-	
-	private static inline function avg_list_i(list:Array<Int>, range:Int):Float {
-		var avg:Float = 0;
-		var length:Int = list.length;
-		if (length < range) {
-			range = length;
-		}
-		for (i in 0...range) {
-			avg += list[length - 1 - i];
-		}
-		avg /= cast(range,Float);
-		return avg;
-	}
 }

@@ -1,5 +1,6 @@
 package;
 
+import bazaarbot.Utility;
 import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
@@ -62,7 +63,7 @@ class Main extends Sprite {
 		display.update(bazaar.get_marketReport(1));
 		time = Lib.getTimer() - time;
 		var avg:Float = (cast(time, Float) / cast(benchmark, Float)) / 1000;
-		var tstr:String = BazaarBot.num_str(time / 1000, 2);
+		var tstr:String = Utility.numStr(time / 1000, 2);
 		var platform:String="NONE";
 		#if flash
 			platform = "flash";
@@ -74,7 +75,7 @@ class Main extends Sprite {
 			platform = "js";
 		#end
 		
-		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.numTypesOfGood() + ", Agents=" + bazaar.numAgents() + ", TIME total=" + tstr + " avg=" + BazaarBot.num_str(avg,2));				
+		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.numTypesOfGood() + ", Agents=" + bazaar.numAgents() + ", TIME total=" + tstr + " avg=" + Utility.numStr(avg,2));
 	}
 	
 	private function onAdvance(m:MouseEvent):Void {
