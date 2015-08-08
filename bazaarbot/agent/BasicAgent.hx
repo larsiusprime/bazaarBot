@@ -5,12 +5,17 @@ import openfl.geom.Point;
  * ...
  * @author larsiusprime
  */
+@:allow(BazaarBot)
 class BasicAgent
 {
 	public var id:Int;			//unique integer identifier
-	public var class_id:String;	//string identifier, "famer", "woodcutter", etc.
-	public var money(get, set):Float;
+	public var className:String;	//string identifier, "famer", "woodcutter", etc.
+	public var money:Float;
+	public var moneyLastRound(default, null):Float;
+	public var profit(get, null):Float;
+	public var inventorySpace(get, null):Float;
 	public var destroyed(default, null):Bool;
+	
 	
 	public static inline var SIGNIFICANT:Float = 0.25;		//25% more or less is "significant"
 	public static inline var SIG_IMBALANCE:Float = 0.33;
@@ -19,16 +24,19 @@ class BasicAgent
 	
 	public static inline var MIN_PRICE:Float = 0.01;		//lowest possible price
 	
-	public function new(id_:Int,class_id_:String,inventory_:Inventory,money_:Float) 
+	public function new(id:Int,className:String,inventory:Inventory,money:Float) 
 	{
-		id = id_;
-		class_id = class_id_;
-		if(inventory_ == null){
+		this.id = id;
+		this.className = className;
+		if (inventory == null)
+		{
 			_inventory = new Inventory();
-		}else {
-			_inventory = inventory_;
 		}
-		money = money_;
+		else
+		{
+			_inventory = inventory;
+		}
+		this.money = money;
 		
 		_price_beliefs = new Map<String, Point>();
 		_observed_trading_range = new Map<String, Array<Float>>();
@@ -131,7 +139,7 @@ class BasicAgent
 			belief.y -= delta_to_mean / 2;			
 			
 			var special_case:Bool = false;
-			var stocks:Float = query_inventory(commodity_);
+			var stocks:Float = queryInventory(commodity_);
 			var ideal:Float = _inventory.ideal(commodity_);
 						
 			if(act == "buy" && stocks < LOW_INVENTORY * ideal) {		
@@ -177,7 +185,7 @@ class BasicAgent
 	}
 	
 	public function create_bid(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer{
-		var bid_price:Float = determine_price_of(commodity_);
+		var bid_price:Float = determinePriceOf(commodity_);
 		var ideal:Float = determine_purchase_quantity(bazaar, commodity_);
 		
 		//can't buy more than limit
@@ -189,8 +197,8 @@ class BasicAgent
 	}
 	
 	public function create_ask(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer{
-		var ask_price:Float = determine_price_of(commodity_);
-		var ideal:Float = determine_sale_quantity(bazaar, commodity_);		
+		var ask_price:Float = determinePriceOf(commodity_);
+		var ideal:Float = determineSaleQuantity(bazaar, commodity_);		
 		
 		//can't sell less than limit
 		var quantity_to_sell:Float = ideal < limit_ ? limit_ : ideal;
@@ -200,75 +208,65 @@ class BasicAgent
 		return null;
 	}
 	
-	public function get_inventory_space():Float {
+	public function get_inventorySpace():Float
+	{
 		return _inventory.getEmptySpace();
 	}
 	
-	public function query_inventory(commodity_:String):Float {
-		return _inventory.query(commodity_);
+	public function queryInventory(good:String):Float
+	{
+		return _inventory.query(good);
 	}
 	
-	public function change_inventory(commodity_:String, delta_:Float):Void {				
-		_inventory.change(commodity_, delta_);
+	public function change_inventory(good:String, delta:Float):Void
+	{
+		_inventory.change(good, delta);
 	}
 	
-	public function get_money():Float {
-		return _money;
-	}
-	
-	public function set_money(f:Float):Float {
-		_money = f;
-		return _money;
-	}
-	
-	public function get_money_last():Float {
-		return _money_last;
-	}
-	
-	public function set_money_last(f:Float):Float {
-		_money_last = f;
-		return _money_last;
-	}
-	
-	public function get_profit():Float {
-		return _money - _money_last;
+	public function get_profit():Float
+	{
+		return money - moneyLastRound;
 	}
 	
 	/********PRIVATE************/
 	
 	private var _inventory:Inventory;
-	private var _money:Float;	
 	private var _money_last:Float; 	//money I had last round
 	private var _price_beliefs:Map<String, Point>;
 	private var _observed_trading_range:Map<String, Array<Float>>;
 	private var _profit:Float = 0;	//profit from last round
 	private var _lookback:Int = 15;
 	
-	private function determine_price_of(commodity_:String):Float {
+	private function determinePriceOf(commodity_:String):Float
+	{
 		var belief:Point = _price_beliefs.get(commodity_);
-		return Utility.randomRange(belief.x, belief.y);
+		return Quick.randomRange(belief.x, belief.y);
 	}
 	
-	private function determine_sale_quantity(bazaar:BazaarBot, commodity_:String):Float {
+	private function determineSaleQuantity(bazaar:BazaarBot, commodity_:String):Float
+	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observe_trading_range(commodity_);
-		if (trading_range != null) {			
-			var favorability:Float = position_in_range(mean, trading_range.x, trading_range.y);
+		if (trading_range != null)
+		{
+			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
 			//position_in_range: high means price is at a high point
 			
 			var amount_to_sell:Float = Math.round(favorability * _inventory.surplus(commodity_));
-			if (amount_to_sell < 1) {
+			if (amount_to_sell < 1)
+			{
 				amount_to_sell = 1;
 			}
 			return amount_to_sell;
-		}return 0;
+		}
+		return 0;
 	}
 	
 	private function determine_purchase_quantity(bazaar:BazaarBot, commodity_:String):Float {
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observe_trading_range(commodity_);
 		if(trading_range != null){
-			var favorability:Float = position_in_range(mean, trading_range.x, trading_range.y);
+			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
 			favorability = 1 - favorability;			
 			//do 1 - favorability to see how close we are to the low end
 			
@@ -284,39 +282,10 @@ class BasicAgent
 		return _price_beliefs.get(commodity_);
 	}
 	
-	private function observe_trading_range(commodity_:String):Point {
+	private function observe_trading_range(commodity_:String):Point
+	{
 		var a:Array<Float> = _observed_trading_range.get(commodity_);
-		var pt:Point = new Point(min_arr(a), max_arr(a));
+		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
 		return pt;
-	}
-	
-	
-	
-	private static inline function min_arr(a:Array<Float>):Float {
-		var min:Float = Math.POSITIVE_INFINITY;
-		for (f in a) {
-			if (f < min) { min = f;}
-		}
-		return min;
-	}
-	
-	private static inline function max_arr(a:Array<Float>):Float{
-		var max:Float = Math.NEGATIVE_INFINITY;
-		for (f in a) {
-			if (f > max) { max = f; }
-		}
-		return max;
-	}
-	
-	private static inline function position_in_range(value:Float, min:Float, max:Float, clamp:Bool=true):Float {
-		value -= min;
-		max -= min;
-		min = 0;		
-		value = (value / (max - min));
-		if (clamp) {
-			if (value < 0) { value = 0; }
-			if (value > 1) { value = 1; }
-		}
-		return value;
 	}
 }

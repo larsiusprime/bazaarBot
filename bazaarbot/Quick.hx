@@ -5,7 +5,7 @@ import bazaarbot.agent.Agent;
  * ...
  * @author larsiusprime
  */
-class Utility
+class Quick
 {
 
 	public static inline function avgf(a:Float, b:Float):Float
@@ -22,6 +22,24 @@ class Utility
 		}
 		avg /= list.length;
 		return avg;
+	}
+	
+	public static inline function minArr(a:Array<Float>):Float
+	{
+		var min:Float = Math.POSITIVE_INFINITY;
+		for (f in a) {
+			if (f < min) { min = f;}
+		}
+		return min;
+	}
+	
+	public static inline function maxArr(a:Array<Float>):Float
+	{
+		var max:Float = Math.NEGATIVE_INFINITY;
+		for (f in a) {
+			if (f > max) { max = f; }
+		}
+		return max;
 	}
 	
 	/**
@@ -73,6 +91,19 @@ class Utility
 		return str;
 	}
 	
+	public static inline function positionInRange(value:Float, min:Float, max:Float, clamp:Bool = true):Float
+	{
+		value -= min;
+		max -= min;
+		min = 0;
+		value = (value / (max - min));
+		if (clamp) {
+			if (value < 0) { value = 0; }
+			if (value > 1) { value = 1; }
+		}
+		return value;
+	}
+	
 	public static inline function randomInteger(min:Int, max:Int):Int
 	{
 		return Std.int(Math.random() * cast(1 + max - min, Float)) + min;
@@ -111,8 +142,8 @@ class Utility
 	
 	public static function sortAgentAlpha(a:Agent, b:Agent):Int
 	{
-		if (a.class_id < b.class_id) return -1;
-		if (a.class_id > b.class_id) return 1;
+		if (a.className < b.className) return -1;
+		if (a.className > b.className) return 1;
 		return 0;
 	}
 	

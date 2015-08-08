@@ -51,15 +51,16 @@ class BazaarBot
 		return _agents.length;
 	}
 	
+	@:access(bazaarbot.agent.BasicAgent)
 	public function simulate(rounds:Int):Void
 	{
 		for (round in 0...rounds)
 		{
 			for (agent in _agents)
 			{
-				agent.set_money_last(agent.money);
+				agent.moneyLastRound = agent.money;
 				
-				var ac:AgentClass = _mapAgents.get(agent.class_id);
+				var ac:AgentClass = _mapAgents.get(agent.className);
 				ac.logic.perform(agent,this);
 				
 				for (commodity in _goodTypes)
@@ -179,7 +180,7 @@ class BazaarBot
 			mr.str_list_commodity += commodity + "\n";
 			
 			var price:Float = history.prices.average(commodity, rounds);
-			mr.str_list_commodity_prices += Utility.numStr(price, 2) + "\n";
+			mr.str_list_commodity_prices += Quick.numStr(price, 2) + "\n";
 			
 			var asks:Float = history.asks.average(commodity, rounds);
 			mr.str_list_commodity_asks += Std.int(asks) + "\n";
@@ -201,19 +202,19 @@ class BazaarBot
 			}
 			mr.str_list_agent += key + "\n";
 			var profit:Float = history.profit.average(key, rounds);
-			mr.str_list_agent_profit += Utility.numStr(profit, 2) + "\n";
+			mr.str_list_agent_profit += Quick.numStr(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
-			var list = _agents.filter(function(a:Agent):Bool { return a.class_id == key; } );
+			var list = _agents.filter(function(a:Agent):Bool { return a.className == key; } );
 			var count:Int = list.length;
 			var money:Float = 0;
 			
 			for (a in list)
 			{
-				money += a.get_money();
+				money += a.money;
 				for (lic in 0..._goodTypes.length)
 				{
-					inventory[lic] += a.query_inventory(_goodTypes[lic]);
+					inventory[lic] += a.queryInventory(_goodTypes[lic]);
 				}
 			}		
 						
@@ -221,11 +222,11 @@ class BazaarBot
 			for (lic in 0..._goodTypes.length)
 			{
 				inventory[lic] /= list.length;
-				mr.arr_str_list_inventory[lic] += Utility.numStr(inventory[lic],1) + "\n";
+				mr.arr_str_list_inventory[lic] += Quick.numStr(inventory[lic],1) + "\n";
 			}
 			
-			mr.str_list_agent_count += Utility.numStr(count, 0) + "\n";
-			mr.str_list_agent_money += Utility.numStr(money, 0) + "\n";
+			mr.str_list_agent_count += Quick.numStr(count, 0) + "\n";
+			mr.str_list_agent_money += Quick.numStr(money, 0) + "\n";
 		}
 		return mr;
 	}	
@@ -409,12 +410,13 @@ class BazaarBot
 		return best_class;
 	}
 	
-	private function getAverageInventory(agent_id:String, commodity_:String):Float
+	private function getAverageInventory(className:String, good:String):Float
 	{
-		var list = _agents.filter(function(a:Agent):Bool { return a.class_id == agent_id; } );
+		var list = _agents.filter(function(a:Agent):Bool { return a.className == className; } );
 		var amount:Float = 0;
-		for (agent in list) {
-			amount += agent.query_inventory(commodity_);
+		for (agent in list)
+		{
+			amount += agent.queryInventory(good);
 		}
 		amount /= list.length;
 		return amount;
@@ -468,11 +470,11 @@ class BazaarBot
 		var bids:Array<Offer> = _book.bids.get(good);
 		var asks:Array<Offer> = _book.asks.get(good);
 		
-		bids = Utility.shuffle(bids);
-		asks = Utility.shuffle(asks);
+		bids = Quick.shuffle(bids);
+		asks = Quick.shuffle(asks);
 		
-		bids.sort(Utility.sortDecreasingPrice);		//highest buying price first
-		asks.sort(Utility.sortIncreasingPrice);		//lowest selling price first
+		bids.sort(Quick.sortDecreasingPrice);		//highest buying price first
+		asks.sort(Quick.sortIncreasingPrice);		//lowest selling price first
 		
 		var successfulTrades:Int = 0;		//# of successful trades this round
 		var moneyTraded:Float = 0;			//amount of money traded this round
@@ -500,7 +502,7 @@ class BazaarBot
 			var seller:Offer = asks[0];
 			
 			var quantity_traded = Math.min(seller.units, buyer.units);
-			var clearing_price  = Utility.avgf(seller.unit_price, buyer.unit_price);
+			var clearing_price  = Quick.avgf(seller.unit_price, buyer.unit_price);
 			
 			if (quantity_traded > 0)
 			{
@@ -577,7 +579,7 @@ class BazaarBot
 			avgPrice = history.prices.average(good,1);
 		}
 		
-		_agents.sort(Utility.sortAgentAlpha);
+		_agents.sort(Quick.sortAgentAlpha);
 		
 		var curr_class:String = "";
 		var last_class:String = "";
@@ -587,13 +589,13 @@ class BazaarBot
 		for (i in 0..._agents.length)
 		{
 			var a:Agent = _agents[i];		//get current agent
-			curr_class = a.class_id;			//check its class
+			curr_class = a.className;			//check its class
 			if (curr_class != last_class)		//new class?
 			{
 				if (list != null)				//do we have a list built up?
 				{				
 					//log last class' profit
-					history.profit.add(last_class, Utility.listAvgf(list));
+					history.profit.add(last_class, Quick.listAvgf(list));
 				}
 				list = [];		//make a new list
 				last_class = curr_class;		
@@ -602,10 +604,10 @@ class BazaarBot
 		}
 		
 		//add the last class too
-		history.profit.add(last_class, Utility.listAvgf(list));
+		history.profit.add(last_class, Quick.listAvgf(list));
 		
 		//sort by id so everything works again
-		_agents.sort(Utility.sortAgentId);
+		_agents.sort(Quick.sortAgentId);
 		
 	}
 	

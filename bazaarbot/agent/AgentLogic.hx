@@ -84,10 +84,10 @@ class AgentLogic
 		var vars:Map<String,Dynamic> = 
 		[
 		 "agent" => agent, 
-		 "query_inventory" => agent.query_inventory,
+		 "query_inventory" => agent.queryInventory,
 		 "produce" => _produce,
 		 "consume" => _consume,
-		 "inventory_is_full" => agent.get_inventory_space,
+		 "inventory_is_full" => agent.get_inventorySpace,
 		 "make_room_for" => 
 			function(a:Agent, c:String = "food", amt:Float = 1.0):Void
 			{ 
@@ -146,13 +146,14 @@ class AgentLogic
 					//Roll to see if this happens
 					if (chance >= 1.0 || Math.random() < chance) {
 						
-						var curr_amount:Float = agent.query_inventory(target);
+						var curr_amount:Float = agent.queryInventory(target);
 						
 						if (amount == -1) {	//-1 means "match my total value"
 							amount = curr_amount;
 						}
 								
-						switch(act.action) {
+						switch(act.action)
+						{
 							case "produce":
 								agent.change_inventory(target, amount);		//produce some stuff
 							case "consume":
@@ -174,24 +175,32 @@ class AgentLogic
 		}
 	}
 	
-	private function _evaluate(curr_node:AgentLogicNode, agent:Agent):Bool {
+	private function _evaluate(curr_node:AgentLogicNode, agent:Agent):Bool
+	{
 		//Fail on the first condition that is false
-		for (c in curr_node.conditions) {
-			switch(c.condition) {
+		for (c in curr_node.conditions)
+		{
+			switch(c.condition)
+			{
 				case "has":	//Do you have something?
 					var str:String;
 					var has:Bool = false;
-					for (str in curr_node.params) {		//look at all the things
-						var amount:Float = agent.query_inventory(str);	//count em
-						if (amount > 0) {
+					for (str in curr_node.params)		//look at all the things
+					{
+						var amount:Float = agent.queryInventory(str);	//count em
+						if (amount > 0)
+						{
 							has = true;					//have it or not
 						}						
-						if (c.negated) {					//looking for NO-has
+						if (c.negated)					//looking for NO-has
+						{
 							if (has) { return false;}
-						}else {								//looking for YES-has
+						}
+						else							//looking for YES-has
+						{
 							if (!has) { return false;}
-						}	
-					}				
+						}
+					}
 					break;
 			}
 		}
