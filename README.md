@@ -22,6 +22,6 @@ Building the example project
 6. Run `lime build flash` to compile for flash
 7. Run `lime build windows` to compile for cpp/windows (or `lime build mac` or `lime build linux`, etc)
 8. Run `lime build html5` to compile for html5
-9. Binaries executables will appear in the Export/ folder
+9. Binary executables will appear in the Export/ folder
 10. Substitute `lime test` instead of `lime build` if you want to build AND immediately run the result.
 
