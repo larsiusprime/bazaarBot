@@ -1,4 +1,4 @@
-package com.leveluplabs.bazaarbot;
+package bazaarbot;
 
 
 

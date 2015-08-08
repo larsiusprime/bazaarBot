@@ -1,4 +1,4 @@
-package com.leveluplabs.bazaarbot;
+package bazaarbot;
 import haxe.io.Path;
 import haxe.Json;
 import hscript.Interp;

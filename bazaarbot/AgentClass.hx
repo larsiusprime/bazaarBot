@@ -1,4 +1,4 @@
-package com.leveluplabs.bazaarbot;
+package bazaarbot;
 import openfl.Assets;
 
 /**
@@ -16,7 +16,7 @@ class AgentClass
 	public var inventory_size_ids:Array<String>;
 	public var inventory_size_amounts:Array<Float>;
 	
-	public var inventory_size:Float;	
+	public var inventory_size:Float;
 	public var logic:AgentLogic;
 	
 	public function new(data:Dynamic) 

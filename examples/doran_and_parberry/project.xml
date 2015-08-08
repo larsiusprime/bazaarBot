@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="Bazaar Bot" package="com.leveluplabs.example" version="1.0.0" company="LevelUpLabs" />
-	<app main="com.leveluplabs.bazaarbot.example.Main" path="Export" file="bazaarBot"/>
+	<meta title="Doran & Parberry's example" package="com.leveluplabs.example" version="1.0.0" company="LevelUpLabs" />
+	<app main="Main" path="Export" file="doran_and_parberry"/>
 	
 	<source path="Source" />
 	
 	<haxelib name="openfl" />
-	<haxelib name="actuate" />
+	<haxelib name="bazaarbot" />
 	<haxelib name="hscript"/>
 	
 	<!--<haxedef name="hscriptPos"/>-->

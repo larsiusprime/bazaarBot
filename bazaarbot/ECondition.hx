@@ -1,4 +1,4 @@
-package com.leveluplabs.bazaarbot;
+package bazaarbot;
 
 /**
  * ...
@@ -13,7 +13,7 @@ enum ECondition {
  
 class ECondition
 {
-	static function toString(a:ECondition):String {		
+	static function toString(a:ECondition):String {
 		return switch(a) {
 			case Has: "has";
 			case Is: "is";

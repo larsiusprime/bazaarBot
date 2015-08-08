@@ -1,10 +1,10 @@
-package com.leveluplabs.bazaarbot.example;
+package;
 
 import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
-import com.leveluplabs.bazaarbot.BazaarBot;
+import bazaarbot.BazaarBot;
 import haxe.Json;
 import flash.display.Bitmap;
 import flash.display.Shape;
@@ -24,8 +24,8 @@ class Main extends Sprite {
 	private var display:MarketDisplay;
 	private var txt_benchmark:TextField;
 	
-	public function new () {			
-		super ();		
+	public function new () {
+		super ();
 		
 		var settings:String = Assets.getText("assets/data/settings.json");
 		var data:Dynamic = Json.parse(settings);

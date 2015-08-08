@@ -1,4 +1,4 @@
-package com.leveluplabs.bazaarbot;
+package bazaarbot;
 import haxe.Json;
 import haxe.xml.Fast;
 import flash.errors.Error;
