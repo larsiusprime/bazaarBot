@@ -154,17 +154,20 @@ class BasicAgent
 	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observeTradingRange(commodity_);
-		if(trading_range != null){
+		if (trading_range != null)
+		{
 			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
 			favorability = 1 - favorability;			
 			//do 1 - favorability to see how close we are to the low end
 			
 			var amount_to_buy:Float = Math.round(favorability * _inventory.shortage(commodity_));
-			if (amount_to_buy < 1) {
+			if (amount_to_buy < 1)
+			{
 				amount_to_buy = 1;
 			}
 			return amount_to_buy;
-		}return 0;
+		}
+		return 0;
 	}
 		
 	private function getPriceBelief(good:String):Point
