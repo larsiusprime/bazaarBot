@@ -1,7 +1,7 @@
 package;
 
 import bazaarbot.agent.Logic;
-import bazaarbot.agent.script.LogicHScript;
+import bazaarbot.agent.LogicHScript;
 import bazaarbot.Quick;
 import flash.Lib;
 import flash.text.TextField;
