@@ -1,5 +1,5 @@
 package bazaarbot;
-import bazaarbot.History.EconNoun;
+import bazaarbot.EconNoun;
 
 /**
  * ...

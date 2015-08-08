@@ -30,11 +30,3 @@ class History
 		profit.register(good);
 	}
 }
-
-enum EconNoun {
-	Price;
-	Ask;
-	Bid;
-	Trade;
-	Profit;
-}
