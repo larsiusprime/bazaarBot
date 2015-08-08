@@ -47,7 +47,7 @@ class Main extends Sprite {
 		display.y = 50;
 		addChild(display);
 		
-		makeButton(120, 10, "Benchmark", onBenchmark);		
+		makeButton(120, 10, "Benchmark", onBenchmark);
 		txt_benchmark = new TextField();
 		txt_benchmark.x = 220;
 		txt_benchmark.y = 10;

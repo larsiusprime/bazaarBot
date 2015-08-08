@@ -56,7 +56,7 @@ class Agent
 		for (str in list_commodities) {
 			var trades:Array<Float> = new Array<Float>();
 			
-			var price:Float = bazaar.get_history_price_avg(str, _lookback);					
+			var price:Float = bazaar.getAverageHistoricalPrice(str, _lookback);					
 			trades.push(price * 0.5);			
 			trades.push(price * 1.5);	//push two fake trades to generate a range
 			
@@ -106,7 +106,7 @@ class Agent
 			observed_trades.push(unit_price_);
 		}
 		
-		var public_mean_price:Float = bazaar.get_history_price_avg(commodity_, 1);
+		var public_mean_price:Float = bazaar.getAverageHistoricalPrice(commodity_, 1);
 		
 		var belief:Point = price_belief(commodity_);
 		var mean:Float = (belief.x + belief.y) / 2;
@@ -143,10 +143,10 @@ class Agent
 				special_case = true;				
 			}
 			
-			if (!special_case) {	
+			if (!special_case) {
 				//Don't know what else to do? Check supply vs. demand
-				var asks:Float = bazaar.get_history_asks_avg(commodity_,1);
-				var bids:Float = bazaar.get_history_bids_avg(commodity_,1);
+				var asks:Float = bazaar.history.asks.average(commodity_,1);
+				var bids:Float = bazaar.history.bids.average(commodity_,1);
 				
 				//supply_vs_demand: 0=balance, 1=all supply, -1=all demand
 				var supply_vs_demand:Float = (asks - bids) / (asks + bids);
@@ -254,7 +254,7 @@ class Agent
 	}
 	
 	private function determine_sale_quantity(bazaar:BazaarBot, commodity_:String):Float {
-		var mean:Float = bazaar.get_history_price_avg(commodity_,_lookback);
+		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observe_trading_range(commodity_);
 		if (trading_range != null) {			
 			var favorability:Float = position_in_range(mean, trading_range.x, trading_range.y);
@@ -269,7 +269,7 @@ class Agent
 	}
 	
 	private function determine_purchase_quantity(bazaar:BazaarBot, commodity_:String):Float {
-		var mean:Float = bazaar.get_history_price_avg(commodity_,_lookback);
+		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observe_trading_range(commodity_);
 		if(trading_range != null){
 			var favorability:Float = position_in_range(mean, trading_range.x, trading_range.y);

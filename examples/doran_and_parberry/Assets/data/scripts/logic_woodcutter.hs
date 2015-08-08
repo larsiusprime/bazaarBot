@@ -18,7 +18,7 @@ if(has_food){
 }else{
 	//fined $2 for being idle
 	consume(agent,"money",2);
-	if(!has_food && inventory_is_full()){		
+	if(!has_food && inventory_is_full()){
 		make_room_for(agent,"food",2);
 	}
 }

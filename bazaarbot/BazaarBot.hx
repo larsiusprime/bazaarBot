@@ -12,27 +12,20 @@ import openfl.Assets;
  */
 class BazaarBot
 {
-	public var history_price(get, null):Map<String, Array<Float>>;
-	public var history_asks(get, null):Map<String, Array<Float>>;
-	public var history_bids(get, null):Map<String, Array<Float>>;
-	public var history_trades(get, null):Map<String, Array<Float>>;
+	public var history:History;
 	
 	public function new() 
 	{
+		history = new History();
+		
 		list_commodities = new Array<String>();
 		_map_commodities = new Map<String, Commodity>();
 		
-		_agent_classes = new Map<String, AgentClass>();		
+		_agent_classes = new Map<String, AgentClass>();
 		list_agents = new Array<Agent>();
 		
 		book_bids = new Map<String, Array<Offer>>();
 		book_asks = new Map<String, Array<Offer>>();
-		
-		_history_price = new Map<String, Array<Float>>();
-		_history_asks = new Map<String, Array<Float>>();
-		_history_bids = new Map < String, Array<Float> > ();
-		_history_trades = new Map < String, Array<Float> > ();
-		_history_profit = new Map < String, Array<Float> > ();
 	}
 	
 	public function init(data:Dynamic,format:String="json"):Void {
@@ -65,32 +58,34 @@ class BazaarBot
 		var list:Array<Dynamic> = data.commodities;
 		for(c in list) {
 			list_commodities.push(c.id);
-			_map_commodities.set(c.id,new Commodity(c.id, c.size));
-			_history_price.set(c.id, new Array<Float>());
-			_history_asks.set(c.id, new Array<Float>());
-			_history_bids.set(c.id, new Array<Float>());			
-			_history_trades.set(c.id, new Array<Float>());
-			add_history_price(c.id, 1);		//start the bidding at $1!
-			add_history_asks(c.id, 1);		//start history charts with 1 fake buy/sell bid
-			add_history_bids(c.id, 1);
-			add_history_trades(c.id, 1);
+			_map_commodities.set(c.id, new Commodity(c.id, c.size));
+			
+			history.register(c.id);
+			history.prices.add(c.id, 1.0);	//start the bidding at $1!
+			history.asks.add(c.id, 1.0);	//start history charts with 1 fake buy/sell bid
+			history.bids.add(c.id, 1.0);
+			history.trades.add(c.id, 1.0);
+			
 			book_asks.set(c.id,new Array<Offer>());
 			book_bids.set(c.id,new Array<Offer>());
-		}		
+		}
 		
 		//Create agent classes
 		var agents:Array<Dynamic> = data.agents;
 		_agent_classes = new Map<String, AgentClass>();
-		for (a in agents) {			
+		for (a in agents)
+		{
 			a.inventory.size = { };
-			for (key in _map_commodities.keys()) {
+			for (key in _map_commodities.keys())
+			{
 				var c:Commodity = _map_commodities.get(key);
 				Reflect.setField(a.inventory.size, c.id, c.size);
 			}
 			var ac:AgentClass = new AgentClass(a);
 			_agent_classes.set(ac.id, ac);
-			_history_profit.set(ac.id, new Array<Float>());
-		}		
+			
+			history.profit.register(ac.id);
+		}
 		
 		//Make the agent list
 		list_agents = new Array<Agent>();
@@ -113,7 +108,7 @@ class BazaarBot
 				list_agents.push(a);
 				agent_index++;
 			}
-		}		
+		}
 	}
 	
 	public function simulate(rounds:Int):Void {
@@ -121,9 +116,9 @@ class BazaarBot
 			for (agent in list_agents) {
 				agent.set_money_last(agent.money);
 				
-				var ac:AgentClass = _agent_classes.get(agent.class_id);				
+				var ac:AgentClass = _agent_classes.get(agent.class_id);
 				ac.logic.perform(agent,this);
-								
+				
 				for (commodity in list_commodities) {
 					agent.generate_offers(this, commodity);
 				}
@@ -157,90 +152,57 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function get_history_price_avg(commodity_:String, range:Int):Float {
-		var list = _history_price.get(commodity_);
-		return avg_list_f(list, range);
+	public function getAverageHistoricalPrice(commodity_:String, range:Int):Float
+	{
+		return history.prices.average(commodity_, range);
 	}
 	
-	public function get_cheapest_commodity(range:Int,not_this:String=""):String{
+	public function getCheapestCommodity(range:Int, not_this:String = ""):String
+	{
 		var best_price:Float = 999999999999999999;
 		var best_commodity:String = "";
 		for (c in list_commodities) {
 			if(c != not_this){
-				var price:Float = get_history_price_avg(c, range);
+				var price:Float = history.prices.average(c, range);
 				if (price < best_price) { best_price = price; best_commodity = c; }
 			}
 		}
 		return best_commodity;
 	}
 	
-	public function get_dearest_commodity(range:Int,not_this:String=""):String{
+	public function getDearestCommodity(range:Int, exclude:Array<String> = null):String
+	{
 		var best_price:Float = 0;
 		var best_commodity:String = "";
-		for (c in list_commodities) {
-			if(c != not_this){
-				var price = get_history_price_avg(c, range);
+		for (c in list_commodities)
+		{
+			if (exclude == null || exclude.indexOf(c) == -1)
+			{
+				var price = history.prices.average(c, range);
 				if (price > best_price) { best_price = price; best_commodity = c; }
 			}
 		}
 		return best_commodity;
 	}
 	
-	/**
-	 * Returns the historical profitability for the given agent class over the last X rounds
-	 * @param	class_ string id of agent class
-	 * @param	range number of rounds to look back
-	 * @return
-	 */
-	
-	public function get_history_profit_avg(class_:String, range:Int):Float {
-		var list = _history_profit.get(class_);
-		return avg_list_f(list, range);
-	}
-	
-	/**
-	 * Returns the historical mean # of asks (sell offers) per round of the given commodity over the last X rounds
-	 * @param	commodity_ string id of commodity
-	 * @param	range number of rounds to look back
-	 * @return
-	 */
-	
-	public function get_history_asks_avg(commodity_:String,range:Int):Float {
-		var list = _history_asks.get(commodity_);
-		return avg_list_f(list, range);
-	}
-		
-	/**
-	 * Returns the historical mean # of bids (buy offers) per round of the given commodity over the last X rounds
-	 * @param	commodity_ string id of commodity
-	 * @param	range number of rounds to look back
-	 * @return
-	 */
-	
-	public function get_history_bids_avg(commodity_:String,range:Int):Float {
-		var list = _history_bids.get(commodity_);
-		return avg_list_f(list, range);
-	}
-	
-	public function get_history_trades_avg(commodity_:String, range:Int):Float {
-		var list = _history_trades.get(commodity_);
-		return avg_list_f(list, range);
-	}
-	
-	public function get_commodities_unsafe():Array<String> {
+	public function get_commodities_unsafe():Array<String>
+	{
 		return list_commodities;
 	}
 	
-	public function get_commodity_entry(str:String):Commodity {
-		if (_map_commodities.exists(str)) {
+	public function get_commodity_entry(str:String):Commodity
+	{
+		if (_map_commodities.exists(str))
+		{
 			return _map_commodities.get(str).copy();
 		}
 		return null;
 	}
 	
 	/********REPORT**********/
-	public function get_marketReport(rounds:Int):MarketReport {
-		var mr:MarketReport = new MarketReport();		
+	public function get_marketReport(rounds:Int):MarketReport
+	{
+		var mr:MarketReport = new MarketReport();
 		mr.str_list_commodity = "Commodities\n\n";
 		mr.str_list_commodity_prices = "Price\n\n";
 		mr.str_list_commodity_trades = "Trades\n\n";
@@ -257,27 +219,29 @@ class BazaarBot
 		for (commodity in list_commodities) {
 			mr.str_list_commodity += commodity + "\n";
 			
-			var price:Float = get_history_price_avg(commodity, rounds);			
+			var price:Float = history.prices.average(commodity, rounds);
 			mr.str_list_commodity_prices += num_str(price, 2) + "\n";
 			
-			var asks:Float = get_history_asks_avg(commodity, rounds);
+			var asks:Float = history.asks.average(commodity, rounds);
 			mr.str_list_commodity_asks += Std.int(asks) + "\n";
 			
-			var bids:Float = get_history_bids_avg(commodity, rounds);
+			var bids:Float = history.bids.average(commodity, rounds);
 			mr.str_list_commodity_bids += Std.int(bids) + "\n";
-						
-			var trades:Float = get_history_trades_avg(commodity, rounds);
+			
+			var trades:Float = history.trades.average(commodity, rounds);
 			mr.str_list_commodity_trades += Std.int(trades) + "\n";
 			
 			mr.arr_str_list_inventory.push(commodity + "\n\n");
 		}	
-		for (key in _agent_classes.keys()) {
-			var inventory:Array<Float> = [];		
-			for (str in list_commodities) {
-				inventory.push(0);		
+		for (key in _agent_classes.keys())
+		{
+			var inventory:Array<Float> = [];
+			for (str in list_commodities)
+			{
+				inventory.push(0);
 			}
 			mr.str_list_agent += key + "\n";
-			var profit:Float = get_history_profit_avg(key, rounds);
+			var profit:Float = history.profit.average(key, rounds);
 			mr.str_list_agent_profit += num_str(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
@@ -316,13 +280,6 @@ class BazaarBot
 	private var _agent_classes:Map<String, AgentClass>;	
 	
 	private var _map_commodities:Map<String, Commodity>;
-	
-	private var _history_price:Map<String, Array<Float>>;	//avg clearing price per good over time
-	private var _history_asks:Map<String, Array<Float>>;		//# ask (sell) offers per good over time
-	private var _history_bids:Map<String, Array<Float>>;		//# bid (buy) offers per good over time
-	private var _history_trades:Map<String, Array<Float>>;		//# units traded per good over time
-	
-	private var _history_profit:Map<String, Array<Float>>;	//profitability of various agent classes
 	
 	private function resolve_offers(commodity_:String = ""):Void {
 		var bids:Array<Offer> = book_bids.get(commodity_);
@@ -412,19 +369,22 @@ class BazaarBot
 		}
 		
 		//update history		
+	
+		history.asks.add(commodity_, num_asks);
+		history.bids.add(commodity_, num_bids);
+		history.trades.add(commodity_, units_traded);
 		
-		add_history_asks(commodity_, num_asks);
-		add_history_bids(commodity_, num_bids);
-		add_history_trades(commodity_, units_traded);		
-		
-		if(units_traded > 0){
+		if (units_traded > 0)
+		{
 			avg_price = money_traded / cast(units_traded, Float);
-			add_history_price(commodity_, avg_price);		
-		}else {
+			history.prices.add(commodity_, avg_price);
+		}
+		else
+		{
 			//special case: none were traded this round, use last round's average price
-			add_history_price(commodity_, get_history_price_avg(commodity_, 1));
-			avg_price = get_history_price_avg(commodity_,1);
-		}		
+			history.prices.add(commodity_, history.prices.average(commodity_, 1));
+			avg_price = history.prices.average(commodity_,1);
+		}
 		
 		list_agents.sort(sort_agent_alpha);
 		var curr_class:String = "";
@@ -438,7 +398,7 @@ class BazaarBot
 			if (curr_class != last_class) {		//new class?
 				if (list != null) {				//do we have a list built up?
 					//log last class' profit
-					add_history_profit(last_class, list_avg_f(list));	
+					history.profit.add(last_class, list_avg_f(list));
 				}
 				list = new Array<Float>();		//make a new list
 				last_class = curr_class;		
@@ -446,7 +406,7 @@ class BazaarBot
 			list.push(a.get_profit());			//push profit onto list
 		}	
 		//add the last class too
-		add_history_profit(last_class, list_avg_f(list));
+		history.profit.add(last_class, list_avg_f(list));
 		
 		//sort by id so everything works again
 		list_agents.sort(sort_agent_id);
@@ -532,8 +492,8 @@ class BazaarBot
 		var best_market:String = "";
 		var best_ratio:Float = -999999;
 		for(commodity in list_commodities){
-			var asks:Float = get_history_asks_avg(commodity, range);
-			var bids:Float = get_history_bids_avg(commodity, range);			
+			var asks:Float = history.asks.average(commodity, range);
+			var bids:Float = history.bids.average(commodity, range);
 			var ratio:Float = 0;
 			if (asks == 0 && bids > 0) {
 				ratio = 9999999999999999;	
@@ -553,7 +513,7 @@ class BazaarBot
 		var best:Float = -99999;
 		var best_id:String="";
 		for(ac_id in _agent_classes.keys()){
-			var val:Float = get_history_profit_avg(ac_id, range);
+			var val:Float = history.profit.average(ac_id, range);
 			if (val > best) {
 				best_id = ac_id;
 				best = val;
@@ -571,31 +531,6 @@ class BazaarBot
 		return null;
 	}
 	
-	private function add_history_profit(agent_class_:String, f:Float):Void {
-		var list = _history_profit.get(agent_class_);
-		list.push(f);
-	}
-	
-	private function add_history_asks(commodity_:String, f:Float):Void {
-		var list = _history_asks.get(commodity_);
-		list.push(f);
-	}
-	
-	private function add_history_bids(commodity_:String, f:Float):Void {
-		var list = _history_bids.get(commodity_);
-		list.push(f);
-	}
-	
-	private function add_history_trades(commodity_:String, f:Float):Void {
-		var list = _history_trades.get(commodity_);
-		list.push(f);
-	}
-	
-	private function add_history_price(commodity_:String, p:Float):Void {
-		var list = _history_price.get(commodity_);
-		list.push(p);
-	}
-	
 	private function transfer_commodity(commodity_:String, units_:Float, seller_id:Int, buyer_id:Int):Void {
 		var seller:Agent = list_agents[seller_id];
 		var buyer:Agent = list_agents[buyer_id];
@@ -603,36 +538,14 @@ class BazaarBot
 		buyer.change_inventory(commodity_, units_);
 	}
 	
-	private function transfer_money(amount_:Float, seller_id:Int, buyer_id:Int):Void {
+	private function transfer_money(amount_:Float, seller_id:Int, buyer_id:Int):Void
+	{
 		var seller:Agent = list_agents[seller_id];
 		var buyer:Agent = list_agents[buyer_id];
 		seller.money += amount_;
 		buyer.money -= amount_;
-	}	
-	
-	private function get_history_price():Map<String, Array<Float>> 
-	{
-		return _history_price;
 	}
 	
-	
-	private function get_history_asks():Map<String, Array<Float>> 
-	{
-		return _history_asks;
-	}
-	
-	
-	private function get_history_bids():Map<String, Array<Float>> 
-	{
-		return _history_bids;
-	}
-	
-	
-	private function get_history_trades():Map<String, Array<Float>> 
-	{
-		return _history_trades;
-	}
-		
 	private static function sort_agent_id(a:Agent, b:Agent):Int {
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;

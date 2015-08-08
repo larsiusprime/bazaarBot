@@ -90,7 +90,7 @@ class AgentLogic
 		 "inventory_is_full" => agent.get_inventory_space,
 		 "make_room_for" => 
 			function(a:Agent, c:String="food", amt:Float = 1.0):Void { 
-				var to_drop:String = bazaar.get_cheapest_commodity(10,c);
+				var to_drop:String = bazaar.getCheapestCommodity(10,c);
 				if (to_drop != "") {_consume(a, to_drop, amt);}
 			}
 		 ];
