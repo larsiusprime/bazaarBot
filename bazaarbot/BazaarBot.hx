@@ -51,23 +51,29 @@ class BazaarBot
 	
 	public function simulate(rounds:Int):Void
 	{
-		for (round in 0...rounds) {
-			for (agent in _agents) {
+		for (round in 0...rounds)
+		{
+			for (agent in _agents)
+			{
 				agent.set_money_last(agent.money);
 				
 				var ac:AgentClass = _mapAgents.get(agent.class_id);
 				ac.logic.perform(agent,this);
 				
-				for (commodity in _goods) {
+				for (commodity in _goods)
+				{
 					agent.generate_offers(this, commodity);
 				}
 			}
 			
-			for(commodity in _goods){
+			for (commodity in _goods)
+			{
 				resolveOffers(commodity);
 			}
-			for (agent in _agents) {
-				if (agent.money <= 0) {
+			for (agent in _agents)
+			{
+				if (agent.money <= 0)
+				{
 					replaceAgent(agent);
 				}
 			}
@@ -92,37 +98,47 @@ class BazaarBot
 	 * @return
 	 */
 	
-	public function getAverageHistoricalPrice(commodity_:String, range:Int):Float
+	public function getAverageHistoricalPrice(good:String, range:Int):Float
 	{
-		return history.prices.average(commodity_, range);
+		return history.prices.average(good, range);
 	}
 	
-	public function getCheapestCommodity(range:Int, not_this:String = ""):String
+	public function getCheapestCommodity(range:Int, exclude:Array<String> = null):String
 	{
 		var best_price:Float = 999999999999999999;
-		var best_commodity:String = "";
-		for (c in _goods) {
-			if(c != not_this){
-				var price:Float = history.prices.average(c, range);
-				if (price < best_price) { best_price = price; best_commodity = c; }
+		var best_good:String = "";
+		for (g in _goods)
+		{
+			if (exclude == null || exclude.indexOf(g) == -1)
+			{
+				var price:Float = history.prices.average(g, range);
+				if (price < best_price)
+				{
+					best_price = price; 
+					best_good = g;
+				}
 			}
 		}
-		return best_commodity;
+		return best_good;
 	}
 	
 	public function getDearestCommodity(range:Int, exclude:Array<String> = null):String
 	{
 		var best_price:Float = 0;
-		var best_commodity:String = "";
-		for (c in _goods)
+		var best_good:String = "";
+		for (g in _goods)
 		{
-			if (exclude == null || exclude.indexOf(c) == -1)
+			if (exclude == null || exclude.indexOf(g) == -1)
 			{
-				var price = history.prices.average(c, range);
-				if (price > best_price) { best_price = price; best_commodity = c; }
+				var price = history.prices.average(g, range);
+				if (price > best_price)
+				{
+					best_price = price;
+					best_good = g;
+				}
 			}
 		}
-		return best_commodity;
+		return best_good;
 	}
 	
 	public function getGoods_unsafe():Array<String>
