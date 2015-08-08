@@ -1,4 +1,5 @@
 package bazaarbot.agent;
+import openfl.Assets;
 import openfl.geom.Point;
 import bazaarbot.Inventory.InventoryData;
 
@@ -106,6 +107,60 @@ class BasicAgent
 	{
 		_inventory.change(good, delta);
 	}
+	
+	/********STATIC*************/
+	
+	public static function agentDataFromJSON(data:Dynamic):AgentData
+	{
+		var agentData = {
+			className:data.id,
+			money:data.money,
+			inventory:
+			{
+				maxSize: data.inventory.max_size,
+				ideal:new Map<String, Float>(),
+				start:new Map<String, Float>(),
+				size:new Map<String, Float>()
+			},
+			logic:null
+		}
+		
+		var inventory_ideal_ids = Reflect.fields(data.inventory.ideal);
+		for (istr in inventory_ideal_ids)
+		{
+			agentData.inventory.ideal.set(istr, Reflect.field(data.inventory.ideal, istr));
+		}
+		
+		var inventory_start_ids = Reflect.fields(data.inventory.start);
+		for (istr in inventory_start_ids)
+		{
+			agentData.inventory.start.set(istr, Reflect.field(data.inventory.start, istr));
+		}
+		
+		var inventory_size_ids = Reflect.fields(data.inventory.size);
+		for (istr in inventory_size_ids)
+		{
+			agentData.inventory.size.set(istr, Reflect.field(data.inventory.size, istr));
+		}
+		
+		var script:String = "";
+		if (Reflect.hasField(data, "script"))
+		{
+			var script_id:String = data.script;
+			script = Assets.getText("assets/data/scripts/" + script_id);
+		}
+		
+		if (script != "")
+		{
+			agentData.logic = new AgentLogic(script);
+		}
+		else
+		{
+			agentData.logic = new AgentLogic(data.logic);
+		}
+		return agentData;
+	}
+
 	
 	/********PRIVATE************/
 	
