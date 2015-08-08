@@ -1,5 +1,7 @@
 package bazaarbot.agent;
+import bazaarbot.agent.BasicAgent.AgentData;
 import bazaarbot.BazaarBot;
+import bazaarbot.Offer;
 import flash.geom.Point;
 
 /**
@@ -15,9 +17,37 @@ class StandardAgent extends BasicAgent
 	
 	public static inline var MIN_PRICE:Float = 0.01;		//lowest possible price
 	
-	public function new(id_:Int,class_id_:String,inventory_:Inventory,money_:Float) 
+	public function new(id:Int, data:AgentData) 
 	{
-		super(id_, class_id_, inventory_, money_);
+		super(id, data);
+	}
+	
+	override public function createBid(bazaar:BazaarBot, good:String, limit:Float):Offer 
+	{
+		var bidPrice:Float = determinePriceOf(good);
+		var ideal:Float = determinePurchaseQuantity(bazaar, good);
+		
+		//can't buy more than limit
+		var quantityToBuy:Float = ideal > limit ? limit : ideal;
+		if (quantityToBuy > 0)
+		{
+			return new Offer(id, good, quantityToBuy, bidPrice);
+		}
+		return null;
+	}
+	
+	override public function createAsk(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer 
+	{
+		var ask_price:Float = determinePriceOf(commodity_);
+		var ideal:Float = determineSaleQuantity(bazaar, commodity_);
+		
+		//can't sell less than limit
+		var quantity_to_sell:Float = ideal < limit_ ? limit_ : ideal;
+		if (quantity_to_sell > 0)
+		{
+			return new Offer(id, commodity_, quantity_to_sell, ask_price);
+		}
+		return null;
 	}
 	
 	override public function generateOffers(bazaar:BazaarBot, commodity:String):Void 

@@ -1,5 +1,6 @@
 package bazaarbot.agent;
 import openfl.geom.Point;
+import bazaarbot.Inventory.InventoryData;
 
 /**
  * ...
@@ -16,19 +17,21 @@ class BasicAgent
 	public var inventorySpace(get, null):Float;
 	public var destroyed(default, null):Bool;
 	
-	public function new(id:Int,className:String,inventory:Inventory,money:Float) 
+	public function new(id:Int, data:AgentData) 
 	{
 		this.id = id;
-		this.className = className;
-		if (inventory == null)
+		className = data.className;
+		_inventory = new Inventory();
+		_inventory.fromData(data.inventory);
+		money = data.money;
+		if (data.lookBack == null)
 		{
-			_inventory = new Inventory();
+			_lookback = 15;
 		}
 		else
 		{
-			_inventory = inventory;
+			_lookback = data.lookBack;
 		}
-		this.money = money;
 		
 		_priceBeliefs = new Map<String, Point>();
 		_observedTradingRange = new Map<String, Array<Float>>();
@@ -84,29 +87,13 @@ class BasicAgent
 	
 	public function createBid(bazaar:BazaarBot, good:String, limit:Float):Offer
 	{
-		var bidPrice:Float = determinePriceOf(good);
-		var ideal:Float = determinePurchaseQuantity(bazaar, good);
-		
-		//can't buy more than limit
-		var quantityToBuy:Float = ideal > limit ? limit : ideal;
-		if (quantityToBuy > 0)
-		{
-			return new Offer(id, good, quantityToBuy, bidPrice);
-		}
+		//no implementation -- provide your own in a subclass
 		return null;
 	}
 	
 	public function createAsk(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer
 	{
-		var ask_price:Float = determinePriceOf(commodity_);
-		var ideal:Float = determineSaleQuantity(bazaar, commodity_);
-		
-		//can't sell less than limit
-		var quantity_to_sell:Float = ideal < limit_ ? limit_ : ideal;
-		if (quantity_to_sell > 0)
-		{
-			return new Offer(id, commodity_, quantity_to_sell, ask_price);
-		}
+		//no implementation -- provide your own in a subclass
 		return null;
 	}
 	
@@ -191,4 +178,12 @@ class BasicAgent
 		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
 		return pt;
 	}
+}
+
+typedef AgentData = {
+	className:String,
+	money:Float,
+	inventory:InventoryData,
+	logic:AgentLogic,
+	?lookBack:Int
 }

@@ -1,4 +1,5 @@
 package bazaarbot.agent;
+import bazaarbot.Inventory.InventoryData;
 import openfl.Assets;
 
 /**
@@ -9,6 +10,9 @@ class AgentClass
 {
 	public var id:String;
 	public var money:Int;
+	
+	public var inventoryData:InventoryData;
+	
 	public var inventory_ideal_ids:Array<String>;
 	public var inventory_ideal_amounts:Array<Float>;
 	public var inventory_start_ids:Array<String>;
@@ -24,24 +28,34 @@ class AgentClass
 		id = data.id;
 		money = data.money;
 		
+		inventoryData = {
+			maxSize: data.inventory.max_size,
+			ideal:new Map<String, Float>(),
+			start:new Map<String, Float>(),
+			size:new Map<String, Float>()
+		};
+		
 		inventory_size = data.inventory.max_size;
 		
 		inventory_ideal_ids = Reflect.fields(data.inventory.ideal);
 		inventory_ideal_amounts = [];
 		for (istr in inventory_ideal_ids) {
 			inventory_ideal_amounts.push(Reflect.field(data.inventory.ideal, istr));
-		}		
+			inventoryData.ideal.set(istr, Reflect.field(data.inventory.ideal, istr));
+		}
 		
 		inventory_start_ids = Reflect.fields(data.inventory.start);
 		inventory_start_amounts = [];
 		for (istr in inventory_start_ids) {
 			inventory_start_amounts.push(Reflect.field(data.inventory.start, istr));
+			inventoryData.start.set(istr, Reflect.field(data.inventory.start, istr));
 		}		
 		
 		inventory_size_ids = Reflect.fields(data.inventory.size);
 		inventory_size_amounts = [];
 		for (istr in inventory_size_ids) {
 			inventory_size_amounts.push(Reflect.field(data.inventory.size, istr));
+			inventoryData.size.set(istr, Reflect.field(data.inventory.size, istr));
 		}
 		
 		var script:String = "";
@@ -56,6 +70,11 @@ class AgentClass
 			logic = new AgentLogic(data.logic);
 		}
 	}
+
+	public function getStartInventoryData():InventoryData
+	{
+		return inventoryData;
+	}
 	
 	public function getStartInventory():Inventory {
 		var i:Inventory = new Inventory();
@@ -66,19 +85,4 @@ class AgentClass
 		return i;
 	}
 	
-}
-
-
-typedef AgentData = {
-	id:Int,
-	money:Int,
-	inventory:InventoryData,
-	logic:AgentLogic
-}
-
-typedef InventoryData = {
-	maxSize:Float,
-	ideal:Map<String, Float>,
-	start:Map<String, Float>,
-	size:Map<String, Float>
 }

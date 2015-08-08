@@ -1,4 +1,5 @@
 package bazaarbot;
+import bazaarbot.agent.BasicAgent.AgentData;
 import bazaarbot.agent.StandardAgent;
 import bazaarbot.agent.AgentClass;
 import haxe.Json;
@@ -365,12 +366,14 @@ class BazaarBot
 		{
 			var val:Int = Reflect.field(start_conditions.agents, class_str);
 			var agent_class = _mapAgents.get(class_str);
-			var inv:Inventory = agent_class.getStartInventory();
+			var inventory = agent_class.getStartInventoryData();// .getStartInventory();
 			var money:Float = agent_class.money;
+			
+			var data:AgentData = { className:agent_class.id, money:money, inventory:inventory, lookBack:15, logic:agent_class.logic };
 			
 			for (i in 0...val)
 			{
-				var a:StandardAgent = new StandardAgent(agent_index, class_str, inv.copy(), money);
+				var a:StandardAgent = new StandardAgent(agent_index, data);
 				a.init(this);
 				_agents.push(a);
 				agent_index++;
@@ -628,7 +631,9 @@ class BazaarBot
 		}
 		
 		var agent_class = _mapAgents.get(best_id);
-		var new_agent:StandardAgent = new StandardAgent(agent.id, best_id, agent_class.getStartInventory(), agent_class.money);
+		var inv = agent_class.getStartInventoryData();
+		
+		var new_agent:StandardAgent = new StandardAgent(agent.id, {className:best_id, money:agent_class.money, inventory:inv, logic:agent_class.logic});
 		new_agent.init(this);
 		_agents[agent.id] = new_agent;
 		agent.destroy();

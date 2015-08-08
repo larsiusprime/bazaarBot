@@ -16,6 +16,35 @@ class Inventory
 		maxSize = 0;
 	}
 	
+	public function fromData(data:InventoryData)
+	{
+		var sizes = [];
+		var amounts = [];
+		for (key in data.start.keys())
+		{
+			sizes.push(key);
+			amounts.push(data.start.get(key));
+		}
+		setStuff(sizes, amounts);
+		sizes = [];
+		amounts = [];
+		for (key in data.size.keys())
+		{
+			sizes.push(key);
+			amounts.push(data.size.get(key));
+		}
+		setSizes(sizes, amounts);
+		sizes = [];
+		amounts = [];
+		for (key in data.ideal.keys())
+		{
+			sizes.push(key);
+			amounts.push(data.ideal.get(key));
+			setIdeal(sizes, amounts);
+		}
+		maxSize = data.maxSize;
+	}
+	
 	public function copy():Inventory
 	{
 		var i:Inventory = new Inventory();
@@ -221,4 +250,11 @@ class Inventory
 	private var _stuff:Map<String, Float>;		// key:commodity_id, val:amount
 	private var _ideal:Map<String, Float>;		// ideal counts for each thing
 	private var _sizes:Map<String, Float>;		// how much space each thing takes up
+}
+
+typedef InventoryData = {
+	maxSize:Float,
+	ideal:Map<String, Float>,
+	start:Map<String, Float>,
+	size:Map<String, Float>
 }
