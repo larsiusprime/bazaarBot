@@ -1,5 +1,7 @@
 package;
 
+import bazaarbot.agent.Logic;
+import bazaarbot.agent.script.LogicHScript;
 import bazaarbot.Quick;
 import flash.Lib;
 import flash.text.TextField;
@@ -13,6 +15,11 @@ import flash.display.SimpleButton;
 import flash.display.Sprite;
 import hscript.Interp;
 import hscript.Parser;
+import jobs.LogicBlacksmith;
+import jobs.LogicFarmer;
+import jobs.LogicMiner;
+import jobs.LogicRefiner;
+import jobs.LogicWoodcutter;
 import openfl.Assets;
 import flash.events.MouseEvent;
 import flash.text.TextFormatAlign;
@@ -25,22 +32,43 @@ class Main extends Sprite {
 	private var display:MarketDisplay;
 	private var txt_benchmark:TextField;
 	
-	public function new () {
+	public function new ()
+	{
 		super ();
 		
-		var settings:String = Assets.getText("assets/data/settings.json");
+		var settings:String = Assets.getText("assets/settings.json");
 		var data:Dynamic = Json.parse(settings);
 		bazaar = new BazaarBot();
-		bazaar.init(data);
+		bazaar.init(data, getLogic);
 		
 		makeButtons();
-	}	
+	}
 	
-	private function doAdd(a:Int, b:Int):Int {
+	private function getLogicScript(str:String):Logic
+	{
+		return new LogicHScript(str + ".hs");
+	}
+	
+	private function getLogic(str:String):Logic
+	{
+		switch(str)
+		{
+			case "blacksmith": return new LogicBlacksmith(null);
+			case "farmer": return new LogicFarmer(null);
+			case "miner": return new LogicMiner(null);
+			case "refiner": return new LogicRefiner(null);
+			case "woodcutter": return new LogicWoodcutter(null);
+		}
+		return null;
+	}
+	
+	private function doAdd(a:Int, b:Int):Int
+	{
 		return a + b;
 	}
 	
-	private function makeButtons():Void {
+	private function makeButtons():Void
+	{
 		makeButton(10, 10, "Advance", onAdvance);
 		
 		display = new MarketDisplay(799, 600 - 51);
@@ -56,7 +84,8 @@ class Main extends Sprite {
 		addChild(txt_benchmark);
 	}
 	
-	private function onBenchmark(m:MouseEvent):Void{
+	private function onBenchmark(m:MouseEvent):Void
+	{
 		var time = Lib.getTimer();
 		var benchmark:Int = 30;
 		bazaar.simulate(benchmark);
@@ -78,7 +107,8 @@ class Main extends Sprite {
 		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.numTypesOfGood() + ", Agents=" + bazaar.numAgents() + ", TIME total=" + tstr + " avg=" + Quick.numStr(avg,2));
 	}
 	
-	private function onAdvance(m:MouseEvent):Void {
+	private function onAdvance(m:MouseEvent):Void
+	{
 		bazaar.simulate(1);
 		display.update(bazaar.get_marketReport(1));
 		/*var str:String = "";
@@ -88,16 +118,17 @@ class Main extends Sprite {
 		}*/
 	}
 	
-	private function makeButton(X:Float, Y:Float, str:String, func:Dynamic, W:Float = 100, H:Float = 30):SimpleButton{
+	private function makeButton(X:Float, Y:Float, str:String, func:Dynamic, W:Float = 100, H:Float = 30):SimpleButton
+	{
 		var up:Sprite = new Sprite();
-		var over:Sprite = new Sprite();		
+		var over:Sprite = new Sprite();
 		var down:Sprite = new Sprite();
 		var hit:Sprite = new Sprite();
 		up.graphics.beginFill(0xaaaaaa);
 		up.graphics.drawRoundRect(0, 0, W, H, 5, 5);
 		up.graphics.endFill();
 		
-		over.graphics.beginFill(0xdddddd);		
+		over.graphics.beginFill(0xdddddd);
 		over.graphics.drawRoundRect(0, 0, W, H, 5, 5);
 		over.graphics.endFill();
 		
@@ -118,9 +149,9 @@ class Main extends Sprite {
 		down.addChild(text3);
 		
 		text1.autoSize = TextFieldAutoSize.LEFT;
-		text1.text = text2.text = text3.text = str;		
+		text1.text = text2.text = text3.text = str;
 		text1.x = text2.x = text3.x = (up.width - text1.textWidth)/2;
-		text1.y = text2.y = text3.y = (up.height - text1.height) / 2;		
+		text1.y = text2.y = text3.y = (up.height - text1.height) / 2;
 		
 		var s:SimpleButton = new SimpleButton(up, over, down, hit);
 		s.addEventListener(MouseEvent.CLICK, func, false, 0, true);
@@ -131,5 +162,4 @@ class Main extends Sprite {
 		addChild(s);
 		return s;
 	}
-	
-}	
+}

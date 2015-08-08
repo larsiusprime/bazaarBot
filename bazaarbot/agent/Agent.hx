@@ -16,6 +16,7 @@ class Agent
 	public var moneyLastRound(default, null):Float;
 	public var profit(get, null):Float;
 	public var inventorySpace(get, null):Float;
+	public var inventoryFull(get, null):Bool;
 	public var destroyed(default, null):Bool;
 	
 	public function new(id:Int, data:AgentData) 
@@ -110,7 +111,7 @@ class Agent
 	
 	/********STATIC*************/
 	
-	public static function agentDataFromJSON(data:Dynamic):AgentData
+	public static function agentDataFromJSON(data:Dynamic, getLogic:String->Logic):AgentData
 	{
 		var agentData = {
 			className:data.id,
@@ -122,7 +123,7 @@ class Agent
 				start:new Map<String, Float>(),
 				size:new Map<String, Float>()
 			},
-			logic:data.logic
+			logic:getLogic(data.logic)
 		}
 		
 		var inventory_ideal_ids = Reflect.fields(data.inventory.ideal);
@@ -143,8 +144,6 @@ class Agent
 			agentData.inventory.size.set(istr, Reflect.field(data.inventory.size, istr));
 		}
 		
-		//agentData.logic = getLogic(data);
-		
 		return agentData;
 	}
 
@@ -157,9 +156,14 @@ class Agent
 	private var _profit:Float = 0;	//profit from last round
 	private var _lookback:Int = 15;
 	
-	public function get_inventorySpace():Float
+	private function get_inventorySpace():Float
 	{
 		return _inventory.getEmptySpace();
+	}
+	
+	public function get_inventoryFull():Bool
+	{
+		return _inventory.getEmptySpace() == 0;
 	}
 	
 	private function get_profit():Float
@@ -235,6 +239,6 @@ typedef AgentData = {
 	className:String,
 	money:Float,
 	inventory:InventoryData,
-	logic:String,
+	logic:Logic,
 	?lookBack:Int
 }

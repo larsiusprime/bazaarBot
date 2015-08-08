@@ -15,7 +15,7 @@ class Logic
 	
 	private var init:Bool = false;
 	
-	public function new(data:Dynamic) 
+	public function new(?data:Dynamic) 
 	{
 		//no implemenation -- provide your own in a subclass
 	}

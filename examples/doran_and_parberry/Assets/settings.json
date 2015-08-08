@@ -6,7 +6,7 @@
 			"woodcutter":10,
 			"refiner":10,
 			"blacksmith":10
-		}		
+		}
 	},
 	"commodities":[
 		{"id":"food" ,"size":"0.5"},
@@ -24,47 +24,47 @@
 				"ideal":{"food":0,"tools":1,"wood":3},
 				"max_size":20
 			},
-			"logic":"farmer.hs"
+			"logic":"farmer"
 		},
 		{
 			"id":"miner",
-			"money":100,						
+			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":1,"ore":0},
 				"ideal":{"food":3,"tools":1},
 				"max_size":20
 			},
-			"logic":"miner.hs"
+			"logic":"miner"
 		},
 		{
 			"id":"refiner",
-			"money":100,						
+			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":1,"metal":0,"ore":0},
 				"ideal":{"food":3,"tools":1,"ore":5},
 				"max_size":20
 			},
-			"logic":"refiner.hs"
+			"logic":"refiner"
 		},
 		{
 			"id":"woodcutter",
-			"money":100,			
+			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":1,"wood":0},
 				"ideal":{"food":3,"tools":1,"wood":0},
 				"max_size":20
 			},
-			"logic":"woodcutter.hs"
+			"logic":"woodcutter"
 		},
 		{
 			"id":"blacksmith",
-			"money":100,		
+			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":0,"metal":0,"ore":0},
 				"ideal":{"food":3,"tools":1,"metal":5},
 				"max_size":20
 			},
-			"logic":"blacksmith.hs"
+			"logic":"blacksmith"
 		}
 	]
 }

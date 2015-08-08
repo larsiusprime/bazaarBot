@@ -29,16 +29,9 @@ class BazaarBot
 		_mapAgents = new Map<String, AgentData>();
 	}
 	
-	public function init(data:Dynamic, format:String = "json"):Void
+	public function init(data:Dynamic, getLogic:String->Logic):Void
 	{
-		if (format == "json")
-		{
-			fromJSON(data);
-		}
-		else
-		{
-			throw new Error("unrecognized data format!");
-		}
+		fromJSON(data, getLogic);
 	}
 	
 	public function numTypesOfGood():Int
@@ -61,7 +54,8 @@ class BazaarBot
 				agent.moneyLastRound = agent.money;
 				
 				var ac = _mapAgents.get(agent.className);
-				agent.getLogic(ac.logic).perform(agent, this);
+				ac.logic.perform(agent, this);
+				//agent.getLogic(ac.logic).perform(agent, this);
 				
 				for (commodity in _goodTypes)
 				{
@@ -317,7 +311,7 @@ class BazaarBot
 		*/
 	}
 	
-	private function fromJSON(data:Dynamic):Void
+	private function fromJSON(data:Dynamic, getLogic:String->Logic):Void
 	{
 		//Create commodity index
 		var list:Array<Dynamic> = data.commodities;
@@ -347,7 +341,7 @@ class BazaarBot
 				var c:Good = _mapGoods.get(key);
 				Reflect.setField(a.inventory.size, c.id, c.size);
 			}
-			var agentData:AgentData = Agent.agentDataFromJSON(a);
+			var agentData:AgentData = Agent.agentDataFromJSON(a, getLogic);
 			_mapAgents.set(agentData.className, agentData);
 			
 			history.profit.register(agentData.className);

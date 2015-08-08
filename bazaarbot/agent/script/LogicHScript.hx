@@ -5,6 +5,7 @@ import haxe.Json;
 import bazaarbot.agent.script.LogicNode;
 import hscript.Interp;
 import hscript.Parser;
+import openfl.Assets;
 
 /**
  * ...
@@ -16,12 +17,13 @@ class LogicHScript extends Logic
 	var source:String;
 	var root:LogicNode;
 	
-	public function new(data:Dynamic) 
+	public function new(?data:Dynamic) 
 	{
 		super(data);
+		if (data == null) return;
 		if (Std.is(data, String))
 		{
-			script = data;
+			script = Assets.getText("assets/scripts/"+data);
 		}
 		else
 		{
@@ -156,7 +158,7 @@ class LogicHScript extends Logic
 		 "query_inventory" => agent.queryInventory,
 		 "produce" => _produce,
 		 "consume" => _consume,
-		 "inventory_is_full" => agent.get_inventorySpace,
+		 "inventory_is_full" => agent.get_inventoryFull,
 		 "make_room_for" => 
 			function(a:Agent, c:String = "food", amt:Float = 1.0):Void
 			{ 
