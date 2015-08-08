@@ -25,8 +25,8 @@ import flash.events.MouseEvent;
 import flash.text.TextFormatAlign;
 
 
-class Main extends Sprite {
-	
+class Main extends Sprite
+{
 	private var bazaar:BazaarBot;
 	
 	private var display:MarketDisplay;
@@ -36,10 +36,8 @@ class Main extends Sprite {
 	{
 		super ();
 		
-		var settings:String = Assets.getText("assets/settings.json");
-		var data:Dynamic = Json.parse(settings);
 		bazaar = new BazaarBot();
-		bazaar.init(data, getLogic);
+		bazaar.init(Json.parse(Assets.getText("assets/settings.json")), getLogic);
 		
 		makeButtons();
 	}
@@ -60,11 +58,6 @@ class Main extends Sprite {
 			case "woodcutter": return new LogicWoodcutter(null);
 		}
 		return null;
-	}
-	
-	private function doAdd(a:Int, b:Int):Int
-	{
-		return a + b;
 	}
 	
 	private function makeButtons():Void
@@ -111,11 +104,6 @@ class Main extends Sprite {
 	{
 		bazaar.simulate(1);
 		display.update(bazaar.get_marketReport(1));
-		/*var str:String = "";
-		for (c in bazaar.get_commodities_unsafe()) {
-			str += c + " \t" + "$" + BazaarBot.num_str(bazaar.get_history_price_avg(c, 1), 2);
-			str += "\n";
-		}*/
 	}
 	
 	private function makeButton(X:Float, Y:Float, str:String, func:Dynamic, W:Float = 100, H:Float = 30):SimpleButton
