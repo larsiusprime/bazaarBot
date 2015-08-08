@@ -1,5 +1,5 @@
 package bazaarbot.agent;
-import bazaarbot.agent.BasicAgent.AgentData;
+import bazaarbot.agent.Agent.AgentData;
 import bazaarbot.BazaarBot;
 import bazaarbot.Offer;
 import flash.geom.Point;
@@ -8,7 +8,7 @@ import flash.geom.Point;
  * ...
  * @author 
  */
-class StandardAgent extends BasicAgent
+class StandardAgent extends Agent
 {
 	public static inline var SIGNIFICANT:Float = 0.25;		//25% more or less is "significant"
 	public static inline var SIG_IMBALANCE:Float = 0.33;

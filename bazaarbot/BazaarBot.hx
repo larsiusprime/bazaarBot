@@ -1,6 +1,6 @@
 package bazaarbot;
-import bazaarbot.agent.BasicAgent;
-import bazaarbot.agent.BasicAgent.AgentData;
+import bazaarbot.agent.Agent;
+import bazaarbot.agent.Agent.AgentData;
 import bazaarbot.agent.StandardAgent;
 import haxe.Json;
 import haxe.xml.Fast;
@@ -25,7 +25,7 @@ class BazaarBot
 		_book = new TradeBook();
 		
 		_goodTypes = new Array<String>();
-		_agents = new Array<StandardAgent>();
+		_agents = new Array<Agent>();
 		_mapGoods = new Map<String, Good>();
 		_mapAgents = new Map<String, AgentData>();
 	}
@@ -52,7 +52,7 @@ class BazaarBot
 		return _agents.length;
 	}
 	
-	@:access(bazaarbot.agent.BasicAgent)
+	@:access(bazaarbot.agent.Agent)
 	public function simulate(rounds:Int):Void
 	{
 		for (round in 0...rounds)
@@ -206,7 +206,7 @@ class BazaarBot
 			mr.str_list_agent_profit += Quick.numStr(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
-			var list = _agents.filter(function(a:StandardAgent):Bool { return a.className == key; } );
+			var list = _agents.filter(function(a:Agent):Bool { return a.className == key; } );
 			var count:Int = list.length;
 			var money:Float = 0;
 			
@@ -237,7 +237,7 @@ class BazaarBot
 	private var _roundNum:Int = 0;
 	
 	private var _goodTypes:Array<String>;		//list of string ids for all the legal commodities
-	private var _agents:Array<StandardAgent>;
+	private var _agents:Array<Agent>;
 	private var _book:TradeBook;
 	private var _mapAgents:Map<String, AgentData>;
 	private var _mapGoods:Map<String, Good>;
@@ -347,14 +347,14 @@ class BazaarBot
 				var c:Good = _mapGoods.get(key);
 				Reflect.setField(a.inventory.size, c.id, c.size);
 			}
-			var agentData:AgentData = BasicAgent.agentDataFromJSON(a);
+			var agentData:AgentData = Agent.agentDataFromJSON(a);
 			_mapAgents.set(agentData.className, agentData);
 			
 			history.profit.register(agentData.className);
 		}
 		
 		//Make the agent list
-		_agents = new Array<StandardAgent>();
+		_agents = new Array<Agent>();
 		
 		//Get start conditions
 		var start_conditions:Dynamic = data.start_conditions;
@@ -370,7 +370,7 @@ class BazaarBot
 			
 			for (i in 0...val)
 			{
-				var a:StandardAgent = new StandardAgent(agentIndex, agentData);
+				var a:Agent = new StandardAgent(agentIndex, agentData);
 				a.init(this);
 				_agents.push(a);
 				agentIndex++;
@@ -412,7 +412,7 @@ class BazaarBot
 	
 	private function getAverageInventory(className:String, good:String):Float
 	{
-		var list = _agents.filter(function(a:StandardAgent):Bool { return a.className == className; } );
+		var list = _agents.filter(function(a:Agent):Bool { return a.className == className; } );
 		var amount:Float = 0;
 		for (agent in list)
 		{
@@ -515,8 +515,8 @@ class BazaarBot
 				transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 				
 				//update agent price beliefs based on successful transaction
-				var buyer_a:StandardAgent = _agents[buyer.agent_id];
-				var seller_a:StandardAgent = _agents[seller.agent_id];
+				var buyer_a:Agent = _agents[buyer.agent_id];
+				var seller_a:Agent = _agents[seller.agent_id];
 				buyer_a.updatePriceModel(this, "buy", good, true, clearing_price);
 				seller_a.updatePriceModel(this, "sell", good, true, clearing_price);
 				
@@ -550,14 +550,14 @@ class BazaarBot
 		while (bids.length > 0)
 		{
 			var buyer:Offer = bids[0];
-			var buyer_a:StandardAgent = _agents[buyer.agent_id];
+			var buyer_a:Agent = _agents[buyer.agent_id];
 			buyer_a.updatePriceModel(this,"buy",good, false);
 			bids.splice(0, 1);
 		}
 		while (asks.length > 0)
 		{
 			var seller:Offer = asks[0];
-			var seller_a:StandardAgent = _agents[seller.agent_id];
+			var seller_a:Agent = _agents[seller.agent_id];
 			seller_a.updatePriceModel(this,"sell",good, false);
 			asks.splice(0, 1);
 		}
@@ -589,7 +589,7 @@ class BazaarBot
 		
 		for (i in 0..._agents.length)
 		{
-			var a:StandardAgent = _agents[i];		//get current agent
+			var a:Agent = _agents[i];		//get current agent
 			curr_class = a.className;			//check its class
 			if (curr_class != last_class)		//new class?
 			{
@@ -612,7 +612,7 @@ class BazaarBot
 		
 	}
 	
-	private function replaceAgent(agent:StandardAgent):Void
+	private function replaceAgent(agent:Agent):Void
 	{
 		var best_id:String = getMostProfitableAgentClass();
 		
@@ -630,7 +630,7 @@ class BazaarBot
 		
 		var agentData = _mapAgents.get(best_id);
 		
-		var newAgent:StandardAgent = new StandardAgent(agent.id, agentData);
+		var newAgent:Agent = new StandardAgent(agent.id, agentData);
 		newAgent.init(this);
 		_agents[agent.id] = newAgent;
 		agent.destroy();
@@ -638,16 +638,16 @@ class BazaarBot
 	
 	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void
 	{
-		var seller:StandardAgent = _agents[seller_id];
-		var  buyer:StandardAgent = _agents[buyer_id];
+		var seller:Agent = _agents[seller_id];
+		var  buyer:Agent = _agents[buyer_id];
 		seller.changeInventory(good, -units);
 		 buyer.changeInventory(good,  units);
 	}
 	
 	private function transferMoney(amount:Float, seller_id:Int, buyer_id:Int):Void
 	{
-		var seller:StandardAgent = _agents[seller_id];
-		var  buyer:StandardAgent = _agents[buyer_id];
+		var seller:Agent = _agents[seller_id];
+		var  buyer:Agent = _agents[buyer_id];
 		seller.money += amount;
 		 buyer.money -= amount;
 	}

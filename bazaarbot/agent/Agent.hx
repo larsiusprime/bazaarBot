@@ -8,7 +8,7 @@ import bazaarbot.Inventory.InventoryData;
  * @author larsiusprime
  */
 @:allow(BazaarBot)
-class BasicAgent
+class Agent
 {
 	public var id:Int;				//unique integer identifier
 	public var className:String;	//string identifier, "famer", "woodcutter", etc.
