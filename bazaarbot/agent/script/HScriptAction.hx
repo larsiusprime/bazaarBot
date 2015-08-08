@@ -4,7 +4,7 @@ package bazaarbot.agent.script;
  * ...
  * @author 
  */
-class LogicAction
+class HScriptAction
 {
 	public var action:String;
 	public var targets:Array<String>;

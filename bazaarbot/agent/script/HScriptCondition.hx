@@ -1,10 +1,10 @@
-package bazaarbot.agent;
+package bazaarbot.agent.script;
 
 /**
  * ...
  * @author 
  */
-class Condition
+class HScriptCondition
 {
 	public var condition:String;
 	public var negated:Bool;

@@ -156,36 +156,36 @@ class BazaarBot
 	public function get_marketReport(rounds:Int):MarketReport
 	{
 		var mr:MarketReport = new MarketReport();
-		mr.str_list_commodity = "Commodities\n\n";
-		mr.str_list_commodity_prices = "Price\n\n";
-		mr.str_list_commodity_trades = "Trades\n\n";
-		mr.str_list_commodity_asks = "Supply\n\n";
-		mr.str_list_commodity_bids = "Demand\n\n";
+		mr.strListGood = "Commodities\n\n";
+		mr.strListGoodPrices = "Price\n\n";
+		mr.strListGoodTrades = "Trades\n\n";
+		mr.strListGoodAsks = "Supply\n\n";
+		mr.strListGoodBids = "Demand\n\n";
 		
-		mr.str_list_agent = "Classes\n\n";
-		mr.str_list_agent_count = "Count\n\n";
-		mr.str_list_agent_profit = "Profit\n\n";
-		mr.str_list_agent_money = "Money\n\n";
+		mr.strListAgent = "Classes\n\n";
+		mr.strListAgentCount = "Count\n\n";
+		mr.strListAgentProfit = "Profit\n\n";
+		mr.strListAgentMoney = "Money\n\n";
 		
-		mr.arr_str_list_inventory = [];
+		mr.arrStrListInventory = [];
 			
 		for (commodity in _goodTypes)
 		{
-			mr.str_list_commodity += commodity + "\n";
+			mr.strListGood += commodity + "\n";
 			
 			var price:Float = history.prices.average(commodity, rounds);
-			mr.str_list_commodity_prices += Quick.numStr(price, 2) + "\n";
+			mr.strListGoodPrices += Quick.numStr(price, 2) + "\n";
 			
 			var asks:Float = history.asks.average(commodity, rounds);
-			mr.str_list_commodity_asks += Std.int(asks) + "\n";
+			mr.strListGoodAsks += Std.int(asks) + "\n";
 			
 			var bids:Float = history.bids.average(commodity, rounds);
-			mr.str_list_commodity_bids += Std.int(bids) + "\n";
+			mr.strListGoodBids += Std.int(bids) + "\n";
 			
 			var trades:Float = history.trades.average(commodity, rounds);
-			mr.str_list_commodity_trades += Std.int(trades) + "\n";
+			mr.strListGoodTrades += Std.int(trades) + "\n";
 			
-			mr.arr_str_list_inventory.push(commodity + "\n\n");
+			mr.arrStrListInventory.push(commodity + "\n\n");
 		}
 		for (key in _mapAgents.keys())
 		{
@@ -194,9 +194,9 @@ class BazaarBot
 			{
 				inventory.push(0);
 			}
-			mr.str_list_agent += key + "\n";
+			mr.strListAgent += key + "\n";
 			var profit:Float = history.profit.average(key, rounds);
-			mr.str_list_agent_profit += Quick.numStr(profit, 2) + "\n";
+			mr.strListAgentProfit += Quick.numStr(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
 			var list = _agents.filter(function(a:Agent):Bool { return a.className == key; } );
@@ -216,11 +216,11 @@ class BazaarBot
 			for (lic in 0..._goodTypes.length)
 			{
 				inventory[lic] /= list.length;
-				mr.arr_str_list_inventory[lic] += Quick.numStr(inventory[lic],1) + "\n";
+				mr.arrStrListInventory[lic] += Quick.numStr(inventory[lic],1) + "\n";
 			}
 			
-			mr.str_list_agent_count += Quick.numStr(count, 0) + "\n";
-			mr.str_list_agent_money += Quick.numStr(money, 0) + "\n";
+			mr.strListAgentCount += Quick.numStr(count, 0) + "\n";
+			mr.strListAgentMoney += Quick.numStr(money, 0) + "\n";
 		}
 		return mr;
 	}	

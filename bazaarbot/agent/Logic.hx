@@ -4,7 +4,7 @@ import haxe.Json;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.Assets;
-import bazaarbot.agent.script.LogicNode;
+import bazaarbot.agent.script.HScriptNode;
 
 /**
  * ...
@@ -12,7 +12,6 @@ import bazaarbot.agent.script.LogicNode;
  */
 class Logic
 {
-	
 	private var init:Bool = false;
 	
 	public function new(?data:Dynamic) 

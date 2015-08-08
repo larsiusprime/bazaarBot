@@ -2,7 +2,7 @@ package bazaarbot.agent.script;
 import bazaarbot.BazaarBot;
 import bazaarbot.agent.Agent;
 import haxe.Json;
-import bazaarbot.agent.script.LogicNode;
+import bazaarbot.agent.script.HScriptNode;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.Assets;
@@ -15,7 +15,7 @@ class LogicHScript extends Logic
 {
 	var script:String = "";
 	var source:String;
-	var root:LogicNode;
+	var root:HScriptNode;
 	
 	public function new(?data:Dynamic) 
 	{
@@ -28,7 +28,7 @@ class LogicHScript extends Logic
 		else
 		{
 			source = Json.stringify(data);
-			root = new LogicNode(data);
+			root = new HScriptNode(data);
 		}
 	}
 	
@@ -44,7 +44,7 @@ class LogicHScript extends Logic
 		}
 	}
 	
-	private function _evaluate(curr_node:LogicNode, agent:Agent):Bool 
+	private function _evaluate(curr_node:HScriptNode, agent:Agent):Bool 
 	{
 		//Fail on the first condition that is false
 		for (c in curr_node.conditions)
@@ -82,7 +82,7 @@ class LogicHScript extends Logic
 	 * @param	agent
 	 */
 	
-	private function _perform(curr_node:LogicNode, agent:Agent):Void 
+	private function _perform(curr_node:HScriptNode, agent:Agent):Void 
 	{
 		if (!curr_node.isLeaf)								//If not a leaf node
 		{
@@ -103,7 +103,7 @@ class LogicHScript extends Logic
 		}
 		else
 		{												//Do the actions
-			var act:LogicAction;
+			var act:HScriptAction;
 			for (act in curr_node.actions)
 			{
 				var i:Int;
