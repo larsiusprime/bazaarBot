@@ -4,7 +4,7 @@ package bazaarbot.agent;
  * ...
  * @author 
  */
-class AgentCondition
+class Condition
 {
 	public var condition:String;
 	public var negated:Bool;

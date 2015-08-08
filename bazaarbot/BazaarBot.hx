@@ -1,7 +1,8 @@
 package bazaarbot;
 import bazaarbot.agent.Agent;
 import bazaarbot.agent.Agent.AgentData;
-import bazaarbot.agent.StandardAgent;
+import bazaarbot.agent.AgentHScript;
+import bazaarbot.agent.Logic;
 import haxe.Json;
 import haxe.xml.Fast;
 import flash.errors.Error;
@@ -21,9 +22,7 @@ class BazaarBot
 	public function new() 
 	{
 		history = new History();
-		
 		_book = new TradeBook();
-		
 		_goodTypes = new Array<String>();
 		_agents = new Array<Agent>();
 		_mapGoods = new Map<String, Good>();
@@ -62,7 +61,7 @@ class BazaarBot
 				agent.moneyLastRound = agent.money;
 				
 				var ac = _mapAgents.get(agent.className);
-				ac.logic.perform(agent,this);
+				agent.getLogic(ac.logic).perform(agent, this);
 				
 				for (commodity in _goodTypes)
 				{
@@ -240,6 +239,7 @@ class BazaarBot
 	private var _agents:Array<Agent>;
 	private var _book:TradeBook;
 	private var _mapAgents:Map<String, AgentData>;
+	private var _mapAgentLogic:Map<String, Logic>;
 	private var _mapGoods:Map<String, Good>;
 	
 	private function fromData(data:BazaarBotData)
@@ -370,7 +370,7 @@ class BazaarBot
 			
 			for (i in 0...val)
 			{
-				var a:Agent = new StandardAgent(agentIndex, agentData);
+				var a:Agent = new AgentHScript(agentIndex, agentData);
 				a.init(this);
 				_agents.push(a);
 				agentIndex++;
@@ -630,7 +630,7 @@ class BazaarBot
 		
 		var agentData = _mapAgents.get(best_id);
 		
-		var newAgent:Agent = new StandardAgent(agent.id, agentData);
+		var newAgent:Agent = new AgentHScript(agent.id, agentData);
 		newAgent.init(this);
 		_agents[agent.id] = newAgent;
 		agent.destroy();

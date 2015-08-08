@@ -5,10 +5,10 @@ import bazaarbot.Offer;
 import flash.geom.Point;
 
 /**
- * ...
+ * An agent that performs the basic logic from the Doran & Parberry article
  * @author 
  */
-class StandardAgent extends Agent
+class AgentStandard extends Agent
 {
 	public static inline var SIGNIFICANT:Float = 0.25;		//25% more or less is "significant"
 	public static inline var SIG_IMBALANCE:Float = 0.33;

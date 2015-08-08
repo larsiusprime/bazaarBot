@@ -122,7 +122,7 @@ class Agent
 				start:new Map<String, Float>(),
 				size:new Map<String, Float>()
 			},
-			logic:null
+			logic:data.logic
 		}
 		
 		var inventory_ideal_ids = Reflect.fields(data.inventory.ideal);
@@ -143,21 +143,8 @@ class Agent
 			agentData.inventory.size.set(istr, Reflect.field(data.inventory.size, istr));
 		}
 		
-		var script:String = "";
-		if (Reflect.hasField(data, "script"))
-		{
-			var script_id:String = data.script;
-			script = Assets.getText("assets/data/scripts/" + script_id);
-		}
+		//agentData.logic = getLogic(data);
 		
-		if (script != "")
-		{
-			agentData.logic = new AgentLogic(script);
-		}
-		else
-		{
-			agentData.logic = new AgentLogic(data.logic);
-		}
 		return agentData;
 	}
 
@@ -178,6 +165,12 @@ class Agent
 	private function get_profit():Float
 	{
 		return money - moneyLastRound;
+	}
+	
+	private function getLogic(str:String):Logic
+	{
+		//no implemenation -- provide your own in a subclass
+		return null;
 	}
 	
 	private function determinePriceOf(commodity_:String):Float
@@ -242,6 +235,6 @@ typedef AgentData = {
 	className:String,
 	money:Float,
 	inventory:InventoryData,
-	logic:AgentLogic,
+	logic:String,
 	?lookBack:Int
 }

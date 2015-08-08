@@ -1,10 +1,10 @@
-package bazaarbot.agent;
+package bazaarbot.agent.script;
 
 /**
  * ...
  * @author 
  */
-class AgentLogicResult
+class LogicResult
 {
 
 	public function new() 

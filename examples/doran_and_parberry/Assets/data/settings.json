@@ -24,7 +24,7 @@
 				"ideal":{"food":0,"tools":1,"wood":3},
 				"max_size":20
 			},
-			"script":"logic_farmer.hs"
+			"logic":"farmer.hs"
 		},
 		{
 			"id":"miner",
@@ -34,7 +34,7 @@
 				"ideal":{"food":3,"tools":1},
 				"max_size":20
 			},
-			"script":"logic_miner.hs"
+			"logic":"miner.hs"
 		},
 		{
 			"id":"refiner",
@@ -44,7 +44,7 @@
 				"ideal":{"food":3,"tools":1,"ore":5},
 				"max_size":20
 			},
-			"script":"logic_refiner.hs"
+			"logic":"refiner.hs"
 		},
 		{
 			"id":"woodcutter",
@@ -54,7 +54,7 @@
 				"ideal":{"food":3,"tools":1,"wood":0},
 				"max_size":20
 			},
-			"script":"logic_woodcutter.hs"
+			"logic":"woodcutter.hs"
 		},
 		{
 			"id":"blacksmith",
@@ -64,7 +64,7 @@
 				"ideal":{"food":3,"tools":1,"metal":5},
 				"max_size":20
 			},
-			"script":"logic_blacksmith.hs"
+			"logic":"blacksmith.hs"
 		}
 	]
 }

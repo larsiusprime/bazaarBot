@@ -1,10 +1,10 @@
-package bazaarbot.agent;
+package bazaarbot.agent.script;
 
 /**
  * ...
  * @author 
  */
-class AgentLogicAction
+class LogicAction
 {
 	public var action:String;
 	public var targets:Array<String>;

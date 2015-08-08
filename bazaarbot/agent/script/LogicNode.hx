@@ -1,21 +1,21 @@
-package bazaarbot.agent;
+package bazaarbot.agent.script;
 
 /**
  * ...
  * @author 
  */
-class AgentLogicNode
+class LogicNode
 {
 	public var isLeaf:Bool = false;		//if it's a leaf node, it should only have actions
 										//if it's a branch node, it should only have conditions/params
 	
-	public var conditions:Array<AgentCondition>;
+	public var conditions:Array<Condition>;
 	public var params:Array<Dynamic>;
 	
-	public var node_true:AgentLogicNode;
-	public var node_false:AgentLogicNode;
+	public var node_true:LogicNode;
+	public var node_false:LogicNode;
 	
-	public var actions:Array<AgentLogicAction>;		
+	public var actions:Array<LogicAction>;		
 		
 	public function new(data:Dynamic=null) 
 	{
@@ -25,21 +25,21 @@ class AgentLogicNode
 				var list_conditions:Array<Dynamic> = data.condition;
 				conditions = [];
 				for (cond in list_conditions) {
-					conditions.push(new AgentCondition(cond));
+					conditions.push(new Condition(cond));
 				}				
 				params = data.param;			
 				if(Reflect.hasField(data,"if_true")){
-					node_true = new AgentLogicNode(data.if_true);
+					node_true = new LogicNode(data.if_true);
 				}
 				if (Reflect.hasField(data, "if_false")) {
-					node_false = new AgentLogicNode(data.if_false);
+					node_false = new LogicNode(data.if_false);
 				}
 			}else {
 				isLeaf = true;
 				var list_actions:Array<Dynamic> = data.action;
 				actions = [];
 				for (a in list_actions) {
-					actions.push(new AgentLogicAction(a));
+					actions.push(new LogicAction(a));
 				}
 			}
 		}
