@@ -52,17 +52,17 @@ class Agent
 	}
 	
 	public function init(bazaar:BazaarBot):Void {
-		var list_commodities = bazaar.get_commodities_unsafe();
+		var list_commodities = bazaar.getGoods_unsafe();
 		for (str in list_commodities) {
 			var trades:Array<Float> = new Array<Float>();
 			
-			var price:Float = bazaar.getAverageHistoricalPrice(str, _lookback);					
-			trades.push(price * 0.5);			
+			var price:Float = bazaar.getAverageHistoricalPrice(str, _lookback);
+			trades.push(price * 0.5);
 			trades.push(price * 1.5);	//push two fake trades to generate a range
 			
 			//set initial price belief & observed trading range
-			_observed_trading_range.set(str, trades);						
-			_price_beliefs.set(str, new Point(price * 0.5, price * 1.5));	
+			_observed_trading_range.set(str, trades);
+			_price_beliefs.set(str, new Point(price * 0.5, price * 1.5));
 		}
 	}
 	

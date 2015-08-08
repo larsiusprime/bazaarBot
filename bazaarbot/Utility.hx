@@ -7,31 +7,64 @@ package bazaarbot;
 class Utility
 {
 
+	public static inline function avgf(a:Float, b:Float):Float
+	{
+		return (a + b) / 2;
+	}
+	
+	public static function listAvgf(list:Array<Float>):Float
+	{
+		var avg:Float = 0;
+		for (j in 0...list.length)
+		{
+			avg += list[j];
+		}
+		avg /= list.length;
+		return avg;
+	}
+	
+	/**
+	 * Turns a number into a string with the specified number of decimal points
+	 * @param	num
+	 * @param	decimals
+	 * @return
+	 */
 	public static function numStr(num:Float, decimals:Int):String
 	{
 		var tens:Float = 1;
-		for(i in 0...decimals) {
+		for (i in 0...decimals)
+		{
 			tens *= 10;
 		}
 		num = Math.floor(num * tens) / tens;
 		var str:String = Std.string(num);
 		var split = str.split(".");
-		if (split.length == 2) {
-			if (split[1].length < decimals) {
+		if (split.length == 2)
+		{
+			if (split[1].length < decimals)
+			{
 				var diff:Int = decimals - split[1].length;
-				for (i in 0...diff) {
+				for (i in 0...diff)
+				{
 					str += "0";
 				}
 			}
-			if(decimals > 0){
+			if (decimals > 0)
+			{
 				str = split[0] + "." + split[1].substr(0, decimals);
-			}else {
+			}
+			else
+			{
 				str = split[0];
-			}			
-		}else {
-			if(decimals > 0){
+			}
+		}
+		else
+		{
+			if (decimals > 0)
+			{
 				str += ".";
-				for (i in 0...decimals) {
+				for (i in 0...decimals)
+				{
 					str += "0";
 				}
 			}
@@ -39,28 +72,9 @@ class Utility
 		return str;
 	}
 	
-	public static inline function avgf(a:Float, b:Float):Float
-	{
-		return (a + b) / 2;
-	}
-	
 	public static inline function randomInteger(min:Int, max:Int):Int
 	{
 		return Std.int(Math.random() * cast(1 + max - min, Float)) + min;
-	}
-	
-	public static function sortAgentAlpha(a:Agent, b:Agent):Int
-	{
-		if (a.class_id < b.class_id) return -1;
-		if (a.class_id > b.class_id) return 1;
-		return 0;
-	}
-	
-	public static function sortAgentId(a:Agent, b:Agent):Int
-	{
-		if (a.id < b.id) return -1;
-		if (a.id > b.id) return 1;
-		return 0;
 	}
 	
 	public static function shuffle(list:Array<Offer>):Array<Offer>
@@ -83,6 +97,20 @@ class Utility
 			}
 		}
 		return list;
+	}
+	
+	public static function sortAgentAlpha(a:Agent, b:Agent):Int
+	{
+		if (a.class_id < b.class_id) return -1;
+		if (a.class_id > b.class_id) return 1;
+		return 0;
+	}
+	
+	public static function sortAgentId(a:Agent, b:Agent):Int
+	{
+		if (a.id < b.id) return -1;
+		if (a.id > b.id) return 1;
+		return 0;
 	}
 	
 	public static function sortDecreasingPrice(a:Offer, b:Offer):Int
