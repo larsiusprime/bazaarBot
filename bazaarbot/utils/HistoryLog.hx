@@ -1,5 +1,5 @@
-package bazaarbot;
-import bazaarbot.EconNoun;
+package bazaarbot.utils;
+import bazaarbot.utils.EconNoun;
 
 /**
  * ...

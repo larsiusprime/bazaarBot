@@ -1,6 +1,6 @@
 package jobs;
 import bazaarbot.BazaarBot;
-import bazaarbot.agent.Agent;
+import bazaarbot.Agent;
 import bazaarbot.agent.Logic;
 
 /**

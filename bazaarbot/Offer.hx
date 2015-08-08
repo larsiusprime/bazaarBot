@@ -19,13 +19,8 @@ class Offer
 		unit_price = unit_price_;
 	}
 	
-	public function toString():String {
+	public function toString():String
+	{
 		return "("+agent_id + "): " + good + "x " + units + " @ " + unit_price;
 	}
-	
-	/*public function copy():Offer {
-		return new Offer(agent_id, commodity_, units_, unit_price);
-	}*/
-
-	
 }

@@ -1,6 +1,6 @@
 package bazaarbot.agent;
-import bazaarbot.agent.Agent.AgentData;
-import bazaarbot.agent.LogicHScript;
+import bazaarbot.Agent.AgentData;
+import bazaarbot.agent.script.LogicHScript;
 import openfl.Assets;
 
 /**

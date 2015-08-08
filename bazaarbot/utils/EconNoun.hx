@@ -1,4 +1,4 @@
-package bazaarbot;
+package bazaarbot.utils;
 
 /**
  * @author larsiusprime

@@ -4,7 +4,7 @@ package bazaarbot;
  * ...
  * @author larsiusprime
  */
-class World
+class Economy
 {
 	public function new() 
 	{

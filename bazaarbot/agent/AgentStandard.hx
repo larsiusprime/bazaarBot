@@ -1,5 +1,5 @@
 package bazaarbot.agent;
-import bazaarbot.agent.Agent.AgentData;
+import bazaarbot.Agent.AgentData;
 import bazaarbot.BazaarBot;
 import bazaarbot.Offer;
 import flash.geom.Point;

@@ -1,7 +1,7 @@
-package bazaarbot.agent;
+package bazaarbot.agent.script;
 import bazaarbot.agent.script.HScriptAction;
 import bazaarbot.BazaarBot;
-import bazaarbot.agent.Agent;
+import bazaarbot.Agent;
 import haxe.Json;
 import bazaarbot.agent.script.HScriptNode;
 import hscript.Interp;

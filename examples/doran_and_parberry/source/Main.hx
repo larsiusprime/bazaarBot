@@ -1,8 +1,8 @@
 package;
 
 import bazaarbot.agent.Logic;
-import bazaarbot.agent.LogicHScript;
-import bazaarbot.Quick;
+import bazaarbot.agent.script.LogicHScript;
+import bazaarbot.utils.Quick;
 import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;

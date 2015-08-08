@@ -1,7 +1,7 @@
 package;
 
 import bazaarbot.BazaarBot;
-import bazaarbot.MarketReport;
+import bazaarbot.utils.MarketReport;
 import flash.display.Sprite;
 import flash.text.TextField;
 import flash.text.TextFormatAlign;

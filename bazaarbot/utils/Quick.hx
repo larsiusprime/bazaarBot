@@ -1,5 +1,5 @@
-package bazaarbot;
-import bazaarbot.agent.Agent;
+package bazaarbot.utils;
+import bazaarbot.Agent;
 
 /**
  * ...

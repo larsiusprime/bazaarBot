@@ -1,7 +1,11 @@
-package bazaarbot.agent;
+package bazaarbot;
+import bazaarbot.agent.Inventory;
+import bazaarbot.utils.EconNoun;
+import bazaarbot.utils.Quick;
 import openfl.Assets;
 import openfl.geom.Point;
-import bazaarbot.Inventory.InventoryData;
+import bazaarbot.agent.Inventory.InventoryData;
+import bazaarbot.agent.Logic;
 
 /**
  * ...

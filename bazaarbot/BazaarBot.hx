@@ -1,8 +1,12 @@
 package bazaarbot;
-import bazaarbot.agent.Agent;
-import bazaarbot.agent.Agent.AgentData;
+import bazaarbot.Agent;
+import bazaarbot.Agent.AgentData;
 import bazaarbot.agent.AgentHScript;
 import bazaarbot.agent.Logic;
+import bazaarbot.utils.History;
+import bazaarbot.utils.MarketReport;
+import bazaarbot.utils.Quick;
+import bazaarbot.utils.TradeBook;
 import haxe.Json;
 import haxe.xml.Fast;
 import flash.errors.Error;
@@ -44,7 +48,7 @@ class BazaarBot
 		return _agents.length;
 	}
 	
-	@:access(bazaarbot.agent.Agent)
+	@:access(bazaarbot.Agent)
 	public function simulate(rounds:Int):Void
 	{
 		for (round in 0...rounds)
