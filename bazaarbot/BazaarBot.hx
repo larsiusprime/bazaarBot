@@ -12,13 +12,14 @@ import openfl.Assets;
  */
 class BazaarBot
 {
+	/**Logs information about all economic activity in this market**/
 	public var history:History;
 	
 	public function new() 
 	{
 		history = new History();
 		
-		list_commodities = new Array<String>();
+		goods = new Array<String>();
 		_map_commodities = new Map<String, Commodity>();
 		
 		_agent_classes = new Map<String, AgentClass>();
@@ -41,7 +42,7 @@ class BazaarBot
 	}
 	
 	public function num_commodities():Int {
-		return list_commodities.length;
+		return goods.length;
 	}
 	
 	public function num_agents():Int {
@@ -57,7 +58,7 @@ class BazaarBot
 		//Create commodity index
 		var list:Array<Dynamic> = data.commodities;
 		for(c in list) {
-			list_commodities.push(c.id);
+			goods.push(c.id);
 			_map_commodities.set(c.id, new Commodity(c.id, c.size));
 			
 			history.register(c.id);
@@ -119,11 +120,11 @@ class BazaarBot
 				var ac:AgentClass = _agent_classes.get(agent.class_id);
 				ac.logic.perform(agent,this);
 				
-				for (commodity in list_commodities) {
+				for (commodity in goods) {
 					agent.generate_offers(this, commodity);
 				}
 			}
-			for(commodity in list_commodities){
+			for(commodity in goods){
 				resolve_offers(commodity);
 			}
 			for (agent in list_agents) {
@@ -161,7 +162,7 @@ class BazaarBot
 	{
 		var best_price:Float = 999999999999999999;
 		var best_commodity:String = "";
-		for (c in list_commodities) {
+		for (c in goods) {
 			if(c != not_this){
 				var price:Float = history.prices.average(c, range);
 				if (price < best_price) { best_price = price; best_commodity = c; }
@@ -174,7 +175,7 @@ class BazaarBot
 	{
 		var best_price:Float = 0;
 		var best_commodity:String = "";
-		for (c in list_commodities)
+		for (c in goods)
 		{
 			if (exclude == null || exclude.indexOf(c) == -1)
 			{
@@ -187,7 +188,7 @@ class BazaarBot
 	
 	public function get_commodities_unsafe():Array<String>
 	{
-		return list_commodities;
+		return goods;
 	}
 	
 	public function get_commodity_entry(str:String):Commodity
@@ -216,7 +217,7 @@ class BazaarBot
 		
 		mr.arr_str_list_inventory = [];
 			
-		for (commodity in list_commodities) {
+		for (commodity in goods) {
 			mr.str_list_commodity += commodity + "\n";
 			
 			var price:Float = history.prices.average(commodity, rounds);
@@ -236,7 +237,7 @@ class BazaarBot
 		for (key in _agent_classes.keys())
 		{
 			var inventory:Array<Float> = [];
-			for (str in list_commodities)
+			for (str in goods)
 			{
 				inventory.push(0);
 			}
@@ -251,13 +252,13 @@ class BazaarBot
 			
 			for (a in list) {
 				money += a.get_money();
-				for (lic in 0...list_commodities.length) {
-					inventory[lic] += a.query_inventory(list_commodities[lic]);
+				for (lic in 0...goods.length) {
+					inventory[lic] += a.query_inventory(goods[lic]);
 				}
 			}		
 						
 			money /= list.length;
-			for (lic in 0...list_commodities.length) {
+			for (lic in 0...goods.length) {
 				inventory[lic] /= list.length;
 				mr.arr_str_list_inventory[lic] += num_str(inventory[lic],1) + "\n";
 			}
@@ -272,7 +273,7 @@ class BazaarBot
 	
 	private var _round_num:Int = 0;
 	
-	private var list_commodities:Array<String>;			//list of string ids for all the legal commodities
+	private var goods:Array<String>;			//list of string ids for all the legal commodities
 	private var list_agents:Array<Agent>;
 	private var book_bids:Map<String, Array<Offer>>;
 	private var book_asks:Map<String, Array<Offer>>;
@@ -322,7 +323,7 @@ class BazaarBot
 				seller.units -= quantity_traded;
 				buyer.units -= quantity_traded;
 							
-				transfer_commodity(commodity_, quantity_traded, seller.agent_id, buyer.agent_id);
+				transferGood(commodity_, quantity_traded, seller.agent_id, buyer.agent_id);
 				transfer_money(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 									
 				//update agent price beliefs based on successful transaction
@@ -457,12 +458,13 @@ class BazaarBot
 		return best_class;
 	}
 	
-	private function get_agent_class_with_most(commodity_:String):String {
+	private function getAgentClassWithMost(good:String):String
+	{
 		var amount:Float = 0;
 		var best_amount:Float = 0;
 		var best_class:String = "";
 		for (key in _agent_classes.keys()) {
-			amount = get_avg_inventory(key, commodity_);
+			amount = getAverageInventory(key, good);
 			if (amount > best_amount) {
 				best_amount = amount;
 				best_class = key;
@@ -471,7 +473,8 @@ class BazaarBot
 		return best_class;
 	}
 	
-	private function get_avg_inventory(agent_id:String, commodity_:String):Float {
+	private function getAverageInventory(agent_id:String, commodity_:String):Float
+	{
 		var list = list_agents.filter(function(a:Agent):Bool { return a.class_id == agent_id; } );
 		var amount:Float = 0;
 		for (agent in list) {
@@ -491,9 +494,9 @@ class BazaarBot
 	private function get_best_market_opportunity(minimum:Float=1.5,range:Int = 10):String {
 		var best_market:String = "";
 		var best_ratio:Float = -999999;
-		for(commodity in list_commodities){
-			var asks:Float = history.asks.average(commodity, range);
-			var bids:Float = history.bids.average(commodity, range);
+		for(good in goods){
+			var asks:Float = history.asks.average(good, range);
+			var bids:Float = history.bids.average(good, range);
 			var ratio:Float = 0;
 			if (asks == 0 && bids > 0) {
 				ratio = 9999999999999999;	
@@ -502,7 +505,7 @@ class BazaarBot
 			}
 			if (ratio > minimum && ratio > best_ratio) {
 				best_ratio = ratio;
-				best_market = commodity;
+				best_market = good;
 			}
 		}
 		return best_market;
@@ -531,22 +534,24 @@ class BazaarBot
 		return null;
 	}
 	
-	private function transfer_commodity(commodity_:String, units_:Float, seller_id:Int, buyer_id:Int):Void {
-		var seller:Agent = list_agents[seller_id];
-		var buyer:Agent = list_agents[buyer_id];
-		seller.change_inventory(commodity_, -units_);
-		buyer.change_inventory(commodity_, units_);
-	}
-	
-	private function transfer_money(amount_:Float, seller_id:Int, buyer_id:Int):Void
+	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void
 	{
 		var seller:Agent = list_agents[seller_id];
-		var buyer:Agent = list_agents[buyer_id];
-		seller.money += amount_;
-		buyer.money -= amount_;
+		var  buyer:Agent = list_agents[buyer_id];
+		seller.change_inventory(good, -units);
+		 buyer.change_inventory(good,  units);
 	}
 	
-	private static function sort_agent_id(a:Agent, b:Agent):Int {
+	private function transfer_money(amount:Float, seller_id:Int, buyer_id:Int):Void
+	{
+		var seller:Agent = list_agents[seller_id];
+		var  buyer:Agent = list_agents[buyer_id];
+		seller.money += amount;
+		 buyer.money -= amount;
+	}
+	
+	private static function sort_agent_id(a:Agent, b:Agent):Int
+	{
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
 		return 0;
