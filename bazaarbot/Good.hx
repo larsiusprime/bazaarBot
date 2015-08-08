@@ -5,9 +5,9 @@ package bazaarbot;
  * @author 
  */
  
-class Commodity
+class Good
 {
-	public var id:String = "";		//string id of commodity
+	public var id:String = "";		//string id of good
 	public var size:Float = 1.0;	//inventory size taken up
 	
 	public function new(id_:String,size_:Float) 
@@ -16,8 +16,9 @@ class Commodity
 		size = size_;
 	}
 
-	public function copy():Commodity {
-		return new Commodity(id,size);
+	public function copy():Good
+	{
+		return new Good(id,size);
 	}
 }
  

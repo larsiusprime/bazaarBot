@@ -20,7 +20,7 @@ class BazaarBot
 		history = new History();
 		
 		goods = new Array<String>();
-		_map_commodities = new Map<String, Commodity>();
+		_map_commodities = new Map<String, Good>();
 		
 		_agent_classes = new Map<String, AgentClass>();
 		agents = new Array<Agent>();
@@ -61,17 +61,18 @@ class BazaarBot
 		
 		//Create commodity index
 		var list:Array<Dynamic> = data.commodities;
-		for(c in list) {
-			goods.push(c.id);
-			_map_commodities.set(c.id, new Commodity(c.id, c.size));
+		for (g in list)
+		{
+			goods.push(g.id);
+			_map_commodities.set(g.id, new Good(g.id, g.size));
 			
-			history.register(c.id);
-			history.prices.add(c.id, 1.0);	//start the bidding at $1!
-			history.asks.add(c.id, 1.0);	//start history charts with 1 fake buy/sell bid
-			history.bids.add(c.id, 1.0);
-			history.trades.add(c.id, 1.0);
+			history.register(g.id);
+			history.prices.add(g.id, 1.0);	//start the bidding at $1!
+			history.asks.add(g.id, 1.0);	//start history charts with 1 fake buy/sell bid
+			history.bids.add(g.id, 1.0);
+			history.trades.add(g.id, 1.0);
 			
-			book.register(c.id);
+			book.register(g.id);
 		}
 		
 		//Create agent classes
@@ -82,7 +83,7 @@ class BazaarBot
 			a.inventory.size = { };
 			for (key in _map_commodities.keys())
 			{
-				var c:Commodity = _map_commodities.get(key);
+				var c:Good = _map_commodities.get(key);
 				Reflect.setField(a.inventory.size, c.id, c.size);
 			}
 			var ac:AgentClass = new AgentClass(a);
@@ -195,7 +196,7 @@ class BazaarBot
 		return goods;
 	}
 	
-	public function get_commodity_entry(str:String):Commodity
+	public function get_commodity_entry(str:String):Good
 	{
 		if (_map_commodities.exists(str))
 		{
@@ -287,7 +288,7 @@ class BazaarBot
 	
 	private var _agent_classes:Map<String, AgentClass>;
 	
-	private var _map_commodities:Map<String, Commodity>;
+	private var _map_commodities:Map<String, Good>;
 	
 	private function resolveOffers(good:String = ""):Void
 	{
