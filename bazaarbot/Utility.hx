@@ -78,6 +78,15 @@ class Utility
 		return Std.int(Math.random() * cast(1 + max - min, Float)) + min;
 	}
 	
+	public static inline function randomRange(a:Float, b:Float):Float
+	{
+		var r:Float = Math.random();
+		var min:Float = a < b ? a : b;
+		var max:Float = a < b ? b : a;
+		var range:Float = max - min;
+		return r * range + min;
+	}
+	
 	public static function shuffle(list:Array<Offer>):Array<Offer>
 	{
 		/*
