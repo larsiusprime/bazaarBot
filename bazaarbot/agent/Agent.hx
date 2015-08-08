@@ -76,8 +76,8 @@ class Agent
 			 }
 		}else {
 			var shortage:Float = _inventory.shortage(commodity);
-			var space:Float = _inventory.get_space_empty();
-			var unit_size:Float = _inventory.get_size_of(commodity);
+			var space:Float = _inventory.getEmptySpace();
+			var unit_size:Float = _inventory.getCapacityFor(commodity);
 			
 			if (shortage > 0 && space >= unit_size) {	
 				var limit:Float = 0;
@@ -200,7 +200,7 @@ class Agent
 	}
 	
 	public function get_inventory_space():Float {
-		return _inventory.get_space_empty();
+		return _inventory.getEmptySpace();
 	}
 	
 	public function query_inventory(commodity_:String):Float {

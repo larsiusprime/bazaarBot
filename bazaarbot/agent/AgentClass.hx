@@ -59,11 +59,26 @@ class AgentClass
 	
 	public function getStartInventory():Inventory {
 		var i:Inventory = new Inventory();
-		i.set_ideal(inventory_ideal_ids, inventory_ideal_amounts);
-		i.set_stuff(inventory_start_ids, inventory_start_amounts);
-		i.set_sizes(inventory_size_ids, inventory_size_amounts);
-		i.max_size = inventory_size;
+		i.setIdeal(inventory_ideal_ids, inventory_ideal_amounts);
+		i.setStuff(inventory_start_ids, inventory_start_amounts);
+		i.setSizes(inventory_size_ids, inventory_size_amounts);
+		i.maxSize = inventory_size;
 		return i;
 	}
 	
+}
+
+
+typedef AgentData = {
+	id:Int,
+	money:Int,
+	inventory:InventoryData,
+	logic:AgentLogic
+}
+
+typedef InventoryData = {
+	maxSize:Float,
+	ideal:Map<String, Float>,
+	start:Map<String, Float>,
+	size:Map<String, Float>
 }
