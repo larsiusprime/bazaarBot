@@ -1,8 +1,8 @@
 package;
 
 import bazaarbot.Agent;
-import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentStandard;
+import bazaarbot.agent.BasicAgent;
+import bazaarbot.agent.BasicAgent.AgentData;
 import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
 import bazaarbot.agent.LogicScript;
@@ -46,16 +46,16 @@ class Main extends Sprite
 		makeButtons();
 	}
 	
-	private function getAgentScript(data:AgentData):Agent
+	private function getAgentScript(data:AgentData):BasicAgent
 	{
 		data.logic = new LogicScript(data.logicName+".hs");
-		return new AgentStandard(0, data);
+		return new Agent(0, data);
 	}
 	
-	private function getAgent(data:AgentData):Agent
+	private function getAgent(data:AgentData):BasicAgent
 	{
 		data.logic = getLogic(data.logicName);
-		return new AgentStandard(0, data);
+		return new Agent(0, data);
 	}
 	
 	private function getLogic(str:String):Logic

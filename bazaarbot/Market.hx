@@ -1,6 +1,6 @@
 package bazaarbot;
-import bazaarbot.Agent;
-import bazaarbot.Agent.AgentData;
+import bazaarbot.agent.BasicAgent;
+import bazaarbot.agent.BasicAgent.AgentData;
 import bazaarbot.agent.Logic;
 import bazaarbot.utils.History;
 import bazaarbot.utils.MarketReport;
@@ -27,7 +27,7 @@ class Market
 		history = new History();
 		_book = new TradeBook();
 		_goodTypes = new Array<String>();
-		_agents = new Array<Agent>();
+		_agents = new Array<BasicAgent>();
 		_mapGoods = new Map<String, Good>();
 		_mapAgents = new Map<String, AgentData>();
 	}
@@ -47,7 +47,7 @@ class Market
 		return _agents.length;
 	}
 	
-	@:access(bazaarbot.Agent)
+	@:access(bazaarbot.agent.BasicAgent)
 	public function simulate(rounds:Int):Void
 	{
 		for (round in 0...rounds)
@@ -199,7 +199,7 @@ class Market
 			mr.strListAgentProfit += Quick.numStr(profit, 2) + "\n";
 			
 			var test_profit:Float = 0;
-			var list = _agents.filter(function(a:Agent):Bool { return a.className == key; } );
+			var list = _agents.filter(function(a:BasicAgent):Bool { return a.className == key; } );
 			var count:Int = list.length;
 			var money:Float = 0;
 			
@@ -230,7 +230,7 @@ class Market
 	private var _roundNum:Int = 0;
 	
 	private var _goodTypes:Array<String>;		//list of string ids for all the legal commodities
-	private var _agents:Array<Agent>;
+	private var _agents:Array<BasicAgent>;
 	private var _book:TradeBook;
 	private var _mapAgents:Map<String, AgentData>;
 	private var _mapGoods:Map<String, Good>;
@@ -308,7 +308,7 @@ class Market
 	
 	private function getAverageInventory(className:String, good:String):Float
 	{
-		var list = _agents.filter(function(a:Agent):Bool { return a.className == className; } );
+		var list = _agents.filter(function(a:BasicAgent):Bool { return a.className == className; } );
 		var amount:Float = 0;
 		for (agent in list)
 		{
@@ -411,8 +411,8 @@ class Market
 				transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
 				
 				//update agent price beliefs based on successful transaction
-				var buyer_a:Agent = _agents[buyer.agent_id];
-				var seller_a:Agent = _agents[seller.agent_id];
+				var buyer_a:BasicAgent = _agents[buyer.agent_id];
+				var seller_a:BasicAgent = _agents[seller.agent_id];
 				buyer_a.updatePriceModel(this, "buy", good, true, clearing_price);
 				seller_a.updatePriceModel(this, "sell", good, true, clearing_price);
 				
@@ -446,14 +446,14 @@ class Market
 		while (bids.length > 0)
 		{
 			var buyer:Offer = bids[0];
-			var buyer_a:Agent = _agents[buyer.agent_id];
+			var buyer_a:BasicAgent = _agents[buyer.agent_id];
 			buyer_a.updatePriceModel(this,"buy",good, false);
 			bids.splice(0, 1);
 		}
 		while (asks.length > 0)
 		{
 			var seller:Offer = asks[0];
-			var seller_a:Agent = _agents[seller.agent_id];
+			var seller_a:BasicAgent = _agents[seller.agent_id];
 			seller_a.updatePriceModel(this,"sell",good, false);
 			asks.splice(0, 1);
 		}
@@ -485,7 +485,7 @@ class Market
 		
 		for (i in 0..._agents.length)
 		{
-			var a:Agent = _agents[i];		//get current agent
+			var a:BasicAgent = _agents[i];		//get current agent
 			curr_class = a.className;			//check its class
 			if (curr_class != last_class)		//new class?
 			{
@@ -508,7 +508,7 @@ class Market
 		
 	}
 	
-	private function replaceAgent(agent:Agent):Void
+	private function replaceAgent(agent:BasicAgent):Void
 	{
 		/*
 		var best_id:String = getMostProfitableAgentClass();
@@ -536,16 +536,16 @@ class Market
 	
 	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void
 	{
-		var seller:Agent = _agents[seller_id];
-		var  buyer:Agent = _agents[buyer_id];
+		var seller:BasicAgent = _agents[seller_id];
+		var  buyer:BasicAgent = _agents[buyer_id];
 		seller.changeInventory(good, -units);
 		 buyer.changeInventory(good,  units);
 	}
 	
 	private function transferMoney(amount:Float, seller_id:Int, buyer_id:Int):Void
 	{
-		var seller:Agent = _agents[seller_id];
-		var  buyer:Agent = _agents[buyer_id];
+		var seller:BasicAgent = _agents[seller_id];
+		var  buyer:BasicAgent = _agents[buyer_id];
 		seller.money += amount;
 		 buyer.money -= amount;
 	}

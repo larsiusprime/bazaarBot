@@ -1,5 +1,5 @@
 package jobs;
-import bazaarbot.Agent;
+import bazaarbot.agent.BasicAgent;
 import bazaarbot.Market;
 /**
  * ...
@@ -13,7 +13,7 @@ class LogicWoodcutter extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, market:Market) 
+	override public function perform(agent:BasicAgent, market:Market) 
 	{
 		var food = agent.queryInventory("food");
 		var tools = agent.queryInventory("tools");

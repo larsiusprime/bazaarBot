@@ -1,6 +1,6 @@
 package bazaarbot.agent;
 import bazaarbot.Market;
-import bazaarbot.Agent;
+import bazaarbot.agent.BasicAgent;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.Assets;
@@ -24,12 +24,12 @@ class LogicScript extends Logic
 		}
 	}
 	
-	override public function perform(agent:Agent, market:Market):Void 
+	override public function perform(agent:BasicAgent, market:Market):Void 
 	{
 		_perform_script(script, agent, market);
 	}
 	
-	private function _perform_script(script:String, agent:Agent, market:Market):Void
+	private function _perform_script(script:String, agent:BasicAgent, market:Market):Void
 	{
 		var parser = new Parser();
 		var ast = parser.parseString(script);
@@ -43,7 +43,7 @@ class LogicScript extends Logic
 		 "consume" => _consume,
 		 "inventory_is_full" => agent.get_inventoryFull,
 		 "make_room_for" => 
-			function(a:Agent, c:String = "food", amt:Float = 1.0):Void
+			function(a:BasicAgent, c:String = "food", amt:Float = 1.0):Void
 			{ 
 				var to_drop:String = market.getCheapestCommodity(10, [c]);
 				if (to_drop != "") {_consume(a, to_drop, amt);}

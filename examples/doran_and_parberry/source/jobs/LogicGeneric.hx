@@ -1,5 +1,5 @@
 package jobs;
-import bazaarbot.Agent;
+import bazaarbot.agent.BasicAgent;
 import bazaarbot.agent.Logic;
 import bazaarbot.Market;
 /**
@@ -14,7 +14,7 @@ class LogicGeneric extends Logic
 		super(data);
 	}
 	
-	private function makeRoomFor(market:Market, a:Agent, c:String = "food", amt:Float = 1.0):Void
+	private function makeRoomFor(market:Market, a:BasicAgent, c:String = "food", amt:Float = 1.0):Void
 	{ 
 		var to_drop:String = market.getCheapestCommodity(10, [c]);
 		if (to_drop != "")
