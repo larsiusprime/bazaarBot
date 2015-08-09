@@ -9,7 +9,7 @@ import openfl.Assets;
  * ...
  * @author larsiusprime
  */
-class LogicHScript extends Logic
+class LogicScript extends Logic
 {
 	var script:String = "";
 	var source:String;

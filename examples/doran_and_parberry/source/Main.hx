@@ -2,11 +2,11 @@ package;
 
 import bazaarbot.Agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentHScript;
+import bazaarbot.agent.AgentScript;
 import bazaarbot.agent.AgentStandard;
 import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
-import bazaarbot.agent.LogicHScript;
+import bazaarbot.agent.LogicScript;
 import bazaarbot.MarketData;
 import bazaarbot.utils.Quick;
 import flash.Lib;
@@ -49,12 +49,12 @@ class Main extends Sprite
 	
 	private function getAgentScript(data:AgentData):Agent
 	{
-		return new AgentHScript(0, data);
+		return new AgentScript(0, data);
 	}
 	
 	private function getLogicScript(str:String):Logic
 	{
-		return new LogicHScript(str + ".hs");
+		return new LogicScript(str + ".hs");
 	}
 	
 	private function getAgent(data:AgentData):Agent

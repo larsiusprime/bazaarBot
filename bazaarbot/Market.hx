@@ -1,7 +1,7 @@
 package bazaarbot;
 import bazaarbot.Agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentHScript;
+import bazaarbot.agent.AgentScript;
 import bazaarbot.agent.Logic;
 import bazaarbot.utils.History;
 import bazaarbot.utils.MarketReport;
@@ -538,7 +538,7 @@ class Market
 		
 		var agentData = _mapAgents.get(best_id);
 		
-		var newAgent:Agent = new AgentHScript(agent.id, agentData);
+		var newAgent:Agent = new AgentScript(agent.id, agentData);
 		newAgent.init(this);
 		_agents[agent.id] = newAgent;
 		agent.destroy();
