@@ -41,18 +41,20 @@ class Main extends Sprite
 		super ();
 		
 		market = new Market();
-		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent, getLogic));
+		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent));
 		
 		makeButtons();
 	}
 	
-	private function getLogicScript(str:String):Logic
+	private function getAgentScript(data:AgentData):Agent
 	{
-		return new LogicScript(str + ".hs");
+		data.logic = new LogicScript(data.logicName+".hs");
+		return new AgentStandard(0, data);
 	}
 	
 	private function getAgent(data:AgentData):Agent
 	{
+		data.logic = getLogic(data.logicName);
 		return new AgentStandard(0, data);
 	}
 	

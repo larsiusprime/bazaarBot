@@ -23,7 +23,7 @@ class Logic
 	 * @param	agent
 	 */
 	
-	public function perform(agent:Agent, bazaar:Market):Void
+	public function perform(agent:Agent, market:Market):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}

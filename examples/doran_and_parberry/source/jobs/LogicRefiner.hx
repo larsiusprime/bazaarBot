@@ -13,7 +13,7 @@ class LogicRefiner extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, bazaar:Market) 
+	override public function perform(agent:Agent, market:Market) 
 	{
 		var food = agent.queryInventory("food");
 		var tools = agent.queryInventory("tools");
@@ -48,7 +48,7 @@ class LogicRefiner extends LogicGeneric
 			_consume(agent,"money",2);
 			if (!has_food && agent.inventoryFull)
 			{
-				makeRoomFor(bazaar, agent,"food",2);
+				makeRoomFor(market, agent,"food",2);
 			}
 		}
 	}

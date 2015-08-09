@@ -24,12 +24,12 @@ class LogicScript extends Logic
 		}
 	}
 	
-	override public function perform(agent:Agent, bazaar:Market):Void 
+	override public function perform(agent:Agent, market:Market):Void 
 	{
-		_perform_script(script, agent, bazaar);
+		_perform_script(script, agent, market);
 	}
 	
-	private function _perform_script(script:String, agent:Agent, bazaar:Market):Void
+	private function _perform_script(script:String, agent:Agent, market:Market):Void
 	{
 		var parser = new Parser();
 		var ast = parser.parseString(script);
@@ -45,7 +45,7 @@ class LogicScript extends Logic
 		 "make_room_for" => 
 			function(a:Agent, c:String = "food", amt:Float = 1.0):Void
 			{ 
-				var to_drop:String = bazaar.getCheapestCommodity(10, [c]);
+				var to_drop:String = market.getCheapestCommodity(10, [c]);
 				if (to_drop != "") {_consume(a, to_drop, amt);}
 			}
 		 ];

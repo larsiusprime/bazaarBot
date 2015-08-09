@@ -206,6 +206,7 @@ typedef AgentData = {
 	className:String,
 	money:Float,
 	inventory:InventoryData,
+	logicName:String,
 	logic:Logic,
 	?lookBack:Int
 }

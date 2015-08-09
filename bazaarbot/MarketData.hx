@@ -13,7 +13,7 @@ class MarketData
 	public var agentTypes:Array<AgentData>;
 	public var agents:Array<Agent>;
 	
-	public function new(goods:Array<Good>,agentTypes:Array<AgentData>,agents:Array<Agent>) 
+	public function new(goods:Array<Good>, agentTypes:Array<AgentData>, agents:Array<Agent>) 
 	{
 		this.goods = goods;
 		this.agentTypes = agentTypes;
@@ -27,7 +27,7 @@ class MarketData
 	 * @param	getLogic	a function to create agent logic modules
 	 */
 	
-	public static function fromJSON(json:Dynamic, getAgent:AgentData->Agent, getLogic:String->Logic):MarketData
+	public static function fromJSON(json:Dynamic, getAgent:AgentData->Agent):MarketData
 	{
 		var goods:Array<Good> = [];
 		
@@ -50,7 +50,8 @@ class MarketData
 				className:a.id,
 				money:a.money,
 				inventory:InventoryData.fromJson(a.inventory),
-				logic:getLogic(a.id)
+				logicName:a.id,
+				logic:null
 			}
 			
 			for (g in goods)

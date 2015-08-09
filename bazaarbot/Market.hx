@@ -37,11 +37,6 @@ class Market
 		fromData(data);
 	}
 	
-	/*public function init(data:Dynamic, getLogic:String->Logic):Void
-	{
-		fromJSON(data, getLogic);
-	}*/
-	
 	public function numTypesOfGood():Int
 	{
 		return _goodTypes.length;
@@ -487,8 +482,6 @@ class Market
 		var last_class:String = "";
 		var list:Array<Float> = null;
 		var avg_profit:Float = 0;
-		
-		trace("_agents = " + _agents);
 		
 		for (i in 0..._agents.length)
 		{
