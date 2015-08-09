@@ -1,7 +1,6 @@
 package jobs;
 import bazaarbot.Agent;
-import bazaarbot.BazaarBot;
-
+import bazaarbot.Market;
 /**
  * ...
  * @author larsiusprime
@@ -14,7 +13,7 @@ class LogicFarmer extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, bazaar:BazaarBot):Void 
+	override public function perform(agent:Agent, bazaar:Market)
 	{
 		var wood = agent.queryInventory("wood");
 		var tools = agent.queryInventory("tools");

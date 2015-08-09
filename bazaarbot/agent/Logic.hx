@@ -4,7 +4,6 @@ import haxe.Json;
 import hscript.Interp;
 import hscript.Parser;
 import openfl.Assets;
-import bazaarbot.agent.script.HScriptNode;
 
 /**
  * ...
@@ -24,7 +23,7 @@ class Logic
 	 * @param	agent
 	 */
 	
-	public function perform(agent:Agent, bazaar:BazaarBot):Void
+	public function perform(agent:Agent, bazaar:Market):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}

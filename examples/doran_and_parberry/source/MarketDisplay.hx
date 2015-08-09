@@ -1,6 +1,6 @@
 package;
 
-import bazaarbot.BazaarBot;
+import bazaarbot.Market;
 import bazaarbot.utils.MarketReport;
 import flash.display.Sprite;
 import flash.text.TextField;

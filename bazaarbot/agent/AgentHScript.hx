@@ -1,6 +1,5 @@
 package bazaarbot.agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.script.LogicHScript;
 import openfl.Assets;
 
 /**
@@ -35,7 +34,6 @@ class AgentHScript extends AgentStandard
 			logic = new LogicHScript(str);
 		}
 		cache.set(str, logic);
-		trace("logic = " + logic);
 		return logic;
 	}
 }

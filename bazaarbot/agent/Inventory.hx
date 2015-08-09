@@ -251,10 +251,3 @@ class Inventory
 	private var _ideal:Map<String, Float>;		// ideal counts for each thing
 	private var _sizes:Map<String, Float>;		// how much space each thing takes up
 }
-
-typedef InventoryData = {
-	maxSize:Float,
-	ideal:Map<String, Float>,
-	start:Map<String, Float>,
-	size:Map<String, Float>
-}

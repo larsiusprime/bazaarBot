@@ -1,6 +1,6 @@
 package bazaarbot.agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.BazaarBot;
+import bazaarbot.Market;
 import bazaarbot.Offer;
 import flash.geom.Point;
 
@@ -22,7 +22,7 @@ class AgentStandard extends Agent
 		super(id, data);
 	}
 	
-	override public function createBid(bazaar:BazaarBot, good:String, limit:Float):Offer 
+	override public function createBid(bazaar:Market, good:String, limit:Float):Offer 
 	{
 		var bidPrice:Float = determinePriceOf(good);
 		var ideal:Float = determinePurchaseQuantity(bazaar, good);
@@ -36,7 +36,7 @@ class AgentStandard extends Agent
 		return null;
 	}
 	
-	override public function createAsk(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer 
+	override public function createAsk(bazaar:Market, commodity_:String, limit_:Float):Offer 
 	{
 		var ask_price:Float = determinePriceOf(commodity_);
 		var ideal:Float = determineSaleQuantity(bazaar, commodity_);
@@ -50,7 +50,7 @@ class AgentStandard extends Agent
 		return null;
 	}
 	
-	override public function generateOffers(bazaar:BazaarBot, commodity:String):Void 
+	override public function generateOffers(bazaar:Market, commodity:String):Void 
 	{
 		var offer:Offer;
 		var surplus:Float = _inventory.surplus(commodity);
@@ -92,7 +92,7 @@ class AgentStandard extends Agent
 		}
 	}
 	
-	override public function updatePriceModel(bazaar:BazaarBot, act:String, good:String, success:Bool, unitPrice:Float = 0):Void 
+	override public function updatePriceModel(bazaar:Market, act:String, good:String, success:Bool, unitPrice:Float = 0):Void 
 	{
 		var observed_trades:Array<Float>;
 		
@@ -116,14 +116,14 @@ class AgentStandard extends Agent
 			if (act == "buy" && delta_to_mean > SIGNIFICANT)			//overpaid
 			{
 				belief.x -= delta_to_mean / 2;							//SHIFT towards mean
-				belief.y -= delta_to_mean / 2; 							
+				belief.y -= delta_to_mean / 2;
 			}
 			else if (act == "sell" && delta_to_mean < -SIGNIFICANT)		//undersold
 			{
 				belief.x -= delta_to_mean / 2;							//SHIFT towards mean
-				belief.y -= delta_to_mean / 2;				
-			}		
-							
+				belief.y -= delta_to_mean / 2;
+			}
+			
 			belief.x += wobble * mean;	//increase the belief's certainty
 			belief.y -= wobble * mean;
 		}
@@ -140,13 +140,13 @@ class AgentStandard extends Agent
 			{
 				//very low on inventory AND can't buy
 				wobble *= 2;			//bid more liberally
-				special_case = true;				
+				special_case = true;
 			}
 			else if (act == "sell" && stocks > HIGH_INVENTORY * ideal)
 			{
 				//very high on inventory AND can't sell
 				wobble *= 2;			//ask more liberally
-				special_case = true;				
+				special_case = true;
 			}
 			
 			if (!special_case)
@@ -159,7 +159,8 @@ class AgentStandard extends Agent
 				var supply_vs_demand:Float = (asks - bids) / (asks + bids);
 				
 				//too much supply, or too much demand
-				if (supply_vs_demand > SIG_IMBALANCE || supply_vs_demand < -SIG_IMBALANCE) {	
+				if (supply_vs_demand > SIG_IMBALANCE || supply_vs_demand < -SIG_IMBALANCE)
+				{
 					//too much supply: lower price
 					//too much demand: raise price
 					
@@ -167,12 +168,12 @@ class AgentStandard extends Agent
 					delta_to_mean = mean - new_mean;
 					
 					belief.x -= delta_to_mean / 2;	//SHIFT towards anticipated new mean
-					belief.y -= delta_to_mean / 2;				
+					belief.y -= delta_to_mean / 2;
 				}
 			}
 			
 			belief.x -= wobble * mean;	//decrease the belief's certainty
-			belief.y += wobble * mean;			
+			belief.y += wobble * mean;
 		}
 		
 		if (belief.x < MIN_PRICE)

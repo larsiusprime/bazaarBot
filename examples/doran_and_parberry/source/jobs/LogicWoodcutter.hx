@@ -1,7 +1,6 @@
 package jobs;
 import bazaarbot.Agent;
-import bazaarbot.BazaarBot;
-
+import bazaarbot.Market;
 /**
  * ...
  * @author larsiusprime
@@ -14,7 +13,7 @@ class LogicWoodcutter extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, bazaar:BazaarBot):Void 
+	override public function perform(agent:Agent, bazaar:Market) 
 	{
 		var food = agent.queryInventory("food");
 		var tools = agent.queryInventory("tools");
@@ -44,7 +43,7 @@ class LogicWoodcutter extends LogicGeneric
 			_consume(agent,"money",2);
 			if (!has_food && agent.inventoryFull)
 			{
-				makeRoomFor(bazaar, agent,"food",2);
+				makeRoomFor(bazaar, agent, "food",2);
 			}
 		}
 	}
