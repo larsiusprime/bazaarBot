@@ -27,9 +27,11 @@ class Agent
 	{
 		this.id = id;
 		className = data.className;
+		money = data.money;
 		_inventory = new Inventory();
 		_inventory.fromData(data.inventory);
-		money = data.money;
+		_logic = data.logic;
+		
 		if (data.lookBack == null)
 		{
 			_lookback = 15;
@@ -61,8 +63,8 @@ class Agent
 		}
 		_priceBeliefs = null;
 		_observedTradingRange = null;
+		_logic = null;
 	}
-	
 	
 	public function init(bazaar:Market):Void
 	{
@@ -79,6 +81,11 @@ class Agent
 			_observedTradingRange.set(str, trades);
 			_priceBeliefs.set(str, new Point(price * 0.5, price * 1.5));
 		}
+	}
+	
+	public function simulate(market:Market):Void
+	{
+		_logic.perform(this, market);
 	}
 	
 	public function generateOffers(bazaar:Market, good:String):Void
@@ -115,6 +122,7 @@ class Agent
 	
 	/********PRIVATE************/
 	
+	private var _logic:Logic;
 	private var _inventory:Inventory;
 	private var _priceBeliefs:Map<String, Point>;
 	private var _observedTradingRange:Map<String, Array<Float>>;
@@ -134,12 +142,6 @@ class Agent
 	private function get_profit():Float
 	{
 		return money - moneyLastRound;
-	}
-	
-	private function getLogic(str:String):Logic
-	{
-		//no implemenation -- provide your own in a subclass
-		return null;
 	}
 	
 	private function determinePriceOf(commodity_:String):Float

@@ -2,7 +2,6 @@ package;
 
 import bazaarbot.Agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentScript;
 import bazaarbot.agent.AgentStandard;
 import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
@@ -45,11 +44,6 @@ class Main extends Sprite
 		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent, getLogic));
 		
 		makeButtons();
-	}
-	
-	private function getAgentScript(data:AgentData):Agent
-	{
-		return new AgentScript(0, data);
 	}
 	
 	private function getLogicScript(str:String):Logic

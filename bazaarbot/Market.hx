@@ -1,7 +1,6 @@
 package bazaarbot;
 import bazaarbot.Agent;
 import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentScript;
 import bazaarbot.agent.Logic;
 import bazaarbot.utils.History;
 import bazaarbot.utils.MarketReport;
@@ -61,10 +60,7 @@ class Market
 			for (agent in _agents)
 			{
 				agent.moneyLastRound = agent.money;
-				
-				var ac = _mapAgents.get(agent.className);
-				ac.logic.perform(agent, this);
-				//agent.getLogic(ac.logic).perform(agent, this);
+				agent.simulate(this);
 				
 				for (commodity in _goodTypes)
 				{
@@ -242,7 +238,6 @@ class Market
 	private var _agents:Array<Agent>;
 	private var _book:TradeBook;
 	private var _mapAgents:Map<String, AgentData>;
-	private var _mapAgentLogic:Map<String, Logic>;
 	private var _mapGoods:Map<String, Good>;
 	
 	private function fromData(data:MarketData)
@@ -522,6 +517,7 @@ class Market
 	
 	private function replaceAgent(agent:Agent):Void
 	{
+		/*
 		var best_id:String = getMostProfitableAgentClass();
 		
 		//Special case to deal with very high demand-to-supply ratios
@@ -542,6 +538,7 @@ class Market
 		newAgent.init(this);
 		_agents[agent.id] = newAgent;
 		agent.destroy();
+		*/
 	}
 	
 	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void
