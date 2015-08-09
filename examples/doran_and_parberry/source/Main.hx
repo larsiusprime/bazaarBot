@@ -1,13 +1,19 @@
 package;
 
+import bazaarbot.Agent;
+import bazaarbot.Agent.AgentData;
+import bazaarbot.agent.AgentHScript;
+import bazaarbot.agent.AgentStandard;
+import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
-import bazaarbot.agent.script.LogicHScript;
+import bazaarbot.agent.LogicHScript;
+import bazaarbot.MarketData;
 import bazaarbot.utils.Quick;
 import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
-import bazaarbot.BazaarBot;
+import bazaarbot.Market;
 import haxe.Json;
 import flash.display.Bitmap;
 import flash.display.Shape;
@@ -27,8 +33,7 @@ import flash.text.TextFormatAlign;
 
 class Main extends Sprite
 {
-	private var bazaar:BazaarBot;
-	
+	private var market:Market;
 	private var display:MarketDisplay;
 	private var txt_benchmark:TextField;
 	
@@ -36,15 +41,25 @@ class Main extends Sprite
 	{
 		super ();
 		
-		bazaar = new BazaarBot();
-		bazaar.init(Json.parse(Assets.getText("assets/settings.json")), getLogic);
+		market = new Market();
+		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent, getLogic));
 		
 		makeButtons();
+	}
+	
+	private function getAgentScript(data:AgentData):Agent
+	{
+		return new AgentHScript(0, data);
 	}
 	
 	private function getLogicScript(str:String):Logic
 	{
 		return new LogicHScript(str + ".hs");
+	}
+	
+	private function getAgent(data:AgentData):Agent
+	{
+		return new AgentStandard(0, data);
 	}
 	
 	private function getLogic(str:String):Logic
@@ -81,8 +96,8 @@ class Main extends Sprite
 	{
 		var time = Lib.getTimer();
 		var benchmark:Int = 30;
-		bazaar.simulate(benchmark);
-		display.update(bazaar.get_marketReport(1));
+		market.simulate(benchmark);
+		display.update(market.get_marketReport(1));
 		time = Lib.getTimer() - time;
 		var avg:Float = (cast(time, Float) / cast(benchmark, Float)) / 1000;
 		var tstr:String = Quick.numStr(time / 1000, 2);
@@ -97,13 +112,13 @@ class Main extends Sprite
 			platform = "js";
 		#end
 		
-		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + bazaar.numTypesOfGood() + ", Agents=" + bazaar.numAgents() + ", TIME total=" + tstr + " avg=" + Quick.numStr(avg,2));
+		txt_benchmark.text = ("Platform=" + platform + " Rounds=" + benchmark + ", Commodities=" + market.numTypesOfGood() + ", Agents=" + market.numAgents() + ", TIME total=" + tstr + " avg=" + Quick.numStr(avg,2));
 	}
 	
 	private function onAdvance(m:MouseEvent):Void
 	{
-		bazaar.simulate(1);
-		display.update(bazaar.get_marketReport(1));
+		market.simulate(1);
+		display.update(market.get_marketReport(1));
 	}
 	
 	private function makeButton(X:Float, Y:Float, str:String, func:Dynamic, W:Float = 100, H:Float = 30):SimpleButton

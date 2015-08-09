@@ -1,5 +1,5 @@
 package jobs;
-import bazaarbot.BazaarBot;
+import bazaarbot.Market;
 import bazaarbot.Agent;
 import bazaarbot.agent.Logic;
 
@@ -15,7 +15,7 @@ class LogicBlacksmith extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, bazaar:BazaarBot):Void 
+	override public function perform(agent:Agent, bazaar:Market)
 	{
 		var food = agent.queryInventory("food");
 		var metal = agent.queryInventory("metal");

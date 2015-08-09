@@ -4,14 +4,14 @@ import bazaarbot.utils.EconNoun;
 import bazaarbot.utils.Quick;
 import openfl.Assets;
 import openfl.geom.Point;
-import bazaarbot.agent.Inventory.InventoryData;
+import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
 
 /**
  * ...
  * @author larsiusprime
  */
-@:allow(BazaarBot)
+@:allow(Market)
 class Agent
 {
 	public var id:Int;				//unique integer identifier
@@ -64,7 +64,7 @@ class Agent
 	}
 	
 	
-	public function init(bazaar:BazaarBot):Void
+	public function init(bazaar:Market):Void
 	{
 		var list_commodities = bazaar.getGoods_unsafe();
 		for (str in list_commodities)
@@ -81,23 +81,23 @@ class Agent
 		}
 	}
 	
-	public function generateOffers(bazaar:BazaarBot, good:String):Void
+	public function generateOffers(bazaar:Market, good:String):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}
 	
-	public function updatePriceModel(bazaar:BazaarBot, act:String, good:String, success:Bool, unitPrice:Float = 0):Void
+	public function updatePriceModel(bazaar:Market, act:String, good:String, success:Bool, unitPrice:Float = 0):Void
 	{
 		//no implementation -- provide your own in a subclass
 	}
 	
-	public function createBid(bazaar:BazaarBot, good:String, limit:Float):Offer
+	public function createBid(bazaar:Market, good:String, limit:Float):Offer
 	{
 		//no implementation -- provide your own in a subclass
 		return null;
 	}
 	
-	public function createAsk(bazaar:BazaarBot, commodity_:String, limit_:Float):Offer
+	public function createAsk(bazaar:Market, commodity_:String, limit_:Float):Offer
 	{
 		//no implementation -- provide your own in a subclass
 		return null;
@@ -112,45 +112,6 @@ class Agent
 	{
 		_inventory.change(good, delta);
 	}
-	
-	/********STATIC*************/
-	
-	public static function agentDataFromJSON(data:Dynamic, getLogic:String->Logic):AgentData
-	{
-		var agentData = {
-			className:data.id,
-			money:data.money,
-			inventory:
-			{
-				maxSize: data.inventory.max_size,
-				ideal:new Map<String, Float>(),
-				start:new Map<String, Float>(),
-				size:new Map<String, Float>()
-			},
-			logic:getLogic(data.logic)
-		}
-		
-		var inventory_ideal_ids = Reflect.fields(data.inventory.ideal);
-		for (istr in inventory_ideal_ids)
-		{
-			agentData.inventory.ideal.set(istr, Reflect.field(data.inventory.ideal, istr));
-		}
-		
-		var inventory_start_ids = Reflect.fields(data.inventory.start);
-		for (istr in inventory_start_ids)
-		{
-			agentData.inventory.start.set(istr, Reflect.field(data.inventory.start, istr));
-		}
-		
-		var inventory_size_ids = Reflect.fields(data.inventory.size);
-		for (istr in inventory_size_ids)
-		{
-			agentData.inventory.size.set(istr, Reflect.field(data.inventory.size, istr));
-		}
-		
-		return agentData;
-	}
-
 	
 	/********PRIVATE************/
 	
@@ -187,7 +148,7 @@ class Agent
 		return Quick.randomRange(belief.x, belief.y);
 	}
 	
-	private function determineSaleQuantity(bazaar:BazaarBot, commodity_:String):Float
+	private function determineSaleQuantity(bazaar:Market, commodity_:String):Float
 	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observeTradingRange(commodity_);
@@ -206,7 +167,7 @@ class Agent
 		return 0;
 	}
 	
-	private function determinePurchaseQuantity(bazaar:BazaarBot, commodity_:String):Float
+	private function determinePurchaseQuantity(bazaar:Market, commodity_:String):Float
 	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observeTradingRange(commodity_);

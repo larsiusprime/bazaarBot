@@ -8,7 +8,7 @@
 			"blacksmith":10
 		}
 	},
-	"commodities":[
+	"goods":[
 		{"id":"food" ,"size":"0.5"},
 		{"id":"wood" ,"size":"1.0"},
 		{"id":"ore"  ,"size":"1.0"},

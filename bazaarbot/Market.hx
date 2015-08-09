@@ -18,7 +18,7 @@ import openfl.Assets;
  * ...
  * @author 
  */
-class BazaarBot
+class Market
 {
 	/**Logs information about all economic activity in this market**/
 	public var history:History;
@@ -33,10 +33,15 @@ class BazaarBot
 		_mapAgents = new Map<String, AgentData>();
 	}
 	
-	public function init(data:Dynamic, getLogic:String->Logic):Void
+	public function init(data:MarketData):Void
+	{
+		fromData(data);
+	}
+	
+	/*public function init(data:Dynamic, getLogic:String->Logic):Void
 	{
 		fromJSON(data, getLogic);
-	}
+	}*/
 	
 	public function numTypesOfGood():Int
 	{
@@ -240,86 +245,10 @@ class BazaarBot
 	private var _mapAgentLogic:Map<String, Logic>;
 	private var _mapGoods:Map<String, Good>;
 	
-	private function fromData(data:BazaarBotData)
-	{
-		/*
-		var list:Array<Good> = data.goods;
-		for (g in list)
-		{
-			_goodTypes.push(g.id);
-			_mapGoods.set(g.id, new Good(g.id, g.size));
-			
-			history.register(g.id);
-			history.prices.add(g.id, 1.0);	//start the bidding at $1!
-			history.asks.add(g.id, 1.0);	//start history charts with 1 fake buy/sell bid
-			history.bids.add(g.id, 1.0);
-			history.trades.add(g.id, 1.0);
-			
-			_book.register(g.id);
-		}
-		
-		var tempAgents:Array<AgentClass> = data.agents;
-		for (a in tempAgents)
-		{
-			//a.inventory.size
-			for (key in _mapGoods.keys())
-			{
-				var g = _mapGoods.get(key);
-				a.
-			}
-		}
-		
-		
-		//Create agent classes
-		var temp_agents:Array<Dynamic> = data.agents;
-		_mapAgents = new Map<String, AgentClass>();
-		for (a in temp_agents)
-		{
-			a.inventory.size = { };
-			for (key in _mapGoods.keys())
-			{
-				var c:Good = _mapGoods.get(key);
-				Reflect.setField(a.inventory.size, c.id, c.size);
-			}
-			var ac:AgentClass = new AgentClass(a);
-			_mapAgents.set(ac.id, ac);
-			
-			history.profit.register(ac.id);
-		}
-		
-		//Make the agent list
-		_agents = new Array<Agent>();
-		
-		//Get start conditions
-		var start_conditions:Dynamic = data.start_conditions;
-		var starts:Array<Dynamic> = Reflect.fields(start_conditions.agents);
-		
-		var agent_index:Int = 0;
-		//Make given number of each agent type
-		
-		for (class_str in starts)
-		{
-			var val:Int = Reflect.field(start_conditions.agents, class_str);
-			var agent_class = _mapAgents.get(class_str);
-			var inv:Inventory = agent_class.getStartInventory();
-			var money:Float = agent_class.money;
-			
-			for (i in 0...val)
-			{
-				var a:Agent = new Agent(agent_index, class_str, inv.copy(), money);
-				a.init(this);
-				_agents.push(a);
-				agent_index++;
-			}
-		}
-		*/
-	}
-	
-	private function fromJSON(data:Dynamic, getLogic:String->Logic):Void
+	private function fromData(data:MarketData)
 	{
 		//Create commodity index
-		var list:Array<Dynamic> = data.commodities;
-		for (g in list)
+		for (g in data.goods)
 		{
 			_goodTypes.push(g.id);
 			_mapGoods.set(g.id, new Good(g.id, g.size));
@@ -333,47 +262,26 @@ class BazaarBot
 			_book.register(g.id);
 		}
 		
-		//Create agent classes
-		var temp_agents:Array<Dynamic> = data.agents;
 		_mapAgents = new Map<String, AgentData>();
 		
-		for (a in temp_agents)
+		for (aData in data.agentTypes)
 		{
-			a.inventory.size = { };
-			for (key in _mapGoods.keys())
-			{
-				var c:Good = _mapGoods.get(key);
-				Reflect.setField(a.inventory.size, c.id, c.size);
-			}
-			var agentData:AgentData = Agent.agentDataFromJSON(a, getLogic);
-			_mapAgents.set(agentData.className, agentData);
-			
-			history.profit.register(agentData.className);
+			_mapAgents.set(aData.className, aData);
+			history.profit.register(aData.className);
 		}
 		
 		//Make the agent list
-		_agents = new Array<Agent>();
+		_agents = [];
 		
-		//Get start conditions
-		var start_conditions:Dynamic = data.start_conditions;
-		var starts:Array<Dynamic> = Reflect.fields(start_conditions.agents);
-		
-		var agentIndex:Int = 0;
-		//Make given number of each agent type
-		
-		for (class_str in starts)
+		var agentIndex = 0;
+		for (agent in data.agents)
 		{
-			var val:Int = Reflect.field(start_conditions.agents, class_str);
-			var agentData = _mapAgents.get(class_str);
-			
-			for (i in 0...val)
-			{
-				var a:Agent = new AgentHScript(agentIndex, agentData);
-				a.init(this);
-				_agents.push(a);
-				agentIndex++;
-			}
+			agent.id = agentIndex;
+			agent.init(this);
+			_agents.push(agent);
+			agentIndex++;
 		}
+		
 	}
 	
 	private function getAgentClassThatMakesMost(good:String):String
@@ -585,6 +493,8 @@ class BazaarBot
 		var list:Array<Float> = null;
 		var avg_profit:Float = 0;
 		
+		trace("_agents = " + _agents);
+		
 		for (i in 0..._agents.length)
 		{
 			var a:Agent = _agents[i];		//get current agent
@@ -649,11 +559,5 @@ class BazaarBot
 		seller.money += amount;
 		 buyer.money -= amount;
 	}
-	
-}
-
-typedef BazaarBotData = {
-	
-	goods:Array<Good>
 	
 }
