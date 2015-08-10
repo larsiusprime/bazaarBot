@@ -5,6 +5,7 @@ import bazaarbot.agent.Logic;
 import bazaarbot.utils.History;
 import bazaarbot.utils.MarketReport;
 import bazaarbot.utils.Quick;
+import bazaarbot.utils.Signal.TypedSignal;
 import bazaarbot.utils.TradeBook;
 import haxe.Json;
 import haxe.xml.Fast;
@@ -19,17 +20,26 @@ import openfl.Assets;
  */
 class Market
 {
+	public var name:String;
+	
 	/**Logs information about all economic activity in this market**/
 	public var history:History;
 	
-	public function new() 
+	/**Signal fired when an agent's money reaches 0 or below**/
+	public var signalBankrupt:TypedSignal<Market->BasicAgent->Void>;
+	
+	public function new(name:String) 
 	{
+		this.name = name;
+		
 		history = new History();
 		_book = new TradeBook();
 		_goodTypes = new Array<String>();
 		_agents = new Array<BasicAgent>();
 		_mapGoods = new Map<String, Good>();
 		_mapAgents = new Map<String, AgentData>();
+		
+		signalBankrupt = new TypedSignal<Market->BasicAgent->Void>();
 	}
 	
 	public function init(data:MarketData):Void
@@ -45,6 +55,16 @@ class Market
 	public function numAgents():Int
 	{
 		return _agents.length;
+	}
+	
+	public function replaceAgent(oldAgent:BasicAgent, newAgent:BasicAgent):Void
+	{
+		trace("replacing oldAgent(" + oldAgent.className+") with (" + newAgent.className+")");
+		
+		newAgent.id = oldAgent.id;
+		_agents[oldAgent.id] = newAgent;
+		oldAgent.destroy();
+		newAgent.init(this);
 	}
 	
 	@:access(bazaarbot.agent.BasicAgent)
@@ -71,7 +91,7 @@ class Market
 			{
 				if (agent.money <= 0)
 				{
-					replaceAgent(agent);
+					signalBankrupt.dispatch(this, agent);
 				}
 			}
 		}
@@ -100,9 +120,49 @@ class Market
 		return history.prices.average(good, range);
 	}
 	
-	public function getCheapestCommodity(range:Int, exclude:Array<String> = null):String
+	/**
+	 * Get the good with the highest demand/supply ratio over time
+	 * @param   minimum the minimum demand/supply ratio to consider an opportunity
+	 * @param	range number of rounds to look back
+	 * @return
+	 */
+	
+	public function getHottestGood(minimum:Float = 1.5, range:Int = 10):String
 	{
-		var best_price:Float = 999999999999999999;
+		var best_market:String = "";
+		var best_ratio:Float = Math.NEGATIVE_INFINITY;
+		for (good in _goodTypes)
+		{
+			var asks:Float = history.asks.average(good, range);
+			var bids:Float = history.bids.average(good, range);
+			var ratio:Float = 0;
+			if (asks == 0 && bids > 0)
+			{
+				ratio = Math.POSITIVE_INFINITY;
+			}
+			else
+			{
+				ratio = bids / asks;
+			}
+			if (ratio > minimum && ratio > best_ratio)
+			{
+				best_ratio = ratio;
+				best_market = good;
+			}
+		}
+		return best_market;
+	}
+	
+	/**
+	 * Returns the good that has the lowest average price over the given range of time
+	 * @param	range how many rounds to look back
+	 * @param	exclude goods to exclude
+	 * @return
+	 */
+	
+	public function getCheapestGood(range:Int, exclude:Array<String> = null):String
+	{
+		var best_price:Float = Math.POSITIVE_INFINITY;
 		var best_good:String = "";
 		for (g in _goodTypes)
 		{
@@ -119,7 +179,14 @@ class Market
 		return best_good;
 	}
 	
-	public function getDearestCommodity(range:Int, exclude:Array<String> = null):String
+	/**
+	 * Returns the good that has the highest average price over the given range of time
+	 * @param	range how many rounds to look back
+	 * @param	exclude goods to exclude
+	 * @return
+	 */
+	
+	public function getDearestGood(range:Int, exclude:Array<String> = null):String
 	{
 		var best_price:Float = 0;
 		var best_good:String = "";
@@ -136,6 +203,47 @@ class Market
 			}
 		}
 		return best_good;
+	}
+	
+	/**
+	 * 
+	 * @param	range
+	 * @return
+	 */
+	public function getMostProfitableAgentClass(range:Int = 10):String
+	{
+		var best:Float = Math.NEGATIVE_INFINITY;
+		var bestClass:String="";
+		for (className in _mapAgents.keys())
+		{
+			var val:Float = history.profit.average(className, range);
+			if (val > best)
+			{
+				bestClass = className;
+				best = val;
+			}
+		}
+		return bestClass;
+	}
+	
+	public function getAgentClass(className:String):AgentData
+	{
+		return _mapAgents.get(className);
+	}
+	
+	public function getAgentClassNames():Array<String>
+	{
+		var agentData = [];
+		for (key in _mapAgents.keys())
+		{
+			agentData.push(key);
+		}
+		return agentData;
+	}
+	
+	public function getGoods():Array<String>
+	{
+		return _goodTypes.copy();
 	}
 	
 	public function getGoods_unsafe():Array<String>
@@ -272,94 +380,6 @@ class Market
 			agentIndex++;
 		}
 		
-	}
-	
-	private function getAgentClassThatMakesMost(good:String):String
-	{
-		var best_class:String = "";
-		var parser = new Parser();
-		var script:String = Assets.getText("assets/data/scripts/best_job.hs");
-		var ast = parser.parseString(script);
-		var interp = new Interp();
-		
-		var variables:Map<String,Dynamic> = ["commodity" => good];
-		interp.variables = variables;
-		best_class = Std.string(interp.execute(ast));
-		
-		return best_class;
-	}
-	
-	private function getAgentClassWithMost(good:String):String
-	{
-		var amount:Float = 0;
-		var bestAmount:Float = 0;
-		var bestClass:String = "";
-		for (key in _mapAgents.keys())
-		{
-			amount = getAverageInventory(key, good);
-			if (amount > bestAmount)
-			{
-				bestAmount = amount;
-				bestClass = key;
-			}
-		}
-		return bestClass;
-	}
-	
-	private function getAverageInventory(className:String, good:String):Float
-	{
-		var list = _agents.filter(function(a:BasicAgent):Bool { return a.className == className; } );
-		var amount:Float = 0;
-		for (agent in list)
-		{
-			amount += agent.queryInventory(good);
-		}
-		amount /= list.length;
-		return amount;
-	}
-	
-	/**
-	 * Get the market with the highest demand/supply ratio over time
-	 * @param   minimum the minimum demand/supply ratio to consider an opportunity
-	 * @param	range number of rounds to look back
-	 * @return
-	 */
-	
-	private function getBestMarketOpportunity(minimum:Float = 1.5, range:Int = 10):String
-	{
-		var best_market:String = "";
-		var best_ratio:Float = -999999;
-		for(good in _goodTypes){
-			var asks:Float = history.asks.average(good, range);
-			var bids:Float = history.bids.average(good, range);
-			var ratio:Float = 0;
-			if (asks == 0 && bids > 0) {
-				ratio = 9999999999999999;
-			}else {
-				ratio = bids / asks;
-			}
-			if (ratio > minimum && ratio > best_ratio) {
-				best_ratio = ratio;
-				best_market = good;
-			}
-		}
-		return best_market;
-	}
-	
-	private function getMostProfitableAgentClass(range:Int = 10):String
-	{
-		var list:Array<Float>;
-		var best:Float = -99999;
-		var best_id:String="";
-		for (ac_id in _mapAgents.keys())
-		{
-			var val:Float = history.profit.average(ac_id, range);
-			if (val > best) {
-				best_id = ac_id;
-				best = val;
-			}
-		}
-		return best_id;
 	}
 	
 	private function resolveOffers(good:String = ""):Void
@@ -506,32 +526,6 @@ class Market
 		//sort by id so everything works again
 		_agents.sort(Quick.sortAgentId);
 		
-	}
-	
-	private function replaceAgent(agent:BasicAgent):Void
-	{
-		/*
-		var best_id:String = getMostProfitableAgentClass();
-		
-		//Special case to deal with very high demand-to-supply ratios
-		//This will make them favor entering an underserved market over
-		//Just picking the most profitable class
-		var best_opportunity:String = getBestMarketOpportunity();
-		if (best_opportunity != "")
-		{
-			var best_opportunity_class:String = getAgentClassThatMakesMost(best_opportunity);
-			if (best_opportunity_class != "") {
-				best_id = best_opportunity_class;
-			}
-		}
-		
-		var agentData = _mapAgents.get(best_id);
-		
-		var newAgent:Agent = new AgentScript(agent.id, agentData);
-		newAgent.init(this);
-		_agents[agent.id] = newAgent;
-		agent.destroy();
-		*/
 	}
 	
 	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void

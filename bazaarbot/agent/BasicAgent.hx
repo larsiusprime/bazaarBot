@@ -8,7 +8,8 @@ import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
 
 /**
- * ...
+ * The most fundamental agent class, and has as little implementation as possible.
+ * In most cases you should start by extending Agent instead of this.
  * @author larsiusprime
  */
 
@@ -67,14 +68,14 @@ class BasicAgent
 		_logic = null;
 	}
 	
-	public function init(bazaar:Market):Void
+	public function init(market:Market):Void
 	{
-		var list_commodities = bazaar.getGoods_unsafe();
-		for (str in list_commodities)
+		var listGoods = market.getGoods_unsafe();
+		for (str in listGoods)
 		{
 			var trades:Array<Float> = new Array<Float>();
 			
-			var price:Float = bazaar.getAverageHistoricalPrice(str, _lookback);
+			var price:Float = market.getAverageHistoricalPrice(str, _lookback);
 			trades.push(price * 0.5);
 			trades.push(price * 1.5);	//push two fake trades to generate a range
 			

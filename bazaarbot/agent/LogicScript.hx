@@ -45,7 +45,7 @@ class LogicScript extends Logic
 		 "make_room_for" => 
 			function(a:BasicAgent, c:String = "food", amt:Float = 1.0):Void
 			{ 
-				var to_drop:String = market.getCheapestCommodity(10, [c]);
+				var to_drop:String = market.getCheapestGood(10, [c]);
 				if (to_drop != "") {_consume(a, to_drop, amt);}
 			}
 		 ];

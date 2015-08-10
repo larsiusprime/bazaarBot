@@ -14,12 +14,12 @@ class LogicGeneric extends Logic
 		super(data);
 	}
 	
-	private function makeRoomFor(market:Market, a:BasicAgent, c:String = "food", amt:Float = 1.0):Void
+	private function makeRoomFor(market:Market, agent:BasicAgent, good:String = "food", amt:Float = 1.0):Void
 	{ 
-		var to_drop:String = market.getCheapestCommodity(10, [c]);
-		if (to_drop != "")
+		var toDrop:String = market.getCheapestGood(10, [good]);
+		if (toDrop != "")
 		{
-			_consume(a, to_drop, amt);
+			_consume(agent, toDrop, amt);
 		}
 	}
 }

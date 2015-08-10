@@ -2,7 +2,7 @@ package bazaarbot.utils;
 import bazaarbot.agent.BasicAgent;
 
 /**
- * ...
+ * A quick & dirty utility class
  * @author larsiusprime
  */
 class Quick
