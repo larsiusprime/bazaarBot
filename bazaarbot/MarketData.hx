@@ -25,7 +25,6 @@ class MarketData
 	 * Parse a market settings file to construct everything
 	 * @param	data		the JSON file definition for your Market
 	 * @param	getAgent	a function to create agents
-	 * @param	getLogic	a function to create agent logic modules
 	 */
 	
 	public static function fromJSON(json:Dynamic, getAgent:AgentData->BasicAgent):MarketData
