@@ -1,5 +1,6 @@
 package bazaarbot;
-import bazaarbot.Agent.AgentData;
+import bazaarbot.agent.BasicAgent;
+import bazaarbot.agent.BasicAgent.AgentData;
 import bazaarbot.agent.InventoryData;
 import bazaarbot.agent.Logic;
 
@@ -11,9 +12,9 @@ class MarketData
 {
 	public var goods:Array<Good>;
 	public var agentTypes:Array<AgentData>;
-	public var agents:Array<Agent>;
+	public var agents:Array<BasicAgent>;
 	
-	public function new(goods:Array<Good>,agentTypes:Array<AgentData>,agents:Array<Agent>) 
+	public function new(goods:Array<Good>, agentTypes:Array<AgentData>, agents:Array<BasicAgent>) 
 	{
 		this.goods = goods;
 		this.agentTypes = agentTypes;
@@ -27,7 +28,7 @@ class MarketData
 	 * @param	getLogic	a function to create agent logic modules
 	 */
 	
-	public static function fromJSON(json:Dynamic, getAgent:AgentData->Agent, getLogic:String->Logic):MarketData
+	public static function fromJSON(json:Dynamic, getAgent:AgentData->BasicAgent):MarketData
 	{
 		var goods:Array<Good> = [];
 		
@@ -50,7 +51,8 @@ class MarketData
 				className:a.id,
 				money:a.money,
 				inventory:InventoryData.fromJson(a.inventory),
-				logic:getLogic(a.id)
+				logicName:a.id,
+				logic:null
 			}
 			
 			for (g in goods)
@@ -62,7 +64,7 @@ class MarketData
 		}
 		
 		//Make the agent list
-		var agents:Array<Agent> = [];
+		var agents:Array<BasicAgent> = [];
 		
 		//Get start conditions
 		var startConditions:Dynamic = json.start_conditions;
@@ -85,7 +87,7 @@ class MarketData
 			
 			for (i in 0...val)
 			{
-				var a:Agent = getAgent(agentData);
+				var a:BasicAgent = getAgent(agentData);
 				a.id = agentIndex;
 				agentIndex++;
 				agents.push(a);

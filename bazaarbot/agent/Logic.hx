@@ -23,12 +23,12 @@ class Logic
 	 * @param	agent
 	 */
 	
-	public function perform(agent:Agent, bazaar:Market):Void
+	public function perform(agent:BasicAgent, market:Market):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}
 	
-	private function _produce(agent:Agent, commodity:String, amount:Float, chance:Float = 1.0):Void
+	private function _produce(agent:BasicAgent, commodity:String, amount:Float, chance:Float = 1.0):Void
 	{
 		if (chance >= 1.0 || Math.random() < chance)
 		{
@@ -36,7 +36,7 @@ class Logic
 		}
 	}
 	
-	private function _consume(agent:Agent, commodity:String, amount:Float, chance:Float = 1.0):Void
+	private function _consume(agent:BasicAgent, commodity:String, amount:Float, chance:Float = 1.0):Void
 	{
 		if (chance >= 1.0 || Math.random() < chance)
 		{

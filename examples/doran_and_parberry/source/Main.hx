@@ -1,31 +1,14 @@
 package;
 
-import bazaarbot.Agent;
-import bazaarbot.Agent.AgentData;
-import bazaarbot.agent.AgentHScript;
-import bazaarbot.agent.AgentStandard;
-import bazaarbot.agent.InventoryData;
-import bazaarbot.agent.Logic;
-import bazaarbot.agent.LogicHScript;
-import bazaarbot.MarketData;
+import bazaarbot.Economy;
+import bazaarbot.Market;
 import bazaarbot.utils.Quick;
 import flash.Lib;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
-import bazaarbot.Market;
-import haxe.Json;
-import flash.display.Bitmap;
-import flash.display.Shape;
 import flash.display.SimpleButton;
 import flash.display.Sprite;
-import hscript.Interp;
-import hscript.Parser;
-import jobs.LogicBlacksmith;
-import jobs.LogicFarmer;
-import jobs.LogicMiner;
-import jobs.LogicRefiner;
-import jobs.LogicWoodcutter;
 import openfl.Assets;
 import flash.events.MouseEvent;
 import flash.text.TextFormatAlign;
@@ -33,6 +16,7 @@ import flash.text.TextFormatAlign;
 
 class Main extends Sprite
 {
+	private var economy:Economy;
 	private var market:Market;
 	private var display:MarketDisplay;
 	private var txt_benchmark:TextField;
@@ -41,38 +25,11 @@ class Main extends Sprite
 	{
 		super ();
 		
-		market = new Market();
-		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent, getLogic));
+		economy = new DoranAndParberryEconomy();
+		
+		market = economy.getMarket("default");
 		
 		makeButtons();
-	}
-	
-	private function getAgentScript(data:AgentData):Agent
-	{
-		return new AgentHScript(0, data);
-	}
-	
-	private function getLogicScript(str:String):Logic
-	{
-		return new LogicHScript(str + ".hs");
-	}
-	
-	private function getAgent(data:AgentData):Agent
-	{
-		return new AgentStandard(0, data);
-	}
-	
-	private function getLogic(str:String):Logic
-	{
-		switch(str)
-		{
-			case "blacksmith": return new LogicBlacksmith(null);
-			case "farmer": return new LogicFarmer(null);
-			case "miner": return new LogicMiner(null);
-			case "refiner": return new LogicRefiner(null);
-			case "woodcutter": return new LogicWoodcutter(null);
-		}
-		return null;
 	}
 	
 	private function makeButtons():Void

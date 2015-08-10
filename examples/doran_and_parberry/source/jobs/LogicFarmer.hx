@@ -1,5 +1,5 @@
 package jobs;
-import bazaarbot.Agent;
+import bazaarbot.agent.BasicAgent;
 import bazaarbot.Market;
 /**
  * ...
@@ -13,7 +13,7 @@ class LogicFarmer extends LogicGeneric
 		super(data);
 	}
 	
-	override public function perform(agent:Agent, bazaar:Market)
+	override public function perform(agent:BasicAgent, market:Market)
 	{
 		var wood = agent.queryInventory("wood");
 		var tools = agent.queryInventory("tools");
@@ -36,7 +36,8 @@ class LogicFarmer extends LogicGeneric
 				_consume(agent,"wood",1,1);
 			}	
 		}
-		else{
+		else
+		{
 			//fined $2 for being idle
 			_consume(agent,"money",2);
 		}
