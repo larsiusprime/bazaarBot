@@ -59,8 +59,6 @@ class Market
 	
 	public function replaceAgent(oldAgent:BasicAgent, newAgent:BasicAgent):Void
 	{
-		trace("replacing oldAgent(" + oldAgent.className+") with (" + newAgent.className+")");
-		
 		newAgent.id = oldAgent.id;
 		_agents[oldAgent.id] = newAgent;
 		oldAgent.destroy();
@@ -135,15 +133,18 @@ class Market
 		{
 			var asks:Float = history.asks.average(good, range);
 			var bids:Float = history.bids.average(good, range);
+			
 			var ratio:Float = 0;
 			if (asks == 0 && bids > 0)
 			{
-				ratio = Math.POSITIVE_INFINITY;
+				//If there are NONE on the market we artificially create a fake supply of 1/2 a unit to avoid the
+				//crazy bias that "infinite" demand can cause...
+				
+				asks = 0.5;
 			}
-			else
-			{
-				ratio = bids / asks;
-			}
+			
+			ratio = bids / asks;
+			
 			if (ratio > minimum && ratio > best_ratio)
 			{
 				best_ratio = ratio;
