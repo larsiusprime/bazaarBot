@@ -31,7 +31,7 @@
 			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":1,"ore":0},
-				"ideal":{"food":3,"tools":1},
+				"ideal":{"food":3,"tools":1,"ore":0},
 				"max_size":20
 			},
 			"logic":"miner"
@@ -41,7 +41,7 @@
 			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":1,"metal":0,"ore":0},
-				"ideal":{"food":3,"tools":1,"ore":5},
+				"ideal":{"food":3,"tools":1,"metal":0,"ore":5},
 				"max_size":20
 			},
 			"logic":"refiner"
@@ -61,7 +61,7 @@
 			"money":100,
 			"inventory":{
 				"start":{"food":1,"tools":0,"metal":0,"ore":0},
-				"ideal":{"food":3,"tools":1,"metal":5},
+				"ideal":{"food":3,"tools":1,"metal":5,"ore":0},
 				"max_size":20
 			},
 			"logic":"blacksmith"
