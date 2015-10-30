@@ -12,7 +12,7 @@ class Quick
 	{
 		return (a + b) / 2;
 	}
-	
+
 	public static function listAvgf(list:Array<Float>):Float
 	{
 		var avg:Float = 0;
@@ -23,7 +23,7 @@ class Quick
 		avg /= list.length;
 		return avg;
 	}
-	
+
 	public static inline function minArr(a:Array<Float>):Float
 	{
 		var min:Float = Math.POSITIVE_INFINITY;
@@ -32,7 +32,7 @@ class Quick
 		}
 		return min;
 	}
-	
+
 	public static inline function maxArr(a:Array<Float>):Float
 	{
 		var max:Float = Math.NEGATIVE_INFINITY;
@@ -41,7 +41,7 @@ class Quick
 		}
 		return max;
 	}
-	
+
 	/**
 	 * Turns a number into a string with the specified number of decimal points
 	 * @param	num
@@ -90,7 +90,7 @@ class Quick
 		}
 		return str;
 	}
-	
+
 	public static inline function positionInRange(value:Float, min:Float, max:Float, clamp:Bool = true):Float
 	{
 		value -= min;
@@ -103,12 +103,12 @@ class Quick
 		}
 		return value;
 	}
-	
+
 	public static inline function randomInteger(min:Int, max:Int):Int
 	{
 		return Std.int(Math.random() * cast(1 + max - min, Float)) + min;
 	}
-	
+
 	public static inline function randomRange(a:Float, b:Float):Float
 	{
 		var r:Float = Math.random();
@@ -117,7 +117,7 @@ class Quick
 		var range:Float = max - min;
 		return r * range + min;
 	}
-	
+
 	public static function shuffle(list:Array<Offer>):Array<Offer>
 	{
 		/*
@@ -139,21 +139,21 @@ class Quick
 		}
 		return list;
 	}
-	
+
 	public static function sortAgentAlpha(a:BasicAgent, b:BasicAgent):Int
 	{
 		if (a.className < b.className) return -1;
 		if (a.className > b.className) return 1;
 		return 0;
 	}
-	
+
 	public static function sortAgentId(a:BasicAgent, b:BasicAgent):Int
 	{
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
 		return 0;
 	}
-	
+
 	public static function sortDecreasingPrice(a:Offer, b:Offer):Int
 	{
 		//Decreasing means: highest first
@@ -161,7 +161,7 @@ class Quick
 		if (a.unit_price > b.unit_price) return -1;
 		return 0;
 	}
-	
+
 	public static function sortIncreasingPrice(a:Offer, b:Offer):Int
 	{
 		//Increasing means: lowest first

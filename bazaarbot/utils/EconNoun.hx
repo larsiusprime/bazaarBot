@@ -4,7 +4,7 @@ package bazaarbot.utils;
  * @author larsiusprime
  */
 
-enum EconNoun 
+enum EconNoun
 {
 	Price;
 	Ask;
