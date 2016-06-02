@@ -12,17 +12,17 @@ class LogicRefiner extends LogicGeneric
 	{
 		super(data);
 	}
-	
-	override public function perform(agent:BasicAgent, market:Market) 
+
+	override public function perform(agent:BasicAgent, market:Market)
 	{
 		var food = agent.queryInventory("food");
 		var tools = agent.queryInventory("tools");
 		var ore = agent.queryInventory("ore");
-		
+
 		var has_food = food >= 1;
 		var has_tools = tools >= 1;
 		var has_ore = ore >= 1;
-		
+
 		if (has_food && has_ore)
 		{
 			if (has_tools)

@@ -9,13 +9,13 @@ class HistoryLog
 {
 	var type:EconNoun;
 	var log:Map<String, Array<Float>>;
-	
-	public function new(type:EconNoun) 
+
+	public function new(type:EconNoun)
 	{
 		this.type = type;
 		log = new Map<String, Array<Float>>();
 	}
-	
+
 	/**
 	 * Add a new entry to this log
 	 * @param	name
@@ -29,7 +29,7 @@ class HistoryLog
 			list.push(amount);
 		}
 	}
-	
+
 	/**
 	 * Register a new category list in this log
 	 * @param	name
@@ -41,7 +41,7 @@ class HistoryLog
 			log.set(name, new Array<Float>());
 		}
 	}
-	
+
 	/**
 	 * Returns the average amount of the given category, looking backwards over a specified range
 	 * @param	name the category of thing

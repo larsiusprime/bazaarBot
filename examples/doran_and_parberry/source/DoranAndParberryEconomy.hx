@@ -21,28 +21,28 @@ import openfl.Assets;
 class DoranAndParberryEconomy extends Economy
 {
 
-	public function new() 
+	public function new()
 	{
 		super();
 		var market = new Market("default");
 		market.init(MarketData.fromJSON(Json.parse(Assets.getText("assets/settings.json")), getAgent));
 		addMarket(market);
 	}
-	
-	override function onBankruptcy(m:Market, a:BasicAgent):Void 
+
+	override function onBankruptcy(m:Market, a:BasicAgent):Void
 	{
 		replaceAgent(m, a);
 	}
-	
+
 	private function replaceAgent(market:Market, agent:BasicAgent):Void
 	{
 		var bestClass:String = market.getMostProfitableAgentClass();
-		
+
 		//Special case to deal with very high demand-to-supply ratios
 		//This will make them favor entering an underserved market over
 		//Just picking the most profitable class
 		var bestGood:String = market.getHottestGood();
-		
+
 		if (bestGood != "")
 		{
 			var bestGoodClass:String = getAgentClassThatMakesMost(bestGood);
@@ -51,12 +51,12 @@ class DoranAndParberryEconomy extends Economy
 				bestClass = bestGoodClass;
 			}
 		}
-		
+
 		var newAgent = getAgent(market.getAgentClass(bestClass));
 		market.replaceAgent(agent, newAgent);
 	}
-	
-	
+
+
 	/**
 	 * Get the average amount of a given good that a given agent class has
 	 * @param	className
@@ -76,7 +76,7 @@ class DoranAndParberryEconomy extends Economy
 		return amount;
 	}
 	*/
-	
+
 	/**
 	 * Find the agent class that produces the most of a given good
 	 * @param	good
@@ -91,7 +91,7 @@ class DoranAndParberryEconomy extends Economy
 		  else if (good == "tools") { "blacksmith"; }
 		  else "";
 	}
-	
+
 	/**
 	 * Find the agent class that has the most of a given good
 	 * @param	good
@@ -115,19 +115,19 @@ class DoranAndParberryEconomy extends Economy
 		return bestClass;
 	}
 	*/
-	
+
 	private function getAgentScript(data:AgentData):BasicAgent
 	{
 		data.logic = new LogicScript(data.logicName+".hs");
 		return new Agent(0, data);
 	}
-	
+
 	private function getAgent(data:AgentData):BasicAgent
 	{
 		data.logic = getLogic(data.logicName);
 		return new Agent(0, data);
 	}
-	
+
 	private function getLogic(str:String):Logic
 	{
 		switch(str)

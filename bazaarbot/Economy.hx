@@ -8,11 +8,11 @@ import bazaarbot.agent.BasicAgent;
 
 class Economy
 {
-	public function new() 
+	public function new()
 	{
 		_markets = [];
 	}
-	
+
 	public function addMarket(m:Market)
 	{
 		if (_markets.indexOf(m) == -1)
@@ -21,7 +21,7 @@ class Economy
 			m.signalBankrupt.add(onBankruptcy);
 		}
 	}
-	
+
 	public function getMarket(name:String):Market
 	{
 		for (m in _markets)
@@ -30,7 +30,7 @@ class Economy
 		}
 		return null;
 	}
-	
+
 	public function simulate(rounds:Int)
 	{
 		for (m in _markets)
@@ -38,13 +38,13 @@ class Economy
 			m.simulate(rounds);
 		}
 	}
-	
+
 	/***PRIVATE***/
-	
+
 	private function onBankruptcy(m:Market, a:BasicAgent):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}
-	
+
 	private var _markets:Array<Market>;
 }

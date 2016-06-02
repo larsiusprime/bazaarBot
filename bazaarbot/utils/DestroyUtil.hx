@@ -8,7 +8,7 @@ class DestroyUtil
 {
 	/**
 	 * Checks if an object is not null before calling destroy(), always returns null.
-	 * 
+	 *
 	 * @param	object	An IDestroyable object that will be destroyed if it's not null.
 	 * @return	null
 	 */
@@ -16,11 +16,11 @@ class DestroyUtil
 	{
 		if (object != null)
 		{
-			object.destroy(); 
+			object.destroy();
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Destroy every element of an array of IDestroyables
 	 *
