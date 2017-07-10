@@ -92,8 +92,8 @@ class Market
 					signalBankrupt.dispatch(this, agent);
 				}
 			}
+			_roundNum++;
 		}
-		_roundNum++;
 	}
 
 	public function ask(offer:Offer):Void
