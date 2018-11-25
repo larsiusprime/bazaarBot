@@ -10,19 +10,19 @@ import bazaarbot.agent.Logic;
 class LogicBlacksmith extends LogicGeneric
 {
 
-	public function new(?data) 
+	public function new(?data)
 	{
 		super(data);
 	}
-	
+
 	override public function perform(agent:BasicAgent, market:Market)
 	{
 		var food = agent.queryInventory("food");
 		var metal = agent.queryInventory("metal");
-		
+
 		var has_food = food >= 1;
 		var has_metal = metal >= 1;
-		
+
 		if (has_food && has_metal)
 		{
 			//convert all metal into tools
@@ -39,5 +39,5 @@ class LogicBlacksmith extends LogicGeneric
 			}
 		}
 	}
-	
+
 }

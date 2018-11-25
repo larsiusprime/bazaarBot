@@ -11,8 +11,8 @@ class History
 	public var bids  (default, null):HistoryLog;
 	public var trades(default, null):HistoryLog;
 	public var profit(default, null):HistoryLog;
-	
-	public function new() 
+
+	public function new()
 	{
 		prices = new HistoryLog(Price);
 		asks   = new HistoryLog(Ask);
@@ -20,7 +20,7 @@ class History
 		trades = new HistoryLog(Trade);
 		profit = new HistoryLog(Profit);
 	}
-	
+
 	public function register(good:String)
 	{
 		prices.register(good);

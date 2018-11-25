@@ -3,20 +3,20 @@ import bazaarbot.agent.Inventory.GoodRecord;
 
 /**
  * ...
- * @author 
+ * @author
  */
 class Inventory
 {
 	public var maxSize:Float = 0;
-	
-	public function new() 
+
+	public function new()
 	{
 		_sizes = new Map<String, Float>();
 		_ideal = new Map<String, Float>();
 		_stuff = new Map<String, GoodRecord>();
 		maxSize = 0;
 	}
-	
+
 	public function fromData(data:InventoryData)
 	{
 		var sizes = [];
@@ -47,7 +47,7 @@ class Inventory
 		}
 		maxSize = data.maxSize;
 	}
-	
+
 	public function copy():Inventory
 	{
 		var i:Inventory = new Inventory();
@@ -79,7 +79,7 @@ class Inventory
 		i.maxSize = maxSize;
 		return i;
 	}
-	
+
 	public function destroy():Void
 	{
 		for (key in _stuff.keys())
@@ -98,7 +98,7 @@ class Inventory
 		_ideal = null;
 		_sizes = null;
 	}
-	
+
 	/**
 	 * Set amounts of various commodities
 	 * @param	stuff_
@@ -112,13 +112,13 @@ class Inventory
 			_stuff.set(stuff[i], amounts[i]);
 		}
 	}
-	
+
 	/**
 	 * Set how much of each commodity to stockpile
 	 * @param	stuff_
 	 * @param	amounts_
 	 */
-	
+
 	public function setIdeal(ideal:Array<String>, amounts:Array<Float>):Void
 	{
 		for (i in 0...ideal.length)
@@ -126,7 +126,7 @@ class Inventory
 			_ideal.set(ideal[i], amounts[i]);
 		}
 	}
-	
+
 	public function setSizes(sizes:Array<String>, amounts:Array<Float>):Void
 	{
 		for (i in 0...sizes.length)
@@ -134,13 +134,13 @@ class Inventory
 			_sizes.set(sizes[i], amounts[i]);
 		}
 	}
-	
+
 	/**
 	 * Returns how much of this
 	 * @param	commodity_ string id of commodity
 	 * @return
 	 */
-	
+
 	public function query(good:String):Float
 	{
 		if (_stuff.exists(good))
@@ -166,12 +166,12 @@ class Inventory
 		}
 		return 0;
 	}
-	
+
 	public function getEmptySpace():Float
 	{
 		return maxSize - getUsedSpace();
 	}
-	
+
 	public function getUsedSpace():Float
 	{
 		var space_used:Float = 0;
@@ -181,7 +181,7 @@ class Inventory
 		}
 		return space_used;
 	}
-	
+
 	public function getCapacityFor(good:String):Float
 	{
 		if (_sizes.exists(good))
@@ -190,7 +190,7 @@ class Inventory
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Change the amount of the given commodity by delta
 	 * @param	commodity_ string id of commodity
@@ -235,17 +235,17 @@ class Inventory
 			result.amount = 0;
 			result.originalCost = 0;
 		}
-		
+
 		_stuff.set(good, result);
 		return result.originalCost;
 	}
-	
+
 	/**
 	 * Returns # of units above the desired inventory level, or 0 if @ or below
 	 * @param	commodity_ string id of commodity
 	 * @return
 	 */
-	
+
 	public function surplus(good:String):Float
 	{
 		var amt:Float = query(good);
@@ -256,13 +256,13 @@ class Inventory
 		}
 		return 0;
 	}
-	
+
 	/**
 	 * Returns # of units below the desired inventory level, or 0 if @ or above
 	 * @param	commodity_
 	 * @return
 	 */
-	
+
 	public function shortage(good:String):Float
 	{
 		if (!_stuff.exists(good))
@@ -277,9 +277,9 @@ class Inventory
 		}
 		return 0;
 	}
-	
+
 	//private static var _index:Map<String, Commodity>;
-	
+
 	private var _stuff:Map<String, Float>;		// key:commodity_id, val:amount
 	private var _ideal:Map<String, Float>;		// ideal counts for each thing
 	private var _sizes:Map<String, Float>;		// how much space each thing takes up

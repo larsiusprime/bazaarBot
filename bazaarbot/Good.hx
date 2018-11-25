@@ -2,15 +2,15 @@ package bazaarbot;
 
 /**
  * ...
- * @author 
+ * @author
  */
- 
+
 class Good
 {
 	public var id:String = "";		//string id of good
 	public var size:Float = 1.0;	//inventory size taken up
-	
-	public function new(id_:String,size_:Float) 
+
+	public function new(id_:String,size_:Float)
 	{
 		id = id_;
 		size = size_;
@@ -21,4 +21,4 @@ class Good
 		return new Good(id, size);
 	}
 }
- 
+

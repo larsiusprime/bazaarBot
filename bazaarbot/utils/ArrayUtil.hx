@@ -4,10 +4,10 @@ package bazaarbot.utils;
  * A set of functions for array manipulation. (Copied from HaxeFlixel)
  */
 class ArrayUtil
-{	
+{
 	/**
 	 * Sets the length of an array.
-	 * 
+	 *
 	 * @param	array		The array.
 	 * @param	newLength	The length you want the array to have.
 	 */
@@ -30,12 +30,12 @@ class ArrayUtil
 			#end
 		}
 	}
-	
+
 	/**
 	 * Safely removes an element from an array by swapping it with the last element and calling pop()
-	 * (won't do anything if the element is not in the array). This is a lot faster than regular splice(), 
+	 * (won't do anything if the element is not in the array). This is a lot faster than regular splice(),
 	 * but it can only be used on arrays where order doesn't matter.
-	 * 
+	 *
 	 * @param	array	The array to remove the element from
 	 * @param 	element	The element to remove from the array
 	 * @return	The array
@@ -50,13 +50,13 @@ class ArrayUtil
 		}
 		return array;
 	}
-	
+
 	/**
 	 * Removes an element from an array by swapping it with the last element and calling pop().
 	 * This is a lot faster than regular splice(), but it can only be used on arrays where order doesn't matter.
-	 * 
+	 *
 	 * IMPORTANT: always count down from length to zero if removing elements from whithin a loop
-	 * 
+	 *
 	 * var i = array.length;
 	 * while (i-- > 0)
 	 * {
@@ -65,7 +65,7 @@ class ArrayUtil
 	 *           ArrayUtil.swapAndPop(array, i);
 	 *      }
 	 * }
-	 * 
+	 *
 	 * @param	array	The array to remove the element from
 	 * @param 	index	The index of the element to be removed from the array
 	 * @return	The array
@@ -77,7 +77,7 @@ class ArrayUtil
 		array.pop();
 		return array;
 	}
-	
+
 	/**
 	 * Clears an array structure, but leaves the object data untouched
 	 * Useful for cleaning up temporary references to data you want to preserve
@@ -110,7 +110,7 @@ class ArrayUtil
 			}
 		}
 	}
-	
+
 	/**
 	 * Flattens 2D arrays into 1D arrays.
 	 * Example: [[1, 2], [3, 2], [1, 1]] -> [1, 2, 3, 2, 1, 1]
@@ -119,15 +119,15 @@ class ArrayUtil
 	public static function flatten2DArray<T>(array:Array<Array<T>>):Array<T>
 	{
 		var result = [];
-		
+
 		for (innerArray in array)
 		{
 			result = result.concat(innerArray);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Compares the contents with == to see if the two arrays are the same.
 	 * Also takes null arrays and the length of the arrays into account.
@@ -142,7 +142,7 @@ class ArrayUtil
 			return false;
 		if (array1.length != array2.length)
 			return false;
-		
+
 		for (i in 0...array1.length)
 		{
 			if (array1[i] != array2[i])
@@ -152,7 +152,7 @@ class ArrayUtil
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Returns the last element of an array or null if the array is null / empty.
 	 */
