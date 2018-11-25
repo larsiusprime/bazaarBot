@@ -42,6 +42,7 @@ class Main extends Sprite
 		addChild(display);
 		
 		makeButton(120, 10, "Benchmark", onBenchmark);
+		
 		txt_benchmark = new TextField();
 		txt_benchmark.x = 220;
 		txt_benchmark.y = 10;
@@ -84,6 +85,7 @@ class Main extends Sprite
 		var over:Sprite = new Sprite();
 		var down:Sprite = new Sprite();
 		var hit:Sprite = new Sprite();
+		
 		up.graphics.beginFill(0xaaaaaa);
 		up.graphics.drawRoundRect(0, 0, W, H, 5, 5);
 		up.graphics.endFill();
@@ -108,6 +110,9 @@ class Main extends Sprite
 		over.addChild(text2);
 		down.addChild(text3);
 		
+		up.x = over.x = down.x = hit.x = X;
+		up.y = over.y = down.y = hit.y = Y;
+		
 		text1.autoSize = TextFieldAutoSize.LEFT;
 		text1.text = text2.text = text3.text = str;
 		text1.x = text2.x = text3.x = (up.width - text1.textWidth)/2;
@@ -116,10 +121,8 @@ class Main extends Sprite
 		var s:SimpleButton = new SimpleButton(up, over, down, hit);
 		s.addEventListener(MouseEvent.CLICK, func, false, 0, true);
 		
-		s.x = X;
-		s.y = Y;
-		
 		addChild(s);
+		
 		return s;
 	}
 }

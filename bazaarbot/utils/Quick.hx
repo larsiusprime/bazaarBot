@@ -24,19 +24,25 @@ class Quick
 		return avg;
 	}
 	
-	public static inline function minArr(a:Array<Float>):Float
+	public static inline function minArr(a:Array<Float> window:Int):Float
 	{
 		var min:Float = Math.POSITIVE_INFINITY;
-		for (f in a) {
+		if (window > a.length) window = a.length;
+		for (i in 0...window)
+		{
+			var f = a[a.length - 1 - i];
 			if (f < min) { min = f;}
 		}
 		return min;
 	}
 	
-	public static inline function maxArr(a:Array<Float>):Float
+	public static inline function maxArr(a:Array<Float>, window:Int):Float
 	{
 		var max:Float = Math.NEGATIVE_INFINITY;
-		for (f in a) {
+		if (window > a.length) window = a.length;
+		for (i in 0...window)
+		{
+			var f = a[a.length - 1 - i];
 			if (f > max) { max = f; }
 		}
 		return max;

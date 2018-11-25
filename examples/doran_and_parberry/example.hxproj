@@ -15,21 +15,22 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="T:\development\git\lime" />
-    <class path="T:\Development\git\bazaarbot" />
-    <class path="T:\development\git\openfl" />
-    <class path="C:\HaxeToolkit\haxe\lib\hscript\2,0,4" />
+    <class path="T:\git\diceydungeons\lime\src" />
+    <class path="T:\git\bazaarbot" />
+    <class path="T:\git\diceydungeons\openfl\src" />
+    <class path="T:\git\DefendersQuest1\libs\hscript" />
     <class path="Source" />
+    <class path="T:\git\diceydungeons\openfl\externs\flash" />
     <class path="Export\flash\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.5.2&#xA;bazaarbot=0.0.1&#xA;openfl=3.2.2&#xA;hscript=2.0.4&#xA;openfl-next&#xA;tools=2.5.2&#xA;no-compilation&#xA;openfl-flash&#xA;web" />
+    <option directives="lime=7.0.0&#xA;bazaarbot=0.0.1&#xA;openfl=8.4.1&#xA;hscript=2.2.0&#xA;tools=7.0.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 11.2&#xA;-debug " />
+    <option additional="--macro lime._internal.macros.DefineMacro.run()&#xA;--macro openfl._internal.utils.ExtraParams.include()&#xA;-swf-version 17&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

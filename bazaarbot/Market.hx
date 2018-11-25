@@ -85,12 +85,20 @@ class Market
 			{
 				resolveOffers(commodity);
 			}
+			
+			var bankruptcies = [];
 			for (agent in _agents)
 			{
 				if (agent.money <= 0)
 				{
-					signalBankrupt.dispatch(this, agent);
+					bankruptcies.push(agent);
 				}
+			}
+			
+			while (bankruptcies.length > 0)
+			{
+				signalBankrupt.dispatch(this, bankruptcies[0]);
+				bankruptcies.splice(0, 1);
 			}
 		}
 		_roundNum++;
@@ -391,7 +399,6 @@ class Market
 		bids = Quick.shuffle(bids);
 		asks = Quick.shuffle(asks);
 		
-		bids.sort(Quick.sortDecreasingPrice);		//highest buying price first
 		asks.sort(Quick.sortIncreasingPrice);		//lowest selling price first
 		
 		var successfulTrades:Int = 0;		//# of successful trades this round
@@ -420,7 +427,7 @@ class Market
 			var seller:Offer = asks[0];
 			
 			var quantity_traded = Math.min(seller.units, buyer.units);
-			var clearing_price  = Quick.avgf(seller.unit_price, buyer.unit_price);
+			var clearing_price  = seller.unit_price;
 			
 			if (quantity_traded > 0)
 			{

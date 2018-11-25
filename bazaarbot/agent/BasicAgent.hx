@@ -25,6 +25,8 @@ class BasicAgent
 	public var inventoryFull(get, null):Bool;
 	public var destroyed(default, null):Bool;
 	
+	public var trackCosts(default, null):Float;
+	
 	public function new(id:Int, data:AgentData) 
 	{
 		this.id = id;
@@ -45,6 +47,8 @@ class BasicAgent
 		
 		_priceBeliefs = new Map<String, Point>();
 		_observedTradingRange = new Map<String, Array<Float>>();
+		
+		trackCosts = 0;
 	}
 	
 	public function destroy():Void
@@ -117,9 +121,43 @@ class BasicAgent
 		return _inventory.query(good);
 	}
 	
+	public function produceInventory(good:String, delta:Float)
+	{
+		if (trackCosts < 1) trackCosts = 1;
+		var currUnitCost:Float = _inventory.change(good, delta, trackCosts / delta);
+		trackCosts = 0;
+	}
+	
+	public function consumeInventory(good:String, delta:Float)
+	{
+		if (good == "money")
+		{
+			money += delta;
+			if (delta < 0)
+			{
+				trackCosts += ( -delta);
+			}
+		}
+		else
+		{
+			var currUnitCost:Float = _inventory.change(good, delta, 0);
+			if (delta < 0)
+			{
+				trackCosts += ( -delta) * currUnitCost;
+			}
+		}
+	}
+	
 	public function changeInventory(good:String, delta:Float):Void
 	{
-		_inventory.change(good, delta);
+		if (good == "money")
+		{
+			money += delta;
+		}
+		else
+		{
+			_inventory.change(good, delta);
+		}
 	}
 	
 	/********PRIVATE************/
@@ -156,7 +194,7 @@ class BasicAgent
 	{
 		var mean:Float = bazaar.getAverageHistoricalPrice(commodity_,_lookback);
 		var trading_range:Point = observeTradingRange(commodity_);
-		if (trading_range != null)
+		if (trading_range != null && mean > 0)
 		{
 			var favorability:Float = Quick.positionInRange(mean, trading_range.x, trading_range.y);
 			//position_in_range: high means price is at a high point
@@ -196,10 +234,10 @@ class BasicAgent
 		return _priceBeliefs.get(good);
 	}
 	
-	private function observeTradingRange(good:String):Point
+	private function observeTradingRange(good:String, int window:Int):Point
 	{
 		var a:Array<Float> = _observedTradingRange.get(good);
-		var pt:Point = new Point(Quick.minArr(a), Quick.maxArr(a));
+		var pt:Point = new Point(Quick.minArr(a,window), Quick.maxArr(a,window));
 		return pt;
 	}
 }

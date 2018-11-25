@@ -1,4 +1,5 @@
 package bazaarbot.agent;
+import bazaarbot.agent.Inventory.GoodRecord;
 
 /**
  * ...
@@ -11,21 +12,22 @@ class Inventory
 	public function new() 
 	{
 		_sizes = new Map<String, Float>();
-		_stuff = new Map<String, Float>();
 		_ideal = new Map<String, Float>();
+		_stuff = new Map<String, GoodRecord>();
 		maxSize = 0;
 	}
 	
 	public function fromData(data:InventoryData)
 	{
 		var sizes = [];
-		var amounts = [];
+		var records = [];
 		for (key in data.start.keys())
 		{
 			sizes.push(key);
-			amounts.push(data.start.get(key));
+			records.push(data.start.get(key).copy());
 		}
-		setStuff(sizes, amounts);
+		setStuff(sizes, records);
+		
 		sizes = [];
 		amounts = [];
 		for (key in data.size.keys())
@@ -34,6 +36,7 @@ class Inventory
 			amounts.push(data.size.get(key));
 		}
 		setSizes(sizes, amounts);
+		
 		sizes = [];
 		amounts = [];
 		for (key in data.ideal.keys())
@@ -48,30 +51,31 @@ class Inventory
 	public function copy():Inventory
 	{
 		var i:Inventory = new Inventory();
-		var stufff:Array<Float> = [];
+		var stuffc:Array<GoodRecord> = [];
 		var stuffi:Array<String> = [];
-		var idealf:Array<Float> = [];
+		var idealc:Array<Float> = [];
 		var ideali:Array<String> = [];
-		var sizesf:Array<Float> = [];
+		var sizesc:Array<Float> = [];
 		var sizesi:Array<String> = [];
+		
 		for (key in _stuff.keys())
 		{
-			stufff.push(_stuff.get(key));
+			stuffc.push(_stuff.get(key).copy());
 			stuffi.push(key);
 		}
 		for (key in _ideal.keys())
 		{
-			idealf.push(_ideal.get(key));
+			idealc.push(_ideal.get(key));
 			ideali.push(key);
 		}
 		for (key in _sizes.keys())
 		{
-			sizesf.push(_sizes.get(key));
+			sizesc.push(_sizes.get(key));
 			sizesi.push(key);
 		}
-		i.setStuff(stuffi, stufff);
-		i.setIdeal(ideali, idealf);
-		i.setSizes(sizesi, sizesf);
+		i.setStuff(stuffi, stuffc);
+		i.setIdeal(ideali, idealc);
+		i.setSizes(sizesi, sizesc);
 		i.maxSize = maxSize;
 		return i;
 	}
@@ -101,7 +105,7 @@ class Inventory
 	 * @param	amounts_
 	 */
 	
-	public function setStuff(stuff:Array<String>, amounts:Array<Float>):Void
+	public function setStuff(stuff:Array<String>, amounts:Array<GoodRecord>):Void
 	{
 		for (i in 0...stuff.length)
 		{
@@ -141,9 +145,17 @@ class Inventory
 	{
 		if (_stuff.exists(good))
 		{
-			return _stuff.get(good);
+			return _stuff.get(good).amount;
 		}
 		return 0;
+	}
+	
+	public function queryCost(good:String):Float
+	{
+		if (_stuff.exists(good))
+		{
+			return _stuff.get(good).originalCost;
+		}
 	}
 	
 	public function ideal(good:String):Float
@@ -183,28 +195,49 @@ class Inventory
 	 * Change the amount of the given commodity by delta
 	 * @param	commodity_ string id of commodity
 	 * @param	delta_ amount added
+	 * @param	the new average cost per unit
 	 */
 	
-	public function change(good:String, delta:Float):Void
+	public function change(good:String, delta:Float, unitCost:Float):Float
 	{
-		var result:Float;
+		var result:GoodRecord = new GoodRecord(0,0);
 		
 		if (_stuff.exists(good))
 		{
-			var amount:Float = _stuff.get(good);
-			result = amount + delta;
+			var record = _stuff.get(good);
+			if (unitCost > 0)
+			{
+				if (record.amount <= 0)
+				{
+					result.amount = delta;
+					result.originalCost = unitCost;
+				}
+				else
+				{
+					result.originalCost = (record.amount * record.originalCost + (delta * unitCost)) / (record.amount + delta);
+					result.amount = record.amount + delta;
+				}
+			}
+			else
+			{
+				result.amount = record.amount + delta;
+				result.originalCost = record.originalCost;
+			}
 		}
 		else
 		{
-			result = delta;
+			result.amount = delta;
+			result.originalCost = unitCost;
 		}
 		
-		if (result < 0)
+		if (result.amount < 0)
 		{
-			result = 0;
+			result.amount = 0;
+			result.originalCost = 0;
 		}
 		
 		_stuff.set(good, result);
+		return result.originalCost;
 	}
 	
 	/**
@@ -250,4 +283,21 @@ class Inventory
 	private var _stuff:Map<String, Float>;		// key:commodity_id, val:amount
 	private var _ideal:Map<String, Float>;		// ideal counts for each thing
 	private var _sizes:Map<String, Float>;		// how much space each thing takes up
+}
+
+class GoodRecord
+{
+	public var amount:Float;
+	public var originalCost:Float;
+	
+	public function new(Amount:Float, OriginalCost:Float)
+	{
+		amount = Amount;
+		originalCost = OriginalCost;
+	}
+	
+	public function copy():GoodRecord
+	{
+		return new GoodRecord(amount, originalCost);
+	}
 }

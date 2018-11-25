@@ -1,0 +1,27 @@
+-main ApplicationMain 
+-cp T:/git/DefendersQuest1/libs/unifill
+-D unifill=0.4.1
+-cp T:/git/DefendersQuest1/libs/openfl3/lime
+-D lime=2.9.9
+-cp T:/git/DefendersQuest1/libs/actuate/src
+-D actuate=1.8.8
+-cp T:/git/bazaarbot
+-D bazaarbot=0.0.1
+--macro keep('IntIterator')
+-cp T:/git/DefendersQuest1/libs/hscript
+-D hscript=2.2.0
+-cp T:/git/DefendersQuest1/libs/openfl3/openfl
+-D openfl=3.6.1
+-cp src
+-cp T:\git\DefendersQuest1\libs\openfl3\openfl/extern
+-D native-trace
+-D openfl-next
+-D tools=2.9.9
+-D no-compilation
+-D openfl-flash
+-D web
+-swf-version 11.2
+-swf bin/flash/bin/DoranAndParberry.swf
+-swf-header 800:480:60:000000
+-cp bin/flash/haxe
+-debug

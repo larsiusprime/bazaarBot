@@ -12,10 +12,8 @@
 	
 	<!--<haxedef name="hscriptPos"/>-->
 	
-	<assets path="Assets" rename="assets" exclude="nme.svg" />
-	<assets path="Assets" include="*.xml" type="text" />
-	<assets path="Assets" include="*.hs" type="text" />
-	<assets path="Assets" include="*.json" type="text" />
-	<icon path="Assets/nme.svg" />
+	<assets path="assets" include="*.xml"/>
+	<assets path="assets" include="*.hs"/>
+	<assets path="assets" include="*.json"/>
 	
 </project>
