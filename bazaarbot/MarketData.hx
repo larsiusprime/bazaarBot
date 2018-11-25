@@ -1,8 +1,8 @@
 package bazaarbot;
-import bazaarbot.agent.BasicAgent;
-import bazaarbot.agent.BasicAgent.AgentData;
+import bazaarbot.agent.Agent;
+import bazaarbot.agent.Agent.AgentData;
 import bazaarbot.agent.InventoryData;
-import bazaarbot.agent.Logic;
+import bazaarbot.agent.ILogic;
 
 /**
  * ...
@@ -12,9 +12,9 @@ class MarketData
 {
 	public var goods:Array<Good>;
 	public var agentTypes:Array<AgentData>;
-	public var agents:Array<BasicAgent>;
+	public var agents:Array<Agent>;
 
-	public function new(goods:Array<Good>, agentTypes:Array<AgentData>, agents:Array<BasicAgent>)
+	public function new(goods:Array<Good>, agentTypes:Array<AgentData>, agents:Array<Agent>)
 	{
 		this.goods = goods;
 		this.agentTypes = agentTypes;
@@ -27,7 +27,7 @@ class MarketData
 	 * @param	getAgent	a function to create agents
 	 */
 
-	public static function fromJSON(json:Dynamic, getAgent:AgentData->BasicAgent):MarketData
+	public static function fromJSON(json:Dynamic, getAgent:AgentData->Agent):MarketData
 	{
 		var goods:Array<Good> = [];
 
@@ -63,7 +63,7 @@ class MarketData
 		}
 
 		//Make the agent list
-		var agents:Array<BasicAgent> = [];
+		var agents:Array<Agent> = [];
 
 		//Get start conditions
 		var startConditions:Dynamic = json.start_conditions;
@@ -86,7 +86,7 @@ class MarketData
 
 			for (i in 0...val)
 			{
-				var a:BasicAgent = getAgent(agentData);
+				var a:Agent = getAgent(agentData);
 				a.id = agentIndex;
 				agentIndex++;
 				agents.push(a);

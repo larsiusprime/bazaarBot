@@ -1,5 +1,5 @@
 package bazaarbot;
-import bazaarbot.agent.BasicAgent;
+import bazaarbot.agent.Agent;
 
 /**
  * ...
@@ -41,7 +41,7 @@ class Economy
 
 	/***PRIVATE***/
 
-	private function onBankruptcy(m:Market, a:BasicAgent):Void
+	private function onBankruptcy(m:Market, a:Agent):Void
 	{
 		//no implemenation -- provide your own in a subclass
 	}

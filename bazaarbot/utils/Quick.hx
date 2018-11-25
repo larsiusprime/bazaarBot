@@ -1,5 +1,5 @@
 package bazaarbot.utils;
-import bazaarbot.agent.BasicAgent;
+import bazaarbot.agent.Agent;
 
 /**
  * A quick & dirty utility class
@@ -140,14 +140,14 @@ class Quick
 		return list;
 	}
 
-	public static function sortAgentAlpha(a:BasicAgent, b:BasicAgent):Int
+	public static function sortAgentAlpha(a:Agent, b:Agent):Int
 	{
 		if (a.className < b.className) return -1;
 		if (a.className > b.className) return 1;
 		return 0;
 	}
 
-	public static function sortAgentId(a:BasicAgent, b:BasicAgent):Int
+	public static function sortAgentId(a:Agent, b:Agent):Int
 	{
 		if (a.id < b.id) return -1;
 		if (a.id > b.id) return 1;
