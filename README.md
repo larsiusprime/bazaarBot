@@ -7,7 +7,7 @@ This engine consists of various "Agents" trading commodities, with emergent free
 
 The eventual goal is to create an open-source "Economics engine" for games and simulations, much like contemporary open-source "Physics engines."
 
-Based on "[Emergent Economies for Role Playing Games](http://larc.unt.edu/techreports/LARC-2010-03.pdf)" by Jonathon Doran and Ian Parberry.
+Originally based on "[Emergent Economies for Role Playing Games](http://larc.unt.edu/techreports/LARC-2010-03.pdf)" by Jonathon Doran and Ian Parberry, but I've departed from that considerably since then based on feedback.
 
 Source: [Procedural Content Generation](http://larc.unt.edu/ian/research/content/)
 
@@ -19,7 +19,7 @@ Building the example project
 3. Install the `hscript` library (a dependency of bazaarBot): `haxelib install hscript`
 4. Clone this repo somewhere on your hard-drive, let's call that `path/to/bazaarbot`
 5. On the command line type `haxelib dev bazaarbot path/to/bazaarbot` to add bazaarbot as a Haxe library.
-6. Open a command-line, navigate to `path/to/bazaarbot/examples/doran_and_parberry`
+6. Open a command-line, navigate to `path/to/bazaarbot/examples/artifact`
 7. Run `lime build flash` to compile for flash
 8. Run `lime build windows` to compile for cpp/windows (or `lime build mac` or `lime build linux`, etc)
 9. Run `lime build html5` to compile for html5
