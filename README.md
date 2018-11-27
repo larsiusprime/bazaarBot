@@ -1,13 +1,15 @@
 bazaarBot
 =========
 
+*UNSTABLE REFACTOR BRANCH! UNDER CONSTRUCTION!*
+
 A simple agent-based free market simulator engine.
 
 This engine consists of various "Agents" trading commodities, with emergent free-floating prices that rise and fall according to the laws of supply and demand.
 
 The eventual goal is to create an open-source "Economics engine" for games and simulations, much like contemporary open-source "Physics engines."
 
-Originally based on "[Emergent Economies for Role Playing Games](http://larc.unt.edu/techreports/LARC-2010-03.pdf)" by Jonathon Doran and Ian Parberry, but I've departed from that considerably since then based on feedback.
+Originally based on "[Emergent Economies for Role Playing Games](http://larc.unt.edu/techreports/LARC-2010-03.pdf)" by Jonathon Doran and Ian Parberry, but I've now departed from that considerably based on some critiques of the paper.
 
 Source: [Procedural Content Generation](http://larc.unt.edu/ian/research/content/)
 
