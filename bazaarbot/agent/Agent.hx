@@ -1,4 +1,5 @@
 package bazaarbot.agent;
+import bazaarbot.Offer;
 import bazaarbot.agent.Inventory;
 import bazaarbot.utils.EconNoun;
 import bazaarbot.utils.Quick;
@@ -47,9 +48,14 @@ class Agent
 		_logic = null;
 	}
 
-	public function simulate(market:Market):Void
+	public function simulateBeforeTrades(market:Market):Void
 	{
-		_logic.perform(this, market);
+		_logic.beforeTrades(this, market);
+	}
+	
+	public function simulateAfterTrades(market:Market):Void
+	{
+		_logic.afterTrades(this, market);
 	}
 	
 	public function init(market:Market):Void
@@ -78,10 +84,45 @@ class Agent
 	{
 		return _inventory.query(good);
 	}
+	
+	public function queryInventoryCost(good:String, units:Int = 1):Float
+	{
+		return _inventory.queryCost(good, units);
+	}
+	
+	public function consumeInventory(good:String, delta:Float):Void
+	{
+		var cost = _inventory.queryCost(good, delta);
+		changeInventory(good, -delta);
+		_inventory.changeCost(good, -delta * cost);
+	}
+	
+	public function sellInventory(good:String, delta:Float, moneyReceived:Float):Void
+	{
+		consumeInventory(good, delta);
+		money += moneyReceived;
+	}
+	
+	public function buyInventory(good:String, delta:Float, moneySpent:Float):Void
+	{
+		changeInventory(good, delta);
+		_inventory.change(good, moneySpent);
+		money -= moneySpent;
+	}
 
 	public function changeInventory(good:String, delta:Float):Void
 	{
 		_inventory.change(good, delta);
+	}
+	
+	public function onRejectedBid(offer:Offer):Void
+	{
+		//no implementation -- provide your own in a subclass
+	}
+
+	public function onRejectedAsk(offer:Offer):Void
+	{
+		//no implementation -- provide your own in a subclass
 	}
 
 	/********PRIVATE************/

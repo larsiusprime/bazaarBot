@@ -4,7 +4,7 @@ package card;
  * ...
  * @author 
  */
-@:enum abstract CardType(Int)
+@:enum abstract CardType(Int) from Int to Int
 {
 	var HERO = 0;
 	var SPELL = 1;

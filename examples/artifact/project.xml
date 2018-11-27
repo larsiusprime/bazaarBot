@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
-	<meta title="Doran & Parberry's example" package="com.leveluplabs.example" version="1.0.0" company="LevelUpLabs" />
-	<app main="Main" path="Export" file="doran_and_parberry"/>
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="Artifact" package="Artifact" version="1.0.0" company="" />
 	
-	<source path="Source" />
+	<!-- output -->
+	<app main="Main" file="Artifact" path="bin" />
 	
+	<window background="#FFFFFF" fps="60" />
+	<window width="1280" height="720" unless="mobile" />
+	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
+	
+	<!-- classpath, haxe libs -->
+	<source path="source" />
 	<haxelib name="openfl" />
 	<haxelib name="bazaarbot" />
-	<haxelib name="hscript"/>
+	<haxelib name="hscript" />
 	
-	<!--<haxedef name="hscriptPos"/>-->
-	
-	<assets path="Assets" rename="assets" exclude="nme.svg" />
+	<!-- assets -->
 	<assets path="Assets" include="*.xml" type="text" />
 	<assets path="Assets" include="*.hs" type="text" />
 	<assets path="Assets" include="*.json" type="text" />
 	<icon path="Assets/icon.svg" />
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
 	
 </project>

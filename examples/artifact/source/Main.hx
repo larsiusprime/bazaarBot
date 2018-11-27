@@ -4,15 +4,15 @@ import economy.ArtifactEconomy;
 import bazaarbot.Economy;
 import bazaarbot.Market;
 import bazaarbot.utils.Quick;
-import flash.Lib;
-import flash.text.TextField;
-import flash.text.TextFieldAutoSize;
-import flash.text.TextFormat;
-import flash.display.SimpleButton;
-import flash.display.Sprite;
+import openfl.Lib;
+import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
+import openfl.display.SimpleButton;
+import openfl.display.Sprite;
 import openfl.Assets;
-import flash.events.MouseEvent;
-import flash.text.TextFormatAlign;
+import openfl.events.MouseEvent;
+import openfl.text.TextFormatAlign;
 
 
 class Main extends Sprite
@@ -25,7 +25,6 @@ class Main extends Sprite
 	public function new ()
 	{
 		super ();
-		
 		economy = new ArtifactEconomy();
 		market = economy.getMarket("artifact");
 		
@@ -36,7 +35,7 @@ class Main extends Sprite
 	{
 		makeButton(10, 10, "Advance", onAdvance);
 		
-		display = new MarketDisplay(799, 600 - 51);
+		display = new MarketDisplay(1279, 720 - 51);
 		display.x = 0;
 		display.y = 50;
 		addChild(display);

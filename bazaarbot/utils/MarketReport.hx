@@ -8,6 +8,8 @@ class MarketReport
 {
 	public var strListGood:String = "";
 	public var strListGoodPrices:String = "";
+	public var strListGoodAskPrices:String = "";
+	public var strListGoodBidPrices:String = "";
 	public var strListGoodTrades:String = "";
 	public var strListGoodAsks:String = "";
 	public var strListGoodBids:String = "";

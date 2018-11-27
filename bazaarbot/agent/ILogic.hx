@@ -6,5 +6,6 @@ import bazaarbot.Market;
  */
 interface ILogic 
 {
-	public function perform(agent:Agent, market:Market):Void;
+	public function beforeTrades(agent:Agent, market:Market):Void;
+	public function afterTrades(agent:Agent, market:Market):Void;
 }

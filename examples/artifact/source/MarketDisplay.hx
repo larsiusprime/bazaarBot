@@ -14,6 +14,8 @@ class MarketDisplay extends Sprite
 {
 	private var txtListGood:TextField;
 	private var txtListGoodPrices:TextField;
+	private var txtListGoodAskPrices:TextField;
+	private var txtListGoodBidPrices:TextField;
 	private var txtListGoodTrades:TextField;
 	private var txtListGoodAsks:TextField;
 	private var txtListGoodBids:TextField;
@@ -40,6 +42,8 @@ class MarketDisplay extends Sprite
 	{
 		txtListGood.text = report.strListGood;
 		txtListGoodPrices.text = report.strListGoodPrices;
+		txtListGoodAskPrices.text = report.strListGoodAskPrices;
+		txtListGoodBidPrices.text = report.strListGoodBidPrices;
 		txtListGoodTrades.text = report.strListGoodTrades;
 		txtListGoodAsks.text = report.strListGoodAsks;
 		txtListGoodBids.text = report.strListGoodBids;
@@ -80,55 +84,67 @@ class MarketDisplay extends Sprite
 	{
 		txtListGood = new TextField();
 		txtListGood.width = width * 0.10;
-		txtListGood.height = height * 0.25;
+		txtListGood.height = height;
 		txtListGood.x = 0;
 		txtListGood.y = 0;
 
 		txtListGoodPrices = new TextField();
 		txtListGoodPrices.width = width * 0.075;
-		txtListGoodPrices.height = height * 0.25;
+		txtListGoodPrices.height = height;
 		txtListGoodPrices.x = txtListGood.x+txtListGood.width;
 		txtListGoodPrices.y = 0;
 
+		txtListGoodAskPrices = new TextField();
+		txtListGoodAskPrices.width = width * 0.075;
+		txtListGoodAskPrices.height = height;
+		txtListGoodAskPrices.x = txtListGoodPrices.x+txtListGoodPrices.width;
+		txtListGoodAskPrices.y = 0;
+		
+		txtListGoodBidPrices = new TextField();
+		txtListGoodBidPrices.width = width * 0.075;
+		txtListGoodBidPrices.height = height;
+		txtListGoodBidPrices.x = txtListGoodAskPrices.x+txtListGoodAskPrices.width;
+		txtListGoodBidPrices.y = 0;
+		
 		txtListGoodTrades = new TextField();
 		txtListGoodTrades.width = width * 0.075;
-		txtListGoodTrades.height = height * 0.25;
-		txtListGoodTrades.x = txtListGoodPrices.x+txtListGoodPrices.width;
+		txtListGoodTrades.height = height;
+		txtListGoodTrades.x = txtListGoodBidPrices.x+txtListGoodBidPrices.width;
 		txtListGoodTrades.y = 0;
 
 		txtListGoodAsks = new TextField();
 		txtListGoodAsks.width = width * 0.075;
-		txtListGoodAsks.height = height * 0.25;
+		txtListGoodAsks.height = height;
 		txtListGoodAsks.x = txtListGoodTrades.x+txtListGoodTrades.width;
 		txtListGoodAsks.y = 0;
 
 		txtListGoodBids = new TextField();
 		txtListGoodBids.width = width * 0.075;
-		txtListGoodBids.height = height * 0.25;
+		txtListGoodBids.height = height;
 		txtListGoodBids.x = txtListGoodAsks.x+txtListGoodAsks.width;
 		txtListGoodBids.y = 0;
 
 		txtListAgent = new TextField();
 		txtListAgent.width = width * 0.10;
-		txtListAgent.height = height * 0.25;
+		txtListAgent.height = height;
 		txtListAgent.x = txtListGoodBids.x + txtListGoodBids.width + 10;
 		txtListAgent.y = 0;
 
 		txtListAgentCount = new TextField();
 		txtListAgentCount.width = width * 0.075;
-		txtListAgentCount.height = height * 0.25;
+		txtListAgentCount.height = height;
 		txtListAgentCount.x = txtListAgent.x + txtListAgent.width + 5;
 		txtListAgentCount.y = 0;
 
 		txtListAgentProfit = new TextField();
 		txtListAgentProfit.width = width * 0.075;
-		txtListAgentProfit.height = height * 0.25;
+		txtListAgentProfit.height = height;
 		txtListAgentProfit.x = txtListAgentCount.x + txtListAgentCount.width + 5;
 		txtListAgentProfit.y = 0;
 
 		txtListAgentMoney = new TextField();
 		txtListAgentMoney.width = width * 0.075;
-		txtListAgentMoney.height = height * 0.25;
+		txtListAgentMoney.height = height;
 		txtListAgentMoney.x = txtListAgentProfit.x + txtListAgentProfit.width + 5;
 		txtListAgentMoney.y = 0;
 
@@ -137,6 +153,8 @@ class MarketDisplay extends Sprite
 
 		addChild(txtListGood);
 		addChild(txtListGoodPrices);
+		addChild(txtListGoodAskPrices);
+		addChild(txtListGoodBidPrices);
 		addChild(txtListGoodTrades);
 		addChild(txtListGoodAsks);
 		addChild(txtListGoodBids);

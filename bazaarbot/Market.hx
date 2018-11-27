@@ -73,24 +73,27 @@ class Market
 			for (agent in _agents)
 			{
 				agent.moneyLastRound = agent.money;
-				agent.simulate(this);
-
+				agent.simulateBeforeTrades(this);
+				
 				for (commodity in _goodTypes)
 				{
 					agent.generateOffers(this, commodity);
 				}
 			}
-
+			
 			for (commodity in _goodTypes)
 			{
 				resolveOffers(commodity);
 			}
+			rejectOffers("*");	//clear out unfilled "any" bids
+			
 			for (agent in _agents)
 			{
 				if (agent.money <= 0)
 				{
 					signalBankrupt.dispatch(this, agent);
 				}
+				agent.simulateAfterTrades(this);
 			}
 			_roundNum++;
 		}
@@ -267,6 +270,8 @@ class Market
 		var mr:MarketReport = new MarketReport();
 		mr.strListGood = "Commodities\n\n";
 		mr.strListGoodPrices = "Price\n\n";
+		mr.strListGoodAskPrices = "Ask$\n\n";
+		mr.strListGoodBidPrices = "Bid$\n\n";
 		mr.strListGoodTrades = "Trades\n\n";
 		mr.strListGoodAsks = "Supply\n\n";
 		mr.strListGoodBids = "Demand\n\n";
@@ -285,6 +290,12 @@ class Market
 			var price:Float = history.prices.average(commodity, rounds);
 			mr.strListGoodPrices += Quick.numStr(price, 2) + "\n";
 
+			var askPrice:Float = history.askPrices.average(commodity, rounds);
+			mr.strListGoodAskPrices += Quick.numStr(askPrice, 2) + "\n";
+			
+			var bidPrice:Float = history.bidPrices.average(commodity, rounds);
+			mr.strListGoodBidPrices += Quick.numStr(bidPrice, 2) + "\n";
+			
 			var asks:Float = history.asks.average(commodity, rounds);
 			mr.strListGoodAsks += Std.int(asks) + "\n";
 
@@ -347,20 +358,12 @@ class Market
 	private function fromData(data:MarketData)
 	{
 		//Create commodity index
+		registerGood("*", 0);
 		for (g in data.goods)
 		{
-			_goodTypes.push(g.id);
-			_mapGoods.set(g.id, new Good(g.id, g.size));
-
-			history.register(g.id);
-			history.prices.add(g.id, 1.0);	//start the bidding at $1!
-			history.asks.add(g.id, 1.0);	//start history charts with 1 fake buy/sell bid
-			history.bids.add(g.id, 1.0);
-			history.trades.add(g.id, 1.0);
-
-			_book.register(g.id);
+			registerGood(g.id, g.size);
 		}
-
+		
 		_mapAgents = new Map<String, AgentData>();
 
 		for (aData in data.agentTypes)
@@ -382,12 +385,33 @@ class Market
 		}
 
 	}
+	
+	public function registerGood(id:String, size:Float)
+	{
+		_goodTypes.push(id);
+		_mapGoods.set(id, new Good(id, size));
+		
+		history.register(id);
+		history.prices.add(id, 1.0); //start the bidding at $0.01!
+		history.askPrices.add(id, 1.0);
+		history.bidPrices.add(id, 1.0);
+		history.asks.add(id, 1.0);   //start history charts with 1 fake buy/sell bid
+		history.bids.add(id, 1.0);
+		history.trades.add(id, 1.0);
+		_book.register(id);
+	}
 
 	private function resolveOffers(good:String = ""):Void
 	{
+		if(good == "*") return;
+		
 		var bids:Array<Offer> = _book.bids.get(good);
 		var asks:Array<Offer> = _book.asks.get(good);
-
+		
+		var anyBids:Array<Offer> = _book.bids.get("*");
+		
+		bids = bids.concat(anyBids);
+		
 		bids = Quick.shuffle(bids);
 		asks = Quick.shuffle(asks);
 
@@ -400,27 +424,53 @@ class Market
 		var avgPrice:Float = 0;				//avg clearing price this round
 		var numAsks:Float = 0;
 		var numBids:Float = 0;
-
+		var askPrice:Float = 0;
+		var bidPrice:Float = 0;
+		var numAnyBids:Float = 0;
+		
 		var failsafe:Int = 0;
 
 		for (i in 0...bids.length)
 		{
 			numBids += bids[i].units;
+			bidPrice += (bids[i].unit_price * bids[i].units);
 		}
 
 		for (i in 0...asks.length)
 		{
 			numAsks += asks[i].units;
+			askPrice += (asks[i].unit_price * asks[i].units);
 		}
-
+		
+		for (i in 0...anyBids.length)
+		{
+			numAnyBids += anyBids[i].units;
+		}
+		
+		bidPrice /= numBids;
+		askPrice /= numAsks;
+		
+		if (Math.isNaN(bidPrice)) bidPrice = history.bidPrices.average(good, 1);
+		if (Math.isNaN(askPrice)) askPrice = history.askPrices.average(good, 1);
+		
 		//march through and try to clear orders
 		while (bids.length > 0 && asks.length > 0)		//while both books are non-empty
 		{
 			var buyer:Offer = bids[0];
 			var seller:Offer = asks[0];
 
-			var quantity_traded = Math.min(seller.units, buyer.units);
-			var clearing_price  = Quick.avgf(seller.unit_price, buyer.unit_price);
+			var quantity_traded = 0.0;
+			var clearing_price = 0.0;
+			
+			if (buyer.unit_price >= seller.unit_price)
+			{
+				clearing_price = seller.unit_price;
+				quantity_traded = Math.min(seller.units, buyer.units);
+			}
+			else
+			{
+				break;
+			}
 
 			if (quantity_traded > 0)
 			{
@@ -428,9 +478,8 @@ class Market
 				seller.units -= quantity_traded;
 				buyer.units -= quantity_traded;
 
-				transferGood(good, quantity_traded, seller.agent_id, buyer.agent_id);
-				transferMoney(quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
-
+				transact(good, quantity_traded, quantity_traded * clearing_price, seller.agent_id, buyer.agent_id);
+				
 				//update agent price beliefs based on successful transaction
 				var buyer_a:Agent = _agents[buyer.agent_id];
 				var seller_a:Agent = _agents[seller.agent_id];
@@ -450,37 +499,56 @@ class Market
 			{
 				bids.splice(0, 1);		//remove bid
 				failsafe = 0;
+				if (buyer.good == "*")
+				{
+					anyBids.remove(buyer);	//if it was an "any" bid remove it from the list of any bids
+				}
 			}
 
 			failsafe++;
 
 			if (failsafe > 1000)
 			{
-				trace("BOINK!");
+				break;
 			}
 		}
-
-		//reject all remaining offers,
-		//update price belief models based on unsuccessful transaction
+		
+		//remove any remaining anybids in the joined array
+		for (anyBid in anyBids)
+		{
+			bids.remove(anyBid);
+		}
+		
+		//reject all remaining offers
 		while (bids.length > 0)
 		{
 			var buyer:Offer = bids[0];
 			var buyer_a:Agent = _agents[buyer.agent_id];
+			buyer_a.onRejectedBid(buyer);
 			bids.splice(0, 1);
 		}
 		while (asks.length > 0)
 		{
 			var seller:Offer = asks[0];
 			var seller_a:Agent = _agents[seller.agent_id];
+			seller_a.onRejectedAsk(seller);
 			asks.splice(0, 1);
 		}
 
 		//update history
-
+		
+		var effBids = numBids - anyBids.length;
+		if (effBids == 0)
+		{
+			effBids = unitsTraded;
+		}
+		
 		history.asks.add(good, numAsks);
-		history.bids.add(good, numBids);
+		history.bids.add(good, effBids);
 		history.trades.add(good, unitsTraded);
-
+		history.askPrices.add(good, askPrice);
+		history.bidPrices.add(good, bidPrice);
+		
 		if (unitsTraded > 0)
 		{
 			avgPrice = moneyTraded / cast(unitsTraded, Float);
@@ -492,7 +560,7 @@ class Market
 			history.prices.add(good, history.prices.average(good, 1));
 			avgPrice = history.prices.average(good,1);
 		}
-
+		
 		_agents.sort(Quick.sortAgentAlpha);
 
 		var curr_class:String = "";
@@ -517,28 +585,65 @@ class Market
 			list.push(a.profit);			//push profit onto list
 		}
 
-		//add the last class too
-		history.profit.add(last_class, Quick.listAvgf(list));
+		if (list != null)
+		{
+			//add the last class too
+			history.profit.add(last_class, Quick.listAvgf(list));
+		}
 
+		//update calcs for fast lookups
+		history.updateIndex();
+		
 		//sort by id so everything works again
 		_agents.sort(Quick.sortAgentId);
 
 	}
+	
+	private function rejectOffers(good:String)
+	{
+		var bids = _book.bids.get(good);
+		var asks = _book.asks.get(good);
+		
+		//reject all remaining offers
+		while (bids.length > 0)
+		{
+			var buyer:Offer = bids[0];
+			var buyer_a:Agent = _agents[buyer.agent_id];
+			buyer_a.onRejectedBid(buyer);
+			bids.splice(0, 1);
+		}
+		while (asks.length > 0)
+		{
+			var seller:Offer = asks[0];
+			var seller_a:Agent = _agents[seller.agent_id];
+			seller_a.onRejectedAsk(seller);
+			asks.splice(0, 1);
+		}
+	}
 
+	private function transact(good:String, units:Float, money:Float, seller_id:Int, buyer_id:Int):Void
+	{
+		var seller = _agents[seller_id];
+		var buyer = _agents[buyer_id];
+		
+		seller.sellInventory(good, units, money);
+		buyer.buyInventory(good, units, money);
+	}
+	
 	private function transferGood(good:String, units:Float, seller_id:Int, buyer_id:Int):Void
 	{
 		var seller:Agent = _agents[seller_id];
-		var  buyer:Agent = _agents[buyer_id];
+		var buyer:Agent = _agents[buyer_id];
 		seller.changeInventory(good, -units);
-		 buyer.changeInventory(good,  units);
+		buyer.changeInventory(good,  units);
 	}
 
 	private function transferMoney(amount:Float, seller_id:Int, buyer_id:Int):Void
 	{
 		var seller:Agent = _agents[seller_id];
-		var  buyer:Agent = _agents[buyer_id];
+		var buyer:Agent = _agents[buyer_id];
 		seller.money += amount;
-		 buyer.money -= amount;
+		buyer.money -= amount;
 	}
 
 }

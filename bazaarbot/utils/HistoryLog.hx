@@ -7,8 +7,8 @@ import bazaarbot.utils.EconNoun;
  */
 class HistoryLog
 {
-	var type:EconNoun;
-	var log:Map<String, Array<Float>>;
+	public var type:EconNoun;
+	public var log:Map<String, Array<Float>>;
 
 	public function new(type:EconNoun)
 	{

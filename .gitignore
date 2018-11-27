@@ -1,3 +1,7 @@
 Docs/LARC-2010-03.pdf
 Export/*
 examples/doran_and_parberry/Export/
+
+examples/artifact/bin/
+
+examples/artifact/Export/

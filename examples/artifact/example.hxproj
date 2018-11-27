@@ -5,9 +5,9 @@
     <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="project.xml" />
-    <movie fps="30" />
-    <movie width="800" />
-    <movie height="600" />
+    <movie fps="60" />
+    <movie width="1280" />
+    <movie height="720" />
     <movie version="1" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
@@ -15,22 +15,21 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="T:\git\diceydungeons\lime\src" />
+    <class path="T:\git\DefendersQuest1\libs\openfl8\lime\src" />
     <class path="T:\git\bazaarbot" />
-    <class path="T:\git\diceydungeons\openfl\src" />
+    <class path="T:\git\DefendersQuest1\libs\openfl8\openfl\src" />
     <class path="T:\git\DefendersQuest1\libs\hscript" />
-    <class path="Source" />
-    <class path="T:\git\diceydungeons\openfl\externs\flash" />
-    <class path="Export\flash\haxe" />
+    <class path="source" />
+    <class path="bin\windows\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=7.0.0&#xA;bazaarbot=0.0.1&#xA;openfl=8.4.1&#xA;hscript=2.2.0&#xA;tools=7.0.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;display" />
+    <option directives="lime=7.1.1&#xA;bazaarbot=0.0.1&#xA;openfl=8.6.4&#xA;hscript=2.2.0&#xA;lime-harfbuzz&#xA;lime-openal&#xA;tools=7.1.1&#xA;lime-cairo&#xA;lime-opengl&#xA;no-compilation&#xA;native&#xA;lime-curl&#xA;lime-native&#xA;lime-vorbis&#xA;openfl-native&#xA;lime-cffi&#xA;windows&#xA;desktop" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--macro lime._internal.macros.DefineMacro.run()&#xA;--macro openfl._internal.utils.ExtraParams.include()&#xA;-swf-version 17&#xA;-debug " />
+    <option additional="--macro lime._internal.macros.DefineMacro.run()&#xA;--macro openfl._internal.macros.ExtraParams.include()&#xA;--remap flash:openfl&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

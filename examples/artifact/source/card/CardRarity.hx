@@ -3,7 +3,7 @@ package card;
 /**
  * @author 
  */
-@:enum abstract CardRarity(Int)
+@:enum abstract CardRarity(Int) from Int to Int
 {
 	var BASIC = 0;
 	var COMMON = 1;

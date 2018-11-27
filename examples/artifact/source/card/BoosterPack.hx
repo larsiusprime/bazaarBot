@@ -6,7 +6,7 @@ package card;
  */
 class BoosterPack
 {
-	public static inline var COST:Int = 2.00;
+	public static inline var COST:Float = 2.00;
 	public static inline var CARDS:Int = 12;
 	public static inline var ITEMS:Int = 2;
 	public static inline var HEROES:Int = 1;
@@ -21,21 +21,25 @@ class BoosterPack
 	
 	public function new()
 	{
-		deck = [];
+		cards = [];
 		heroes = 0;
 		items = 0;
 		rares = 0;
-	
+		
+		var num = 0;
+		
 		for (i in 0...HEROES)
 		{
 			var card = new Card(HERO);
 			count(card);
+			num++;
 		}
 		
 		for (i in 0...ITEMS)
 		{
 			var card = new Card(ITEM);
 			count(card);
+			num++;
 		}
 		
 		var otherCards = (CARDS - (HEROES + ITEMS));
@@ -43,13 +47,18 @@ class BoosterPack
 		{
 			var card = new Card();
 			count(card);
+			num++;
 		}
 		
 		if (rares == 0)
 		{
-			var i:Int = Util.iRandom(0, cards.length - 1);
+			var i:Int = Util.iRandom(0, num - 1);
 			var card = cards[i];
-			card.rarity = RARE;
+			while (card.rarity != RARE)
+			{
+				card.rarity = RARE;
+			}
+			num++;
 		}
 	}
 	
@@ -58,6 +67,6 @@ class BoosterPack
 		cards.push(card);
 		if (card.type == HERO) heroes++;
 		if (card.type == ITEM) items++;
-		if (card.type == RARE) rares++;
+		if (card.rarity == RARE) rares++;
 	}
 }
